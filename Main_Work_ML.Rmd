@@ -1,4 +1,3 @@
-github du chline hs
 ---
 title: "Main Group Work_ML"
 author: "Pascal Ingold, Timon Reichmuth und Davide Gualdani"

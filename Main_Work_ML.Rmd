@@ -1,0 +1,132 @@
+---
+title: "Main Group Work_ML"
+author: "Pascal Ingold"
+date: "2026-03-22"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+First step: Loading Packages
+
+```{r}
+library(tidyverse)
+library(janitor)
+library(mgcv)
+library(e1071)
+library(nnet)
+library(caret)
+library(pROC)
+library(Metrics)
+library(performance)
+library(broom)
+library(ggplot2)
+```
+
+
+
+Second step: Reading all available Datasets
+```{r}
+path_listings <- "./Data_Vaud_all/listings-2.csv"
+path_neigborhoods <- "./Data_Vaud_all/neighbourhoods.csv"
+path_reviews_2 <- "./Data_Vaud_all/reviews-2.csv"
+path_calendar <- "./Data_Vaud_all/calendar.csv"
+d.raw_data_listings <- read.csv(path_listings, header = TRUE)
+d.raw_data_neigborhoods <- read.csv(path_neigborhoods, header = TRUE)
+d.raw_data_reviews <- read.csv(path_reviews_2, header = TRUE)
+d.raw_data_calendar <- read.csv(path_calendar, header = TRUE)
+```
+
+Cleaning the Airbnb-Listings Data. 
+
+```{r}
+d.airbnb_listings <- d.raw_data_listings %>%
+  clean_names()
+
+d.listings_clean <- d.airbnb_listings %>%
+  mutate(
+    price = str_remove_all(price, "\\$|,"),
+    price = as.numeric(price),
+    host_is_superhost = ifelse(host_is_superhost %in% c("t", "TRUE", "1"), 1, 0),
+    room_type = as.factor(room_type),
+    property_type = as.factor(property_type)
+  ) %>%
+  filter(!is.na(price), price > 0)
+
+
+```
+
+
+First Feature Engineering for the airbnb_listings data
+
+```{r}
+d.airbnb_listings_feat <- d.listings_clean %>%
+  mutate(
+    log_price = log(price),
+    price_per_guest = price / pmax(accommodates, 1),
+    high_demand = ifelse(availability_365 < 100, 1, 0),
+    reviews_per_month = replace_na(reviews_per_month, 0)
+  )
+```
+
+Exploratory Data Analysis
+
+```{r}
+hist(d.airbnb_listings_feat$price)
+hist(d.airbnb_listings_feat$log_price)
+ggplot(data= d.airbnb_listings_feat, aes(x = room_type, y = price)) +
+  geom_boxplot() +
+  scale_y_log10() +
+  labs(
+    title = "Preisverteilung nach Room Type (log-Skala)",
+    x = "Room Type",
+    y = "Log_Preis"
+  ) +
+  theme_minimal()
+
+ggplot(data = d.airbnb_listings_feat, aes(x = accommodates, y = log_price)) +
+  geom_point(alpha = 0.4) +
+  geom_smooth(method = "loess", se = FALSE) +
+  labs(
+    title = "Preis vs. Kapazität (log-Skala)",
+    x = "Anzahl Gäste",
+    y = "Log_Preis"
+  ) +
+  theme_minimal()
+  
+ggplot(data = d.airbnb_listings_feat, aes(x = log_price, y = number_of_reviews)) +
+  geom_point(alpha = 0.4) +
+  geom_smooth(method = "loess", se = FALSE) +
+  labs(
+    title = "Anzahl Reviews vs. Preis",
+    x = "Log_Preis",
+    y = "Anzahl Reviews"
+  ) +
+  theme_minimal()
+
+ggplot(data = d.airbnb_listings_feat, aes(x = longitude, y = latitude)) +
+  geom_point(aes(color = log_price), alpha = 0.6) +
+  scale_color_viridis_c() +
+  labs(
+    title = "Airbnb Listings (Farbe = Log-Preis)",
+    x = "Longitude",
+    y = "Latitude",
+    color = "Log_Preis"
+  ) +
+  theme_minimal()
+
+ggplot(data = d.airbnb_listings_feat, aes(x = longitude, y = latitude)) +
+  geom_point(aes(color = log_price, size = number_of_reviews), alpha = 0.5) +
+  scale_color_viridis_c() +
+  labs(
+    title = "Listings: Preis und Nachfrage",
+    x = "Longitude",
+    y = "Latitude",
+    color = "Log_Preis",
+    size = "Reviews"
+  ) +
+  theme_minimal()
+```
+

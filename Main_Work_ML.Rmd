@@ -10,6 +10,24 @@ knitr::opts_chunk$set(echo = TRUE)
 
 ```
 
+Next Steps: 
+
+Pascal: 
+- Data Cleaning von 80 predictors auf <20 runterbrechen
+- Feature Engineering ausbauen
+- Business Case liefern
+
+Timon: 
+- Forschungsfragen ausarbeiten
+
+Davide: 
+- EDA Ausbauen
+
+TBD: 
+- ML Methoden verteilen auf uns 3
+
+
+
 First step: Loading Packages
 
 ```{r}

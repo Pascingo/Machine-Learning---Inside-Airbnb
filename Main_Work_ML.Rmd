@@ -1,3 +1,5 @@
+github du chline hurensohn
+
 ---
 title: "Main Group Work_ML"
 author: "Pascal Ingold, Timon Reichmuth und Davide Gualdani"
@@ -7,7 +9,7 @@ output: pdf_document
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
-#github du chline hs
+
 ```
 
 First step: Loading Packages

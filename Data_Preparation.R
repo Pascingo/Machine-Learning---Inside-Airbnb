@@ -6,3 +6,6 @@ raw_data_listings <- read.csv(path_listings, header = TRUE)
 raw_data_neigborhoods <- read.csv(path_neigborhoods, header = TRUE)
 raw_data_reviews <- read.csv(path_reviews_2, header = TRUE)
 raw_data_calendar <- read.csv(path_calendar, header = TRUE)
+
+
+#test

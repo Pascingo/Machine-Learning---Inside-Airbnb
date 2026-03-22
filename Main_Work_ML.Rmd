@@ -19,6 +19,7 @@ Pascal:
 
 Timon: 
 - Forschungsfragen ausarbeiten
+- Outlier Handling definieren.
 
 Davide: 
 - EDA Ausbauen
@@ -26,7 +27,20 @@ Davide:
 TBD: 
 - ML Methoden verteilen auf uns 3
 
-
+# Business Case
+We propose a data-driven pricing decision-support system for Airbnb hosts in the
+Canton of Vaud, providing market-aligned price recommendations based on listing
+characteristics. The tool targets both new and existing hosts, using inputs such
+as location, room type, guest capacity, availability, ratings, and superhost status.
+Advanced machine learning models—including LM, GLM, GAM, SVM, and Neural
+Networks—will be applied to identify key price drivers and generate accurate
+predictions. The objective is to balance revenue and occupancy, helping hosts
+understand their market value.
+A key feature is interpretability, enabling users to see why a certain price is
+recommended. From a business perspective, the system aims to increase booking
+rates, reduce price dispersion, and improve host satisfaction.
+The model is tailored to the Canton of Vaud to capture regional economic effects
+and can be extended to dynamic pricing in future iterations.
 
 First step: Loading Packages
 
@@ -41,6 +55,7 @@ library(pROC)
 library(Metrics)
 library(performance)
 library(broom)
+library(stringr)
 library(ggplot2)
 ```
 
@@ -49,13 +64,7 @@ library(ggplot2)
 Second step: Reading all available Datasets
 ```{r}
 path_listings <- "./Data_Vaud_all/listings-2.csv"
-path_neigborhoods <- "./Data_Vaud_all/neighbourhoods.csv"
-path_reviews_2 <- "./Data_Vaud_all/reviews-2.csv"
-path_calendar <- "./Data_Vaud_all/calendar.csv"
 d.raw_data_listings <- read.csv(path_listings, header = TRUE)
-d.raw_data_neigborhoods <- read.csv(path_neigborhoods, header = TRUE)
-d.raw_data_reviews <- read.csv(path_reviews_2, header = TRUE)
-d.raw_data_calendar <- read.csv(path_calendar, header = TRUE)
 ```
 
 Cleaning the Airbnb-Listings Data. 
@@ -74,7 +83,21 @@ d.listings_clean <- d.airbnb_listings %>%
   ) %>%
   filter(!is.na(price), price > 0)
 
-
+d.listings_clean <- d.listings_clean %>%
+  select(-listing_url, -scrape_id, -last_scraped, -source, -name, -description,
+         -neighborhood_overview, -picture_url, -host_url, -host_name, -host_location,
+         -host_about, -host_thumbnail_url, -host_picture_url, -host_neighbourhood,
+         -neighbourhood, -neighbourhood_cleansed, -bathrooms_text, -amenities, 
+         -minimum_minimum_nights, -maximum_minimum_nights, -minimum_maximum_nights,
+         -maximum_maximum_nights, -minimum_nights_avg_ntm, -maximum_nights_avg_ntm,
+         -calendar_updated, -has_availability, -availability_30, -availability_60,
+         -availability_90, -calendar_last_scraped, -number_of_reviews_ltm, -number_of_reviews_l30d,
+         -availability_eoy, -number_of_reviews_ly, -review_scores_accuracy, -review_scores_cleanliness,
+         -review_scores_checkin, -review_scores_communication, -review_scores_location,
+         -license, -instant_bookable, -calculated_host_listings_count_entire_homes, -calculated_host_listings_count_private_rooms,
+         -calculated_host_listings_count_shared_rooms, -reviews_per_month, -bedrooms, -review_scores_value)
+d.listings_clean <- d.listings_clean %>%
+  mutate(host_since_year = str_extract(host_since, "^\\d{4}"))
 ```
 
 
@@ -85,8 +108,7 @@ d.airbnb_listings_feat <- d.listings_clean %>%
   mutate(
     log_price = log(price),
     price_per_guest = price / pmax(accommodates, 1),
-    high_demand = ifelse(availability_365 < 100, 1, 0),
-    reviews_per_month = replace_na(reviews_per_month, 0)
+    high_demand = ifelse(availability_365 < 100, 1, 0)
   )
 ```
 

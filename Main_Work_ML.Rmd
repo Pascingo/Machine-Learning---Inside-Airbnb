@@ -1,6 +1,6 @@
 ---
 title: "Main Group Work_ML"
-author: "Pascal Ingold, Timon Reichmuth und Davide Gualdani"
+author: "Pascal Ingold, Timon Reichmuth und Davide Gualdani Hansjakobli"
 date: "2026-03-22"
 output: pdf_document
 ---

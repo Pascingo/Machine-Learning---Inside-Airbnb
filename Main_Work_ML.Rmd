@@ -32,7 +32,7 @@ We propose a data-driven pricing decision-support system for Airbnb hosts in the
 Canton of Vaud, providing market-aligned price recommendations based on listing
 characteristics. The tool targets both new and existing hosts, using inputs such
 as location, room type, guest capacity, availability, ratings, and superhost status.
-Advanced machine learning models—including LM, GLM, GAM, SVM, and Neural
+Machine learning models—including LM, GLM, GAM, SVM, and Neural
 Networks—will be applied to identify key price drivers and generate accurate
 predictions. The objective is to balance revenue and occupancy, helping hosts
 understand their market value.

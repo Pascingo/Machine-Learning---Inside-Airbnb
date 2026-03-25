@@ -384,3 +384,75 @@ kable(na_summary, caption = "Count of Missing Values per Variable")
 ```
 
 
+
+
+
+Bi gad Moti gsi
+Davide: Linear Model
+Before we jump straight into the lm() function, we need to do one crucial step for your business case: Train/Test Splitting. Since your goal is to build a predictive pricing tool, you need to train your model on one chunk of the data (e.g., 80%) and test its accuracy on data it has never seen before (the remaining 20%). This proves to the client that your tool actually works in the real world.Additionally, the evaluation guidelines explicitly warn against fitting a "very simple linear model" if you are going to compare it to complex models like Neural Networks or SVMs. To make it a "fair way" of comparing, you should include at least one interaction term in your LM.
+
+```{r}
+# --- 1. Split Data into Training and Testing Sets ---
+# Using the caret package (which you already loaded) to create an 80/20 split
+set.seed(42) # Set a seed so you get the exact same split every time you compile!
+train_index <- createDataPartition(d.airbnb_listings_feat$log_price, p = 0.8, list = FALSE)
+
+train_data <- d.airbnb_listings_feat[train_index, ]
+test_data <- d.airbnb_listings_feat[-train_index, ]
+
+# --- 2. Fit the Linear Model ---
+# Note: We MUST use log_price because "amounts" must virtually always be log-transformed[cite: 192, 193].
+# We add an interaction term (*) between accommodates and room_type for a fairer comparison with complex models[cite: 182].
+lm_model <- lm(log_price ~ accommodates * room_type + 
+                 host_is_superhost + 
+                 number_of_reviews + 
+                 availability_365, 
+               data = train_data)
+
+# --- 3. View the Results ---
+summary(lm_model)
+```
+
+# Interpreting the Coefficients
+Because your target variable is log_price, interpreting the coefficients requires a slight mental shift. A coefficient in a log-linear model represents an *approximate percentage change in the original price*.
+
+## The Baseline (The Intercept)
+*What the math says:* The intercept is 4.371.
+*Client Translation:* Our baseline reference listing—an 'Entire home/apt' (the category missing from the list, meaning it's the default)—has an estimated base price of roughly 79 CHF per night (exp(4.371)), assuming all other factors are zero.
+
+## Capacity (Accommodates)
+*What the math says:* The coefficient is 0.1553 (Highly significant).
+*Client Translation:* Capacity is a massive price driver. For a standard entire apartment, every additional guest the property can accommodate increases the nightly price by 16.8% ((exp(0.1553) - 1) * 100).
+
+## Room Types & The Interaction Term
+This is where your interaction term (accommodates * room_type) pays off, proving why you shouldn't use a simple, plain model!
+
+*Private Rooms:* They are inherently cheaper. The base price drops by roughly 30.8% (exp(-0.3688) - 1) compared to an entire home. The interaction term for private rooms is not statistically significant (p = 0.52), meaning an extra guest in a private room adds about the same 16.8% premium as it does in an entire home.
+
+*Shared Rooms:* This is the most interesting part. The base price drops, but look at the interaction term: -0.1585 (Highly significant). If you add the base guest coefficient (0.1553) to this shared room interaction (-0.1585), you get essentially zero.
+
+*Client Translation:* "While adding guests allows hosts of 'Entire homes' and 'Private rooms' to charge about 17% more per guest, this rule does not apply to 'Shared rooms'. For shared rooms, adding more beds does not allow the host to increase the price at all.
+
+## Surprising Business Insights (Other Drivers)
+*Superhost Status (-0.0648):* "Counter-intuitively, Superhosts actually charge about 6.3% less than regular hosts. From a business perspective, this suggests that hosts might achieve Superhost status because they offer highly competitive, slightly lower prices to ensure high booking rates and good reviews."
+
+*Number of Reviews (-0.0014):* "Listings with more reviews tend to be slightly cheaper (each review drops the price by about 0.14%). This likely points to 'budget' listings having a higher turnover of guests, and therefore accumulating more reviews."
+
+*Availability (0.00029):* "Listings with higher availability are slightly more expensive. This makes sense: highly expensive places are booked less often, leaving more days available on their calendar."
+
+# Evaluating Predictive Performance
+To see how "accurate" our model is, we will calculate the Root Mean Squared Error (RMSE) on the test data. The guidelines state that if we cannot find another measure of fit, we can use RMSE.
+```{r}
+# --- 4. Make Predictions on the Test Data ---
+# Predict the log_price for the unseen test data
+lm_predictions <- predict(lm_model, newdata = test_data)
+
+# FIX: Force R to use the Metrics package specifically
+lm_rmse <- Metrics::rmse(test_data$log_price, lm_predictions)
+
+print(paste("Linear Model RMSE on Test Data:", round(lm_rmse, 4)))
+
+```
+
+*Client Translation:* "Our baseline Linear Model achieved a Root Mean Squared Error (RMSE) of 0.4624 on unseen test data. Because we are predicting the logarithm of the price, this means our model's predictions are typically off by a factor of roughly exp(0.4624), which equals about 1.58. In practical terms, our base model's price estimates are generally within a ~58% margin of error. While this is a good starting point, it highlights the need for our more advanced machine learning models to capture the complex, non-linear pricing dynamics in the Vaud market."
+

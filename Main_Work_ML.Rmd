@@ -171,6 +171,8 @@ ggplot(data = d.airbnb_listings_feat, aes(x = longitude, y = latitude)) +
   theme_minimal()
 ```
 
+
+
 Davide's EDA
 ```{r}
 # --- 1. Distribution of the Target Variable (Price) ---
@@ -251,7 +253,7 @@ ggplot(data = d.airbnb_listings_feat, aes(x = longitude, y = latitude)) +
   theme_minimal()
 ```
 Davide's overall Data Analysis
-1. Overall Market Overview (Prices & Capacity)
+# 1. Overall Market Overview (Prices & Capacity)
 This is the absolute minimum, maximum, median, and mean for the most important numeric variables.
 ```{r}
 # Basic summary statistics for key numerical variables
@@ -263,7 +265,7 @@ print(summary_stats)
 ```
 Client Interpretation: "The average Airbnb in Vaud costs X CHF per night, but the median is Y CHF, indicating that a few extremely expensive luxury listings might be skewing the average upward. Prices range from a minimum of A CHF to a maximum of B CHF."
 
-2. Analysis by Room Type
+# 2. Analysis by Room Type
 Since we want to know how many different types of rooms there are, we group the data and calculate the counts, percentages, and price ranges for each type.
 ```{r}
 # Detailed breakdown by Room Type
@@ -283,7 +285,7 @@ print(room_type_analysis)
 ```
 Client Interpretation: "Entire homes/apartments dominate the Vaud market, making up 75% of all listings. As expected, the Hotel room command the highest median price (264.5 CHF), compared to shared rooms (47 CHF)."
 
-3. Superhost vs. Regular Host Breakdown
+# 3. Superhost vs. Regular Host Breakdown
 This business case specifically mentions superhost status. So we took a look to see how many there are and if they actually charge more or even less.
 ```{r}
 # Superhost statistics

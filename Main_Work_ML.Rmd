@@ -57,6 +57,7 @@ library(broom)
 library(stringr)
 library(ggplot2)
 library(patchwork)
+library(knitr)
 ```
 
 
@@ -171,6 +172,13 @@ ggplot(data = d.airbnb_listings_feat, aes(x = longitude, y = latitude)) +
   theme_minimal()
 ```
 
+*Important to mention*
+During our exploratory data analysis, we identified one 'Private room' listing with an unrealistically high price of 2'147'483'647 CHF. We excluded this single observation from our dataset as it is an extreme outlier that does not reflect the true market conditions and would negatively skew our predictive models.
+```{r}
+# This keeps everything EXCEPT the row that is a Private room AND costs more than 5000
+d.airbnb_listings_feat <- d.airbnb_listings_feat %>%
+  filter(!(room_type == "Private room" & price > 100000))
+```
 
 
 Davide's EDA
@@ -300,6 +308,79 @@ superhost_analysis <- d.airbnb_listings_feat %>%
   mutate(host_is_superhost = ifelse(host_is_superhost == 1, "Yes", "No"))
 
 print(superhost_analysis)
+```
+
+# 1. Host Experience vs. Price (host_since_year)
+Now let's test the hypothesis: can "older" (more experienced) hosts charge higher prices than newcomers?
+```{r}
+# First, ensure the year is treated as a numeric variable
+d.airbnb_listings_feat <- d.airbnb_listings_feat %>%
+  mutate(host_since_year = as.numeric(host_since_year))
+
+# Plot: Price trend over the years of host membership
+ggplot(data = d.airbnb_listings_feat %>% filter(!is.na(host_since_year)), 
+       aes(x = host_since_year, y = log_price)) +
+  geom_point(alpha = 0.2, color = "darkcyan") +
+  # Adding a smoother is mandatory for exploratory plots according to the hints!
+  geom_smooth(method = "gam", formula = y ~ s(x, bs = "cs"), color = "orange", se = TRUE) +
+  labs(
+    title = "Can established hosts command higher prices?",
+    x = "Host Since (Year)",
+    y = "Log(Price)"
+  ) +
+  theme_minimal()
+```
+Client Interpretation: "We observe that hosts who joined the platform earlier (e.g., around 2015) do (or do not) command higher average prices compared to recent joiners. For our pricing tool, this means..."
+
+
+# 2. Correlation Matrix (Crucial before Machine Learning)
+Before we train our LM, GAM, or SVM, we need to know how our numerical variables relate to each other. This helps us identify multicollinearity (when two predictors provide the same information) and strong price drivers.
+
+```{r}
+# Select relevant numerical variables (drop NAs just for the correlation calculation)
+cor_data <- d.airbnb_listings_feat %>%
+  select(log_price, accommodates, number_of_reviews, availability_365) %>%
+  drop_na()
+
+# Calculate the correlation matrix
+cor_matrix <- cor(cor_data)
+
+# Render a nice table for your RMarkdown document
+kable(round(cor_matrix, 2), caption = "Correlation Matrix of Key Numerical Drivers")
+```
+Client Interpretation: "As expected, accommodates shows the strongest positive correlation with price. It is also interesting to note the relationship between availability and number_of_reviews..."
+
+# 3. Detailed property_type Analysis
+We already analyzed room_type, but Airbnb often has dozens of property_types (e.g., "Entire chalet", "Private room in castle", etc.). Summarizing the Top 10 property types in the Canton of Vaud provides maybe a great market insight.
+```{r}
+# Top 10 Property Types by frequency and their median price
+top_properties <- d.airbnb_listings_feat %>%
+  group_by(property_type) %>%
+  summarise(
+    Total_Listings = n(),
+    Median_Price = median(price, na.rm = TRUE)
+  ) %>%
+  arrange(desc(Total_Listings)) %>%
+  slice_head(n = 10) # Keep only the top 10
+
+kable(top_properties, caption = "Top 10 Property Types in the Canton of Vaud")
+```
+
+Client Interpretation: "While standard apartments like "entire rental unit" are the most common, specialty properties like chalets, homes and villas command a significant premium, which our model will need to capture."
+
+# 4. Missing Values (NA) Check
+This step is less for the client and essential for your ML models. Most modeling functions (like lm() or svm()) will throw errors or silently drop entire rows if NAs are present. You need to know exactly where your data is missing!
+
+```{r}
+# Count the number of NAs for each key column in your dataset
+na_summary <- d.airbnb_listings_feat %>%
+  select(price, log_price, accommodates, number_of_reviews, host_is_superhost, availability_365) %>%
+  summarise(across(everything(), ~ sum(is.na(.)))) %>%
+  t() %>% # Transpose for better readability
+  as.data.frame() %>%
+  rename(Missing_Values = V1)
+
+kable(na_summary, caption = "Count of Missing Values per Variable")
 ```
 
 

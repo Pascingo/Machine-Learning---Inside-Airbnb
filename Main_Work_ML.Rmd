@@ -6,7 +6,7 @@ output: pdf_document
 ---
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_chunk$set(echo = TRUE, cache = TRUE, comment = NA)
 
 ```
 
@@ -19,7 +19,36 @@ Pascal:
 
 Timon: 
 - Forschungsfragen ausarbeiten
+
+#Research Questions
+
+What factors, which can be modified by Hosts on AirBnb affect guest willingness to pay more for a certain room?
+
+What are factors that influence the guest willingness to pay (WTP)
+
+What are factors on which the guest can adjust their pricing model?
+
+
+
+##Concepts: Willingness to pay (WTP)
+
+WTP is the hypothetical value, how much a customer is willing to pay for a location or a room for a certain standard. This can rise, if for example the host provides the ability to wash clothes in the apartment. So for the same location, once with and once without a washing machine, the customers WTP might increase with the washer. In a more abstract example, if the host is a super host, the customer might trust the host more and his WTP is higher. 
+
+##Hypothesis
+H1: if „Room-sided Factors“ are better, the guests WTP increases
+H2: if „host-sided Factors“ are better, the guesta WTP increases
+H3: if the host is a super host, the WTP of a guest increases
+
+WTP is measured in the Price displayed. We assume, that the mean of prices is similar to the WTP and residuals even out. Therefore we can work with the effective prices displayed on AirBnb. 
+
+
+
 - Outlier Handling definieren.
+--> falsche Datenpunkte sollten gelöscht werden. Extremwerte im Zweifel drin lassen. Ansonsten kann das als p-hacking verstanden werden. 
+
+
+
+
 
 Davide: 
 - EDA Ausbauen

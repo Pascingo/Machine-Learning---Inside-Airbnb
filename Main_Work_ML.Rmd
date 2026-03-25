@@ -56,6 +56,7 @@ library(performance)
 library(broom)
 library(stringr)
 library(ggplot2)
+library(patchwork)
 ```
 
 
@@ -169,4 +170,134 @@ ggplot(data = d.airbnb_listings_feat, aes(x = longitude, y = latitude)) +
   ) +
   theme_minimal()
 ```
+
+Davide's EDA
+```{r}
+# --- 1. Distribution of the Target Variable (Price) ---
+# Upgrading base R hist() to ggplot2 for a more professional look.
+# Showing both raw and log side-by-side helps visually justify the transformation to the client.
+p_raw <- ggplot(d.airbnb_listings_feat, aes(x = price)) +
+  geom_histogram(bins = 50, fill = "steelblue", color = "white") +
+  labs(title = "Raw Price Distribution", x = "Price", y = "Count") +
+  theme_minimal()
+
+p_log <- ggplot(d.airbnb_listings_feat, aes(x = log_price)) +
+  geom_histogram(bins = 50, fill = "darkgreen", color = "white") +
+  labs(title = "Log-transformed Price Distribution", x = "Log(Price)", y = "Count") +
+  theme_minimal()
+p_raw + p_log # Displays them side-by-side
+
+# --- 2. Categorical Predictor: Room Type vs. Price ---
+# Your original code was good, just cleaned up the aesthetics.
+ggplot(data = d.airbnb_listings_feat, aes(x = room_type, y = log_price, fill = room_type)) +
+  geom_boxplot(alpha = 0.7) +
+  labs(
+    title = "Price Distribution by Room Type",
+    x = "Room Type",
+    y = "Log(Price)"
+  ) +
+  theme_minimal() +
+  theme(legend.position = "none")
+
+# --- 3. Continuous Predictor: Capacity vs. Price ---
+ggplot(data = d.airbnb_listings_feat, aes(x = accommodates, y = log_price)) +
+  geom_point(alpha = 0.3, color = "darkgray") +
+  geom_smooth(method = "loess", color = "blue", se = FALSE) +
+  labs(
+    title = "Price vs. Capacity",
+    subtitle = "Smoother applied to identify potential non-linear trends",
+    x = "Number of Guests (Accommodates)",
+    y = "Log(Price)"
+  ) +
+  theme_minimal()
+
+# --- 4. Continuous Predictor: Reviews vs. Price ---
+# Correction: The response variable (log_price) should generally be on the y-axis 
+# when plotting against a predictor[cite: 255].
+ggplot(data = d.airbnb_listings_feat, aes(x = number_of_reviews, y = log_price)) +
+  geom_point(alpha = 0.3, color = "darkgray") +
+  geom_smooth(method = "loess", color = "red", se = FALSE) +
+  labs(
+    title = "Does the Number of Reviews impact Price?",
+    x = "Total Number of Reviews",
+    y = "Log(Price)"
+  ) +
+  theme_minimal()
+
+# --- 5. Binary Predictor: Superhost Status ---
+# Adding this because it's a key part of your business case and fulfills the binary variable requirement.
+ggplot(data = d.airbnb_listings_feat, aes(x = as.factor(host_is_superhost), y = log_price, fill = as.factor(host_is_superhost))) +
+  geom_boxplot(alpha = 0.7) +
+  scale_x_discrete(labels = c("0" = "Regular Host", "1" = "Superhost")) +
+  labs(
+    title = "Price Difference: Superhosts vs. Regular Hosts",
+    x = "Host Status",
+    y = "Log(Price)"
+  ) +
+  theme_minimal() +
+  theme(legend.position = "none")
+
+# --- 6. Spatial Data: Mapping the Listings ---
+# Cleaned up the map to focus purely on location and price.
+ggplot(data = d.airbnb_listings_feat, aes(x = longitude, y = latitude)) +
+  geom_point(aes(color = log_price), alpha = 0.6, size = 1.5) +
+  scale_color_viridis_c(option = "plasma") +
+  labs(
+    title = "Airbnb Listings in Vaud by Price",
+    x = "Longitude",
+    y = "Latitude",
+    color = "Log(Price)"
+  ) +
+  theme_minimal()
+```
+Davide's overall Data Analysis
+1. Overall Market Overview (Prices & Capacity)
+This is the absolute minimum, maximum, median, and mean for the most important numeric variables.
+```{r}
+# Basic summary statistics for key numerical variables
+summary_stats <- d.airbnb_listings_feat %>%
+  select(price, log_price, accommodates, number_of_reviews, availability_365) %>%
+  summary()
+
+print(summary_stats)
+```
+Client Interpretation: "The average Airbnb in Vaud costs X CHF per night, but the median is Y CHF, indicating that a few extremely expensive luxury listings might be skewing the average upward. Prices range from a minimum of A CHF to a maximum of B CHF."
+
+2. Analysis by Room Type
+Since we want to know how many different types of rooms there are, we group the data and calculate the counts, percentages, and price ranges for each type.
+```{r}
+# Detailed breakdown by Room Type
+room_type_analysis <- d.airbnb_listings_feat %>%
+  group_by(room_type) %>%
+  summarise(
+    Total_Listings = n(),
+    Percentage_of_Market = round((n() / nrow(d.airbnb_listings_feat)) * 100, 1),
+    Min_Price = min(price, na.rm = TRUE),
+    Median_Price = median(price, na.rm = TRUE),
+    Average_Price = round(mean(price, na.rm = TRUE), 1),
+    Max_Price = max(price, na.rm = TRUE)
+  ) %>%
+  arrange(desc(Total_Listings)) # Sorts by the most common room type
+
+print(room_type_analysis)
+```
+Client Interpretation: "Entire homes/apartments dominate the Vaud market, making up 75% of all listings. As expected, the Hotel room command the highest median price (264.5 CHF), compared to shared rooms (47 CHF)."
+
+3. Superhost vs. Regular Host Breakdown
+This business case specifically mentions superhost status. So we took a look to see how many there are and if they actually charge more or even less.
+```{r}
+# Superhost statistics
+superhost_analysis <- d.airbnb_listings_feat %>%
+  group_by(host_is_superhost) %>%
+  summarise(
+    Total_Hosts = n(),
+    Percentage = round((n() / nrow(d.airbnb_listings_feat)) * 100, 1),
+    Median_Price = median(price, na.rm = TRUE),
+    Avg_Reviews = round(mean(number_of_reviews, na.rm = TRUE), 1)
+  ) %>%
+  mutate(host_is_superhost = ifelse(host_is_superhost == 1, "Yes", "No"))
+
+print(superhost_analysis)
+```
+
 

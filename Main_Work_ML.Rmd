@@ -145,6 +145,11 @@ d.airbnb_listings_feat <- d.listings_clean %>%
   )
 ```
 
+```{r}
+str(d.airbnb_listings_feat)
+```
+
+
 Exploratory Data Analysis
 
 ```{r}

@@ -11,14 +11,33 @@ knitr::opts_chunk$set(echo = TRUE, cache = TRUE, comment = NA)
 ```
 
 Next Steps: 
+bis Montag 09.00 Timon & Davide hypo schärfen.
+- Forschungsfragen ausarbeiten (präzision auf Host richten)
 
 Pascal: 
-- Data Cleaning von 80 predictors auf <20 runterbrechen
 - Feature Engineering ausbauen
-- Business Case liefern
 
 Timon: 
-- Forschungsfragen ausarbeiten
+- 
+
+Davide:
+- 
+
+Modelle zu verteilen: 
+– a Linear Model
+– a Generalised Linear Model with family set to Poisson
+– a Generalised Linear Model with family set to Binomial
+– a Generalised Additive Model
+– a Neural Network
+– a Support Vector Machine
+
+
+Infos zu bedenken: 
+ABGABEDATUM: irwo im Juni 26
+
+- Outlier Handling definieren.
+--> falsche Datenpunkte sollten gelöscht werden. Extremwerte im Zweifel drin lassen. Ansonsten kann das als p-hacking verstanden werden. 
+
 
 #Research Questions
 
@@ -28,33 +47,18 @@ What are factors that influence the guest willingness to pay (WTP)
 
 What are factors on which the guest can adjust their pricing model?
 
-
-
 ##Concepts: Willingness to pay (WTP)
 
 WTP is the hypothetical value, how much a customer is willing to pay for a location or a room for a certain standard. This can rise, if for example the host provides the ability to wash clothes in the apartment. So for the same location, once with and once without a washing machine, the customers WTP might increase with the washer. In a more abstract example, if the host is a super host, the customer might trust the host more and his WTP is higher. 
 
 ##Hypothesis
 H1: if „Room-sided Factors“ are better, the guests WTP increases
-H2: if „host-sided Factors“ are better, the guesta WTP increases
+H2: if „host-sided Factors“ are better, the guests WTP increases
 H3: if the host is a super host, the WTP of a guest increases
 
 WTP is measured in the Price displayed. We assume, that the mean of prices is similar to the WTP and residuals even out. Therefore we can work with the effective prices displayed on AirBnb. 
 
 
-
-- Outlier Handling definieren.
---> falsche Datenpunkte sollten gelöscht werden. Extremwerte im Zweifel drin lassen. Ansonsten kann das als p-hacking verstanden werden. 
-
-
-
-
-
-Davide: 
-- EDA Ausbauen
-
-TBD: 
-- ML Methoden verteilen auf uns 3
 
 # Business Case
 We propose a data-driven pricing decision-support system for Airbnb hosts in the
@@ -114,7 +118,8 @@ d.listings_clean <- d.airbnb_listings %>%
   filter(!is.na(price), price > 0)
 
 d.listings_clean <- d.listings_clean %>%
-  select(-listing_url, -scrape_id, -last_scraped, -source, -name, -description,
+  select(-id, -host_id, -host_listings_count, -host_total_listings_count, -listing_url, -scrape_id, -last_scraped,
+         -source, -name, -description, -maximum_nights, -first_review, -last_review, -calculated_host_listings_count, -host_since, -availability_365, -estimated_revenue_l365d, 
          -neighborhood_overview, -picture_url, -host_url, -host_name, -host_location,
          -host_about, -host_thumbnail_url, -host_picture_url, -host_neighbourhood,
          -neighbourhood, -neighbourhood_cleansed, -bathrooms_text, -amenities, 
@@ -126,8 +131,6 @@ d.listings_clean <- d.listings_clean %>%
          -review_scores_checkin, -review_scores_communication, -review_scores_location,
          -license, -instant_bookable, -calculated_host_listings_count_entire_homes, -calculated_host_listings_count_private_rooms,
          -calculated_host_listings_count_shared_rooms, -reviews_per_month, -bedrooms, -review_scores_value)
-d.listings_clean <- d.listings_clean %>%
-  mutate(host_since_year = str_extract(host_since, "^\\d{4}"))
 ```
 
 
@@ -138,7 +141,7 @@ d.airbnb_listings_feat <- d.listings_clean %>%
   mutate(
     log_price = log(price),
     price_per_guest = price / pmax(accommodates, 1),
-    high_demand = ifelse(availability_365 < 100, 1, 0)
+    high_demand = ifelse(estimated_occupancy_l365d > 200, 1, 0)
   )
 ```
 

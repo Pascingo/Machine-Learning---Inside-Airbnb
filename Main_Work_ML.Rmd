@@ -24,12 +24,25 @@ Davide:
 - 
 
 Modelle zu verteilen: 
-– a Linear Model
-– a Generalised Linear Model with family set to Poisson
-– a Generalised Linear Model with family set to Binomial
-– a Generalised Additive Model
-– a Neural Network
-– a Support Vector Machine
+– a Linear Model --> lm(price ~ rewview_rating + Superhost T/F) --> für unterscheidung und kontrolle. 
+– a Generalised Linear Model with family set to Poisson --> glm(Price ~ reviews)
+– a Generalised Linear Model with family set to Binomial --> glm(Price ~ Superhost T/F)
+– a Generalised Additive Model -->  gam(price ~  s(accommodates) +   --> allenfalls aufbauend auf dem lm()
+                                    s(review_scores_rating) + 
+                                    s(availability_365) +   
+                                    s(number_of_reviews) +   
+                                    s(longitude, latitude) +   
+                                    s(host_listings_count) +   
+                                    room_type +   
+                                    host_is_superhost +   
+                                    bathrooms + 
+                                    bedrooms,   
+                                    family = gaussian(link="log"),   
+                                    data = df_clean)
+
+– a Neural Network --> 
+– a Support Vector Machine --> 
+
 
 
 Infos zu bedenken: 
@@ -41,7 +54,7 @@ ABGABEDATUM: irwo im Juni 26
 
 #Research Questions
 
-What factors, which can be modified by Hosts on AirBnb affect guest willingness to pay more for a certain room?
+What factors, which can be modified by Hosts on AirBnb, affect guest willingness to pay more for a certain room?
 
 What are factors that influence the guest willingness to pay (WTP)
 
@@ -52,9 +65,10 @@ What are factors on which the guest can adjust their pricing model?
 WTP is the hypothetical value, how much a customer is willing to pay for a location or a room for a certain standard. This can rise, if for example the host provides the ability to wash clothes in the apartment. So for the same location, once with and once without a washing machine, the customers WTP might increase with the washer. In a more abstract example, if the host is a super host, the customer might trust the host more and his WTP is higher. 
 
 ##Hypothesis
-H1: if „Room-sided Factors“ are better, the guests WTP increases
-H2: if „host-sided Factors“ are better, the guests WTP increases
-H3: if the host is a super host, the WTP of a guest increases
+H1: If the review-score of a host is better, the WTP of a guest increases. 
+H2: If a host has more reviews, the WTP of a guest increases. 
+H3: If a host is e superhost, the WTP of a guest increases. 
+H4: 
 
 WTP is measured in the Price displayed. We assume, that the mean of prices is similar to the WTP and residuals even out. Therefore we can work with the effective prices displayed on AirBnb. 
 

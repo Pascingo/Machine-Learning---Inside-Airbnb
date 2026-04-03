@@ -15,18 +15,18 @@ bis Montag 09.00 Timon & Davide hypo schärfen.
 - Forschungsfragen ausarbeiten (präzision auf Host richten)
 
 Pascal: 
-- Feature Engineering ausbauen
+- – a Generalised Linear Model with family set to Poisson --> glm(Price ~ reviews)
+
 
 Timon: 
-- 
+- a Linear Model --> lm(price ~ rewview_rating + Superhost T/F) --> für unterscheidung und kontrolle. 
+
 
 Davide:
-- 
+- – a Generalised Linear Model with family set to Binomial --> glm(Price ~ Superhost T/F)
+
 
 Modelle zu verteilen: 
-– a Linear Model --> lm(price ~ rewview_rating + Superhost T/F) --> für unterscheidung und kontrolle. 
-– a Generalised Linear Model with family set to Poisson --> glm(Price ~ reviews)
-– a Generalised Linear Model with family set to Binomial --> glm(Price ~ Superhost T/F)
 – a Generalised Additive Model -->  gam(price ~  s(accommodates) +   --> allenfalls aufbauend auf dem lm()
                                     s(review_scores_rating) + 
                                     s(availability_365) +   
@@ -40,13 +40,13 @@ Modelle zu verteilen:
                                     family = gaussian(link="log"),   
                                     data = df_clean)
 
-– a Neural Network --> 
-– a Support Vector Machine --> Overpriced Underpriced Right Price
+– a Neural Network --> Ev. auch Kategorisierung analog SVM
+– a Support Vector Machine --> Overpriced & Underpriced & Right Price (Davide und Timon)
 
 
 
 Infos zu bedenken: 
-ABGABEDATUM: irwo im Juni 26
+ABGABEDATUM: 12 Juni
 
 - Outlier Handling definieren.
 --> falsche Datenpunkte sollten gelöscht werden. Extremwerte im Zweifel drin lassen. Ansonsten kann das als p-hacking verstanden werden. 
@@ -146,6 +146,8 @@ d.listings_clean <- d.listings_clean %>%
          -license, -instant_bookable, -calculated_host_listings_count_entire_homes, -calculated_host_listings_count_private_rooms,
          -calculated_host_listings_count_shared_rooms, -reviews_per_month, -bedrooms, -review_scores_value)
 ```
+
+Das ist unser definitives Datenset!
 
 
 First Feature Engineering for the airbnb_listings data

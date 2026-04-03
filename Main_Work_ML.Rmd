@@ -14,7 +14,7 @@ Next Steps:
 
 
 Pascal: 
-- – a Generalised Linear Model with family set to Poisson --> glm(Price ~ reviews) Achtung Price kann nicht mit Poisson gerechnet werden! Sind keine Zähldaten.
+- – a Generalised Linear Model with family set to Poisson --> glm(Price ~ reviews) Achtung Price kann nicht mit Poisson gerechnet werden! Sind keine Zähldaten. Neu Auslastung genutzt, um Zähldaten zu haben.
 
 
 Timon: 

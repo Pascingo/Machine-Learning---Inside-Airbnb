@@ -41,7 +41,7 @@ Modelle zu verteilen:
                                     data = df_clean)
 
 – a Neural Network --> 
-– a Support Vector Machine --> 
+– a Support Vector Machine --> Overpriced Underpriced Right Price
 
 
 

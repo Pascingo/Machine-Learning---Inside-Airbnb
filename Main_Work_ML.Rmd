@@ -11,11 +11,10 @@ knitr::opts_chunk$set(echo = TRUE, cache = TRUE, comment = NA)
 ```
 
 Next Steps: 
-bis Montag 09.00 Timon & Davide hypo schärfen.
-- Forschungsfragen ausarbeiten (präzision auf Host richten)
+
 
 Pascal: 
-- – a Generalised Linear Model with family set to Poisson --> glm(Price ~ reviews)
+- – a Generalised Linear Model with family set to Poisson --> glm(Price ~ reviews) Achtung Price kann nicht mit Poisson gerechnet werden! Sind keine Zähldaten.
 
 
 Timon: 
@@ -148,6 +147,11 @@ d.listings_clean <- d.listings_clean %>%
 ```
 
 Das ist unser definitives Datenset!
+
+```{r}
+str(d.listings_clean)
+```
+
 
 
 First Feature Engineering for the airbnb_listings data
@@ -508,4 +512,61 @@ print(paste("Linear Model RMSE on Test Data:", round(lm_rmse, 4)))
 ```
 
 *Client Translation:* "Our baseline Linear Model achieved a Root Mean Squared Error (RMSE) of 0.4624 on unseen test data. Because we are predicting the logarithm of the price, this means our model's predictions are typically off by a factor of roughly exp(0.4624), which equals about 1.58. In practical terms, our base model's price estimates are generally within a ~58% margin of error. While this is a good starting point, it highlights the need for our more advanced machine learning models to capture the complex, non-linear pricing dynamics in the Vaud market."
+
+
+# GLM set to poisson (Pascal)
+```{r, Pascals GLM}
+# Poisson-Modell zum Auslastung vorherzusagen
+
+glm_poisson <- glm(estimated_occupancy_l365d ~ price + host_is_superhost + 
+                     review_scores_rating + accommodates + room_type, 
+                   data = d.airbnb_listings_feat, 
+                   family = "poisson")
+
+summary(glm_poisson)
+
+# Gibt es Overdispersion? Poisson-Annahme ist, dass Mittelwert exakt gleich der Varianz ist. Airbnbs sind viele günstig und wenige sehr teuer!
+dispersion_ratio <- glm_poisson$deviance / glm_poisson$df.residual
+print(paste("Dispersion Ratio:", dispersion_ratio))
+
+glm_quasipoisson <- glm(estimated_occupancy_l365d ~ price + host_is_superhost + 
+                          review_scores_rating + accommodates + room_type, 
+                        data = d.airbnb_listings_feat, 
+                        family = "quasipoisson")
+
+summary(glm_quasipoisson)
+```
+# Interpretation 
+## GLM-Poisson:
+
+Das GLM mit Poissonverteilung hat wie erwartet eine Überdispersion produziert, da die Streuung der Airbnb-Daten zu erwarten war. Das Modell hat die Standardfehler zu klein berechnet, wweshalb im ersten Output alle Variablen hochsignifikant waren. Danach wurde die Dispersion berechnet und sie war grösser als 1, nämlich 56.53. Als Lösung wurde ein Quasipoissonmodell genutzt, welches die Standardfehler nach oben anpasst.
+
+## GLM-Quasipoisson
+Das GLM mit Quasipoissonverteilung hat die Überdispersion korrigiert. Die Standardfehler wurden nach oben angepasst (deutlich) und gibt nun ein realistisches Bild, welche Faktoren wirklich einen Einfluss auf die Auslastung haben.
+Interpretationen:
+- Price -> hochsignifikant negativ. Wie erwartet: Je höher der Preis, desto geringer die Auslastung
+- Superhost: hochsignifikant positiv: Achtung, logarithmierte Raten, darum Effekt mit Exponentialfunktion berechnen exp(0.9577) = 2.6. Ein Superhost zu sein steigert die Auslastung um das 2,6-fache im Vergleich zum normalen Host.
+- Bewertungen: Positiv und signifikant. Bessere Bewertungen führen zu mehr Buchungen.
+- Kapazität: Positiv und signifikant. Je mehr Leute reinpassen, desto mehr Buchungen.
+- Zimmertypen: Im Intercept ist "Entire home/apt". Private Room ist signifikant schlechter gebucht als ganze Unterkunft. Shared Room hat hohen P-Wert. Statistisch kann man nicht sagen, ob sich die Auslastung eines geteilten Zimmers von der ganzen Wochnung unterscheidet.
+
+# GLM Quasi-Poisson Ergebnisse für Businesscase
+
+```{r, Pascal}
+
+# Extract model results and calculate the percentage change for each variable
+d.results_glm_quasipoisson <- tidy(glm_quasipoisson) %>%
+  # Calculate the percentage
+  mutate(
+    pct_change = (exp(estimate) - 1) * 100,
+    # Round the percentage change to 2 
+    pct_change = round(pct_change, 2)
+  ) %>%
+  # Select only the relevant columns for business case
+  select(term, estimate, pct_change_rounded, p.value)
+
+print(d.results_glm_quasipoisson)
+
+```
+
 

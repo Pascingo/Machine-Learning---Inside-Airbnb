@@ -95,7 +95,7 @@ library(janitor)
 library(mgcv)
 library(e1071)
 library(nnet)
-library(caret)
+
 library(pROC)
 library(Metrics)
 library(performance)
@@ -513,6 +513,14 @@ print(paste("Linear Model RMSE on Test Data:", round(lm_rmse, 4)))
 
 *Client Translation:* "Our baseline Linear Model achieved a Root Mean Squared Error (RMSE) of 0.4624 on unseen test data. Because we are predicting the logarithm of the price, this means our model's predictions are typically off by a factor of roughly exp(0.4624), which equals about 1.58. In practical terms, our base model's price estimates are generally within a ~58% margin of error. While this is a good starting point, it highlights the need for our more advanced machine learning models to capture the complex, non-linear pricing dynamics in the Vaud market."
 
+#LM (Timon)
+```{r Timon}
+
+
+
+```
+
+
 
 # GLM set to poisson (Pascal)
 ```{r, Pascals GLM}
@@ -570,3 +578,4 @@ print(d.results_glm_quasipoisson)
 ```
 
 
+#GLM set to binomial(Davide)

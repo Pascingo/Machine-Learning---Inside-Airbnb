@@ -317,8 +317,8 @@ ggplot(data = d.airbnb_listings_feat, aes(x = longitude, y = latitude)) +
   ) +
   theme_minimal()
 ```
-Davide's overall Data Analysis
-# 1. Overall Market Overview (Prices & Capacity)
+# Davide's overall Data Analysis
+## 1. Overall Market Overview (Prices & Capacity)
 This is the absolute minimum, maximum, median, and mean for the most important numeric variables.
 ```{r}
 # Basic summary statistics for key numerical variables
@@ -330,7 +330,7 @@ print(summary_stats)
 ```
 Client Interpretation: "The average Airbnb in Vaud costs X CHF per night, but the median is Y CHF, indicating that a few extremely expensive luxury listings might be skewing the average upward. Prices range from a minimum of A CHF to a maximum of B CHF."
 
-# 2. Analysis by Room Type
+## 2. Analysis by Room Type
 Since we want to know how many different types of rooms there are, we group the data and calculate the counts, percentages, and price ranges for each type.
 ```{r}
 # Detailed breakdown by Room Type
@@ -350,7 +350,7 @@ print(room_type_analysis)
 ```
 Client Interpretation: "Entire homes/apartments dominate the Vaud market, making up 75% of all listings. As expected, the Hotel room command the highest median price (264.5 CHF), compared to shared rooms (47 CHF)."
 
-# 3. Superhost vs. Regular Host Breakdown
+## 3. Superhost vs. Regular Host Breakdown
 This business case specifically mentions superhost status. So we took a look to see how many there are and if they actually charge more or even less.
 ```{r}
 # Superhost statistics
@@ -367,7 +367,7 @@ superhost_analysis <- d.airbnb_listings_feat %>%
 print(superhost_analysis)
 ```
 
-# 1. Host Experience vs. Price (host_since_year)
+## 1. Host Experience vs. Price (host_since_year)
 Now let's test the hypothesis: can "older" (more experienced) hosts charge higher prices than newcomers?
 ```{r}
 # First, ensure the year is treated as a numeric variable
@@ -390,7 +390,7 @@ ggplot(data = d.airbnb_listings_feat %>% filter(!is.na(host_since_year)),
 Client Interpretation: "We observe that hosts who joined the platform earlier (e.g., around 2015) do (or do not) command higher average prices compared to recent joiners. For our pricing tool, this means..."
 
 
-# 2. Correlation Matrix (Crucial before Machine Learning)
+## 2. Correlation Matrix (Crucial before Machine Learning)
 Before we train our LM, GAM, or SVM, we need to know how our numerical variables relate to each other. This helps us identify multicollinearity (when two predictors provide the same information) and strong price drivers.
 
 ```{r}
@@ -407,7 +407,7 @@ kable(round(cor_matrix, 2), caption = "Correlation Matrix of Key Numerical Drive
 ```
 Client Interpretation: "As expected, accommodates shows the strongest positive correlation with price. It is also interesting to note the relationship between availability and number_of_reviews..."
 
-# 3. Detailed property_type Analysis
+## 3. Detailed property_type Analysis
 We already analyzed room_type, but Airbnb often has dozens of property_types (e.g., "Entire chalet", "Private room in castle", etc.). Summarizing the Top 10 property types in the Canton of Vaud provides maybe a great market insight.
 ```{r}
 # Top 10 Property Types by frequency and their median price
@@ -425,7 +425,7 @@ kable(top_properties, caption = "Top 10 Property Types in the Canton of Vaud")
 
 Client Interpretation: "While standard apartments like "entire rental unit" are the most common, specialty properties like chalets, homes and villas command a significant premium, which our model will need to capture."
 
-# 4. Missing Values (NA) Check
+## 4. Missing Values (NA) Check
 This step is less for the client and essential for your ML models. Most modeling functions (like lm() or svm()) will throw errors or silently drop entire rows if NAs are present. You need to know exactly where your data is missing!
 
 ```{r}
@@ -443,7 +443,7 @@ kable(na_summary, caption = "Count of Missing Values per Variable")
 
 
 
-
+##AI-Generated Models by Davide
 Bi gad Moti gsi
 Davide: Linear Model
 Before we jump straight into the lm() function, we need to do one crucial step for your business case: Train/Test Splitting. Since your goal is to build a predictive pricing tool, you need to train your model on one chunk of the data (e.g., 80%) and test its accuracy on data it has never seen before (the remaining 20%). This proves to the client that your tool actually works in the real world.Additionally, the evaluation guidelines explicitly warn against fitting a "very simple linear model" if you are going to compare it to complex models like Neural Networks or SVMs. To make it a "fair way" of comparing, you should include at least one interaction term in your LM.
@@ -470,18 +470,18 @@ lm_model <- lm(log_price ~ accommodates * room_type +
 summary(lm_model)
 ```
 
-# Interpreting the Coefficients
+### Interpreting the Coefficients
 Because your target variable is log_price, interpreting the coefficients requires a slight mental shift. A coefficient in a log-linear model represents an *approximate percentage change in the original price*.
 
-## The Baseline (The Intercept)
+### The Baseline (The Intercept)
 *What the math says:* The intercept is 4.371.
 *Client Translation:* Our baseline reference listing—an 'Entire home/apt' (the category missing from the list, meaning it's the default)—has an estimated base price of roughly 79 CHF per night (exp(4.371)), assuming all other factors are zero.
 
-## Capacity (Accommodates)
+### Capacity (Accommodates)
 *What the math says:* The coefficient is 0.1553 (Highly significant).
 *Client Translation:* Capacity is a massive price driver. For a standard entire apartment, every additional guest the property can accommodate increases the nightly price by 16.8% ((exp(0.1553) - 1) * 100).
 
-## Room Types & The Interaction Term
+### Room Types & The Interaction Term
 This is where your interaction term (accommodates * room_type) pays off, proving why you shouldn't use a simple, plain model!
 
 *Private Rooms:* They are inherently cheaper. The base price drops by roughly 30.8% (exp(-0.3688) - 1) compared to an entire home. The interaction term for private rooms is not statistically significant (p = 0.52), meaning an extra guest in a private room adds about the same 16.8% premium as it does in an entire home.
@@ -490,14 +490,14 @@ This is where your interaction term (accommodates * room_type) pays off, proving
 
 *Client Translation:* "While adding guests allows hosts of 'Entire homes' and 'Private rooms' to charge about 17% more per guest, this rule does not apply to 'Shared rooms'. For shared rooms, adding more beds does not allow the host to increase the price at all.
 
-## Surprising Business Insights (Other Drivers)
+### Surprising Business Insights (Other Drivers)
 *Superhost Status (-0.0648):* "Counter-intuitively, Superhosts actually charge about 6.3% less than regular hosts. From a business perspective, this suggests that hosts might achieve Superhost status because they offer highly competitive, slightly lower prices to ensure high booking rates and good reviews."
 
 *Number of Reviews (-0.0014):* "Listings with more reviews tend to be slightly cheaper (each review drops the price by about 0.14%). This likely points to 'budget' listings having a higher turnover of guests, and therefore accumulating more reviews."
 
 *Availability (0.00029):* "Listings with higher availability are slightly more expensive. This makes sense: highly expensive places are booked less often, leaving more days available on their calendar."
 
-# Evaluating Predictive Performance
+### Evaluating Predictive Performance
 To see how "accurate" our model is, we will calculate the Root Mean Squared Error (RMSE) on the test data. The guidelines state that if we cannot find another measure of fit, we can use RMSE.
 ```{r}
 # --- 4. Make Predictions on the Test Data ---
@@ -536,12 +536,12 @@ glm_quasipoisson <- glm(estimated_occupancy_l365d ~ price + host_is_superhost +
 
 summary(glm_quasipoisson)
 ```
-# Interpretation 
-## GLM-Poisson:
+## Interpretation 
+### GLM-Poisson:
 
 Das GLM mit Poissonverteilung hat wie erwartet eine Überdispersion produziert, da die Streuung der Airbnb-Daten zu erwarten war. Das Modell hat die Standardfehler zu klein berechnet, wweshalb im ersten Output alle Variablen hochsignifikant waren. Danach wurde die Dispersion berechnet und sie war grösser als 1, nämlich 56.53. Als Lösung wurde ein Quasipoissonmodell genutzt, welches die Standardfehler nach oben anpasst.
 
-## GLM-Quasipoisson
+### GLM-Quasipoisson
 Das GLM mit Quasipoissonverteilung hat die Überdispersion korrigiert. Die Standardfehler wurden nach oben angepasst (deutlich) und gibt nun ein realistisches Bild, welche Faktoren wirklich einen Einfluss auf die Auslastung haben.
 Interpretationen:
 - Price -> hochsignifikant negativ. Wie erwartet: Je höher der Preis, desto geringer die Auslastung
@@ -550,7 +550,7 @@ Interpretationen:
 - Kapazität: Positiv und signifikant. Je mehr Leute reinpassen, desto mehr Buchungen.
 - Zimmertypen: Im Intercept ist "Entire home/apt". Private Room ist signifikant schlechter gebucht als ganze Unterkunft. Shared Room hat hohen P-Wert. Statistisch kann man nicht sagen, ob sich die Auslastung eines geteilten Zimmers von der ganzen Wochnung unterscheidet.
 
-# GLM Quasi-Poisson Ergebnisse für Businesscase
+## GLM Quasi-Poisson Ergebnisse für Businesscase
 
 ```{r, Pascal}
 

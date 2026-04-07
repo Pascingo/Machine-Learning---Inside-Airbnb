@@ -50,6 +50,14 @@ ABGABEDATUM: 12 Juni
 - Outlier Handling definieren.
 --> falsche Datenpunkte sollten gelöscht werden. Extremwerte im Zweifel drin lassen. Ansonsten kann das als p-hacking verstanden werden. 
 
+Coding Conventions. 
+• data sets are named with the prefix “d.” (e.g., d.cats).
+• linear model objects are named with the prefix “lm.” (e.g., lm.cats)
+• within the text R-objects are written using code formatting (e.g., lm.cats)
+14
+• variable names are written using italic (e.g., Body.weight)
+• these conventions are arbitrary, but hopefully useful to the reader
+
 
 #Research Questions
 
@@ -95,7 +103,6 @@ library(janitor)
 library(mgcv)
 library(e1071)
 library(nnet)
-
 library(pROC)
 library(Metrics)
 library(performance)
@@ -514,11 +521,36 @@ print(paste("Linear Model RMSE on Test Data:", round(lm_rmse, 4)))
 *Client Translation:* "Our baseline Linear Model achieved a Root Mean Squared Error (RMSE) of 0.4624 on unseen test data. Because we are predicting the logarithm of the price, this means our model's predictions are typically off by a factor of roughly exp(0.4624), which equals about 1.58. In practical terms, our base model's price estimates are generally within a ~58% margin of error. While this is a good starting point, it highlights the need for our more advanced machine learning models to capture the complex, non-linear pricing dynamics in the Vaud market."
 
 #LM (Timon)
-```{r Timon}
+```{r lm overall by Timon}
+
+#Umbauen der Variablen von Character-Prozent in binominale Werte dieser beider 
+#allenfalls in die DAtenaufbereitung verschieben?????
+
+
+d.airbnb_listings_feat$host_response_rate <- as.numeric(sub("%", "", d.airbnb_listings_feat$host_response_rate)) / 100
+print(d.airbnb_listings_feat$host_response_rate)
+d.airbnb_listings_feat$host_acceptance_rate <- as.numeric(sub("%", "", d.airbnb_listings_feat$host_acceptance_rate)) / 100
+print(d.airbnb_listings_feat$host_acceptance_rate)
+
+
+#das lm erstellen. 
+
+lm.overall <- lm(price ~ as.factor(host_response_time) + host_response_rate + host_acceptance_rate + as.factor(host_is_superhost) +
+                                   as.factor(host_has_profile_pic) + as.factor(host_identity_verified) + as.factor(property_type) + 
+                                   as.factor(room_type) + bathrooms + beds, minimum_nights + number_of_reviews + estimated_occupancy_l365d +
+                                   review_scores_rating, data = d.airbnb_listings_feat)
+summary(lm.overall)
 
 
 
+
+
+#fehlt: host_verifications, neighbourhood_group_cleansed, latitde, longitude, accomodates, log_price
+#Diese Variablen wurden aus verschiedenen Gründen nicht miteingebaut. 
 ```
+Vorläufiges Fazit: 
+- die Variablen müssen noch angepasst werden. beispielsweise macht es möglicherweise sinn, private Rooms zusammenzufassen. ist ja eigentlich egal in welcher ARt gebäude.
+- wieso hat room_type so viele NA?
 
 
 

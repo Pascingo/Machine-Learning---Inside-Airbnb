@@ -2,7 +2,9 @@
 title: "Main Group Work_ML"
 author: "Pascal Ingold, Timon Reichmuth und Davide Gualdani"
 date: "2026-03-22"
-output: pdf_document
+output:
+  html_document:
+    df_print: paged
 ---
 
 ```{r setup, include=FALSE}
@@ -163,7 +165,9 @@ str(d.listings_clean)
 
 First Feature Engineering for the airbnb_listings data
 
-```{r}
+```{r FE for XXX (XXX)}
+
+#Für Model XXXX 
 d.airbnb_listings_feat <- d.listings_clean %>%
   mutate(
     log_price = log(price),
@@ -172,7 +176,31 @@ d.airbnb_listings_feat <- d.listings_clean %>%
   )
 ```
 
-```{r}
+
+```{r FE for lm (TIMON)}
+
+#removing % from responserate and make it binomial
+d.airbnb_listings_feat$host_response_rate <- as.numeric(sub("%", "", d.airbnb_listings_feat$host_response_rate)) / 100 
+
+#removing % from responserate and make it binomial
+d.airbnb_listings_feat$host_acceptance_rate <- as.numeric(sub("%", "", d.airbnb_listings_feat$host_acceptance_rate)) / 100 
+```
+wie gehen wir bei diesen Variablen mit den NA um?
+```{r FE for glm binomial (DAVIDE)}
+
+
+```
+
+
+```{r FE for glm poisson (PASCAL)}
+
+
+```
+
+
+
+
+```{r final call of dataset}
 str(d.airbnb_listings_feat)
 ```
 
@@ -525,14 +553,6 @@ To see how "accurate" our model is, we will calculate the Root Mean Squared Erro
 #LM (Timon)
 ```{r lm overall by Timon}
 
-#Umbauen der Variablen von Character-Prozent in binominale Werte dieser beider 
-#allenfalls in die DAtenaufbereitung verschieben?????
-
-
-d.airbnb_listings_feat$host_response_rate <- as.numeric(sub("%", "", d.airbnb_listings_feat$host_response_rate)) / 100
-print(d.airbnb_listings_feat$host_response_rate)
-d.airbnb_listings_feat$host_acceptance_rate <- as.numeric(sub("%", "", d.airbnb_listings_feat$host_acceptance_rate)) / 100
-print(d.airbnb_listings_feat$host_acceptance_rate)
 
 
 #das lm erstellen. 

@@ -99,7 +99,7 @@ The model is tailored to the Canton of Vaud to capture regional economic effects
 
 First step: Loading Packages
 
-```{r}
+```{r Libraries, results = "hide"}
 library(tidyverse)
 library(janitor)
 library(mgcv)
@@ -118,14 +118,14 @@ library(knitr)
 
 
 Second step: Reading all available Datasets
-```{r}
+```{r reading Dataset}
 path_listings <- "./Data_Vaud_all/listings-2.csv"
 d.raw_data_listings <- read.csv(path_listings, header = TRUE)
 ```
 
 Cleaning the Airbnb-Listings Data. 
 
-```{r}
+```{r cleaning Dataset}
 d.airbnb_listings <- d.raw_data_listings %>%
   clean_names()
 
@@ -157,7 +157,7 @@ d.listings_clean <- d.listings_clean %>%
 
 Das ist unser definitives Datenset!
 
-```{r}
+```{r final Call cleaned Dataset}
 str(d.listings_clean)
 ```
 
@@ -200,7 +200,7 @@ wie gehen wir bei diesen Variablen mit den NA um?
 
 
 
-```{r final call of dataset}
+```{r final call of FE-dataset}
 str(d.airbnb_listings_feat)
 ```
 

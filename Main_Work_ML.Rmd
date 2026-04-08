@@ -380,21 +380,21 @@ das kann glaub gelöscht werden - Davide!!!!*****
 Now let's test the hypothesis: can "older" (more experienced) hosts charge higher prices than newcomers?
 ```{r}
 # First, ensure the year is treated as a numeric variable
-d.airbnb_listings_feat <- d.airbnb_listings_feat %>%
-  mutate(host_since_year = as.numeric(host_since_year))
+#d.airbnb_listings_feat <- d.airbnb_listings_feat %>%
+#  mutate(host_since_year = as.numeric(host_since_year))
 
 # Plot: Price trend over the years of host membership
-ggplot(data = d.airbnb_listings_feat %>% filter(!is.na(host_since_year)), 
-       aes(x = host_since_year, y = log_price)) +
-  geom_point(alpha = 0.2, color = "darkcyan") +
+#ggplot(data = d.airbnb_listings_feat %>% filter(!is.na(host_since_year)), 
+#       aes(x = host_since_year, y = log_price)) +
+#  geom_point(alpha = 0.2, color = "darkcyan") +
   # Adding a smoother is mandatory for exploratory plots according to the hints!
-  geom_smooth(method = "gam", formula = y ~ s(x, bs = "cs"), color = "orange", se = TRUE) +
-  labs(
-    title = "Can established hosts command higher prices?",
-    x = "Host Since (Year)",
-    y = "Log(Price)"
-  ) +
-  theme_minimal()
+#  geom_smooth(method = "gam", formula = y ~ s(x, bs = "cs"), color = "orange", se = TRUE) +
+#  labs(
+#    title = "Can established hosts command higher prices?",
+#    x = "Host Since (Year)",
+#    y = "Log(Price)"
+#  ) +
+#  theme_minimal()
 ```
 Client Interpretation: "We observe that hosts who joined the platform earlier (e.g., around 2015) do (or do not) command higher average prices compared to recent joiners. For our pricing tool, this means..."
 
@@ -460,23 +460,23 @@ Before we jump straight into the lm() function, we need to do one crucial step f
 ```{r}
 # --- 1. Split Data into Training and Testing Sets ---
 # Using the caret package (which you already loaded) to create an 80/20 split
-set.seed(42) # Set a seed so you get the exact same split every time you compile!
-train_index <- createDataPartition(d.airbnb_listings_feat$log_price, p = 0.8, list = FALSE)
+#set.seed(42) # Set a seed so you get the exact same split every time you compile!
+#train_index <- createDataPartition(d.airbnb_listings_feat$log_price, p = 0.8, list = FALSE)
 
-train_data <- d.airbnb_listings_feat[train_index, ]
-test_data <- d.airbnb_listings_feat[-train_index, ]
+#train_data <- d.airbnb_listings_feat[train_index, ]
+#test_data <- d.airbnb_listings_feat[-train_index, ]
 
 # --- 2. Fit the Linear Model ---
 # Note: We MUST use log_price because "amounts" must virtually always be log-transformed[cite: 192, 193].
 # We add an interaction term (*) between accommodates and room_type for a fairer comparison with complex models[cite: 182].
-lm_model <- lm(log_price ~ accommodates * room_type + 
-                 host_is_superhost + 
-                 number_of_reviews + 
-                 availability_365, 
-               data = train_data)
+#lm_model <- lm(log_price ~ accommodates * room_type + 
+#                 host_is_superhost + 
+#                 number_of_reviews + 
+#                 availability_365, 
+#               data = train_data)
 
 # --- 3. View the Results ---
-summary(lm_model)
+#summary(lm_model)
 ```
 
 ### Interpreting the Coefficients
@@ -511,12 +511,12 @@ To see how "accurate" our model is, we will calculate the Root Mean Squared Erro
 ```{r}
 # --- 4. Make Predictions on the Test Data ---
 # Predict the log_price for the unseen test data
-lm_predictions <- predict(lm_model, newdata = test_data)
+#lm_predictions <- predict(lm_model, newdata = test_data)
 
 # FIX: Force R to use the Metrics package specifically
-lm_rmse <- Metrics::rmse(test_data$log_price, lm_predictions)
+#lm_rmse <- Metrics::rmse(test_data$log_price, lm_predictions)
 
-print(paste("Linear Model RMSE on Test Data:", round(lm_rmse, 4)))
+#print(paste("Linear Model RMSE on Test Data:", round(lm_rmse, 4)))
 
 ```
 
@@ -605,7 +605,7 @@ d.results_glm_quasipoisson <- tidy(glm_quasipoisson) %>%
     pct_change = round(pct_change, 2)
   ) %>%
   # Select only the relevant columns for business case
-  select(term, estimate, pct_change_rounded, p.value)
+  select(term, estimate, pct_change, p.value)
 
 print(d.results_glm_quasipoisson)
 

@@ -16,18 +16,19 @@ Next Steps:
 
 
 Pascal: 
-- – a Generalised Linear Model with family set to Poisson --> glm(Price ~ reviews) Achtung Price kann nicht mit Poisson gerechnet werden! Sind keine Zähldaten. Neu Auslastung genutzt, um Zähldaten zu haben.
+- a Generalised Linear Model with family set to Poisson --> glm(Price ~ reviews) Achtung Price kann nicht mit Poisson gerechnet werden! Sind keine Zähldaten. Neu Auslastung genutzt, um Zähldaten zu haben. -> DONE
+- NA Handling untersuchen
+- Neural Network --> Ev. auch Kategorisierung analog SVM
 
 
 Timon: 
-- a Linear Model --> lm(price ~ rewview_rating + Superhost T/F) --> für unterscheidung und kontrolle. 
+- a Linear Model --> lm(price ~ rewview_rating + Superhost T/F) --> für unterscheidung und kontrolle. -> INPROGRESS
+- NA Handling untersuchen
+– a Support Vector Machine --> Overpriced & Underpriced & Right Price (Davide und Timon)
 
 
 Davide:
-- – a Generalised Linear Model with family set to Binomial --> glm(Price ~ Superhost T/F)
-
-
-Modelle zu verteilen: 
+- – a Generalised Linear Model with family set to Binomial --> glm(Price ~ Superhost T/F) -> DONE
 – a Generalised Additive Model -->  gam(price ~  s(accommodates) +   --> allenfalls aufbauend auf dem lm()
                                     s(review_scores_rating) + 
                                     s(availability_365) +   
@@ -40,9 +41,6 @@ Modelle zu verteilen:
                                     bedrooms,   
                                     family = gaussian(link="log"),   
                                     data = df_clean)
-
-– a Neural Network --> Ev. auch Kategorisierung analog SVM
-– a Support Vector Machine --> Overpriced & Underpriced & Right Price (Davide und Timon)
 
 
 
@@ -196,8 +194,18 @@ d.airbnb_listings_feat$host_is_superhost <- ifelse(d.airbnb_listings_feat$host_i
 
 ```
 wie gehen wir bei diesen Variablen mit den NA um?
-```{r FE for glm binomial (DAVIDE)}
 
+
+#GLM set to binomial(Davide)
+1. Schritt: Zielvariable binarisieren
+Aus Preis eine 0/1-Variable machen
+Der Median ist der sauberste Cutpoint — er ist robust gegenüber Ausreissern und teilt den Datensatz exakt in zwei Hälften
+```{r FE for glm binomial (DAVIDE)}
+d.airbnb_listings_feat <- d.airbnb_listings_feat %>%
+  mutate(price_high = as.integer(price > median(price, na.rm = TRUE)))
+
+# Checken ob Split sauber ist
+table(d.airbnb_listings_feat$price_high)
 
 ```
 
@@ -577,19 +585,8 @@ print(d.results_glm_quasipoisson)
 ```
 
 
-#GLM set to binomial(Davide)
-1. Schritt: Zielvariable binarisieren
-Aus Preis eine 0/1-Variable machen
-Der Median ist der sauberste Cutpoint — er ist robust gegenüber Ausreissern und teilt den Datensatz exakt in zwei Hälften
-```{r}
-d.airbnb_listings_feat <- d.airbnb_listings_feat %>%
-  mutate(price_high = as.integer(price > median(price, na.rm = TRUE)))
 
-# Checken ob Split sauber ist
-table(d.airbnb_listings_feat$price_high)
-```
-
-2. Schritt GLM Binomial
+# GLM Binomial (DAVIDE)
 
 ```{r}
 glm_binomial <- glm(price_high ~ host_is_superhost,
@@ -598,7 +595,7 @@ glm_binomial <- glm(price_high ~ host_is_superhost,
 
 summary(glm_binomial)
 ```
-3. Schritt Interpretation - Odds Ratio berechnen
+# Interpretation GLM Binomial - Odds Ratio berechnen (DAVIDE)
 Genau wie Pascal exp() für seinen Quasipoisson gebraucht hat, brauchst du das hier auch. Bei Binomial sind es Odds Ratios:
 
 ```{r}

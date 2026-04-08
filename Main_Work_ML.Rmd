@@ -330,7 +330,7 @@ This is the absolute minimum, maximum, median, and mean for the most important n
 ```{r}
 # Basic summary statistics for key numerical variables
 summary_stats <- d.airbnb_listings_feat %>%
-  select(price, log_price, accommodates, number_of_reviews, availability_365) %>%
+  select(price, log_price, accommodates, number_of_reviews) %>%
   summary()
 
 print(summary_stats)
@@ -373,6 +373,8 @@ superhost_analysis <- d.airbnb_listings_feat %>%
 
 print(superhost_analysis)
 ```
+########### --------------------- #########
+das kann glaub gelöscht werden - Davide!!!!*****
 
 ## 1. Host Experience vs. Price (host_since_year)
 Now let's test the hypothesis: can "older" (more experienced) hosts charge higher prices than newcomers?
@@ -403,7 +405,7 @@ Before we train our LM, GAM, or SVM, we need to know how our numerical variables
 ```{r}
 # Select relevant numerical variables (drop NAs just for the correlation calculation)
 cor_data <- d.airbnb_listings_feat %>%
-  select(log_price, accommodates, number_of_reviews, availability_365) %>%
+  select(log_price, accommodates, number_of_reviews) %>%
   drop_na()
 
 # Calculate the correlation matrix
@@ -438,7 +440,7 @@ This step is less for the client and essential for your ML models. Most modeling
 ```{r}
 # Count the number of NAs for each key column in your dataset
 na_summary <- d.airbnb_listings_feat %>%
-  select(price, log_price, accommodates, number_of_reviews, host_is_superhost, availability_365) %>%
+  select(price, log_price, accommodates, number_of_reviews, host_is_superhost) %>%
   summarise(across(everything(), ~ sum(is.na(.)))) %>%
   t() %>% # Transpose for better readability
   as.data.frame() %>%
@@ -611,3 +613,57 @@ print(d.results_glm_quasipoisson)
 
 
 #GLM set to binomial(Davide)
+1. Schritt: Zielvariable binarisieren
+Aus Preis eine 0/1-Variable machen
+Der Median ist der sauberste Cutpoint — er ist robust gegenüber Ausreissern und teilt den Datensatz exakt in zwei Hälften
+```{r}
+d.airbnb_listings_feat <- d.airbnb_listings_feat %>%
+  mutate(price_high = as.integer(price > median(price, na.rm = TRUE)))
+
+# Checken ob Split sauber ist
+table(d.airbnb_listings_feat$price_high)
+```
+
+2. Schritt GLM Binomial
+
+```{r}
+glm_binomial <- glm(price_high ~ host_is_superhost,
+                    data   = d.airbnb_listings_feat,
+                    family = binomial(link = "logit"))
+
+summary(glm_binomial)
+```
+3. Schritt Interpretation - Odds Ratio berechnen
+Genau wie Pascal exp() für seinen Quasipoisson gebraucht hat, brauchst du das hier auch. Bei Binomial sind es Odds Ratios:
+
+```{r}
+d.results_glm_binomial <- tidy(glm_binomial) %>%
+  mutate(
+    odds_ratio = round(exp(estimate), 3),
+    p.value    = round(p.value, 4)
+  ) %>%
+  select(term, estimate, odds_ratio, p.value)
+
+print(d.results_glm_binomial)
+```
+Was der Output sagt
+Der Koeffizient für host_is_superhost ist negativ (-0.2217) und signifikant (p = 0.002). Das Odds Ratio von 0.801 bedeutet: Superhosts haben ~20% geringere Odds, über dem Medianpreis zu liegen — *somit sind Superhosts tendenziell günstiger, nicht teurer.*
+Das klingt zuerst wie ein Widerspruch zu H3. Ist es aber nicht.
+Die eigentlich spannende Erkenntnis: kombiniere das mit Pascals Ergebnis
+
+Pascals Quasipoisson hat gezeigt: 
+Superhost-Status steigert die Auslastung um Faktor 2.6. Dein Binomial zeigt: Superhosts liegen eher unter dem Medianpreis.
+Das ergibt zusammen ein kohärentes Bild der Superhost-Strategie:
+
+Superhost = niedrigerer Preis  +  viel höhere Auslastung
+Normal Host = höherer Preis    +  deutlich weniger Buchungen
+
+*Superhosts optimieren auf Volumen statt Marge.* Das macht auch betriebswirtschaftlich Sinn: um den Superhost-Status zu halten, braucht man viele Buchungen und gute Reviews — das funktioniert besser mit kompetitiven Preisen.
+
+H3 wird nicht bestätigt im Sinne von "Superhosts können mehr verlangen".
+Stattdessen zeigt sich das Gegenteil: *Superhosts preisen strategisch*
+günstiger, erzielen dafür aber massiv mehr Buchungen (Pascal's Modell).
+Das ist ein stärkerer Befund als eine simple Bestätigung von H3 — es zeigt eine echte Preisstrategie.
+
+Ein Host der Superhost-Status anstrebt, sollte seinen Preis nicht erhöhen, sondern durch kompetitive Preise Buchungen und Reviews sammeln. Der Superhost-Status zahlt sich dann indirekt über Auslastung aus, nicht über den Einzelpreis.
+

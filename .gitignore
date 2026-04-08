@@ -5,3 +5,6 @@
 .httr-oauth
 .DS_Store
 .quarto
+Main_Work_ML.Rmd
+Main_Work_ML_cache/
+Main_Work_ML_files/

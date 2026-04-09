@@ -62,7 +62,7 @@ Coding Conventions.
 • these conventions are arbitrary, but hopefully useful to the reader
 
 
-#Research Questions
+# Research Questions
 
 What factors, which can be modified by Hosts on AirBnb, affect guest willingness to pay more for a certain room?
 
@@ -70,11 +70,11 @@ What are factors that influence the guest willingness to pay (WTP)
 
 What are factors on which the guest can adjust their pricing model?
 
-##Concepts: Willingness to pay (WTP)
+## Concepts: Willingness to pay (WTP)
 
 WTP is the hypothetical value, how much a customer is willing to pay for a location or a room for a certain standard. This can rise, if for example the host provides the ability to wash clothes in the apartment. So for the same location, once with and once without a washing machine, the customers WTP might increase with the washer. In a more abstract example, if the host is a super host, the customer might trust the host more and his WTP is higher. 
 
-##Hypothesis
+## Hypothesis
 H1: If the review-score of a host is better, the WTP of a guest increases. 
 H2: If a host has more reviews, the WTP of a guest increases. 
 H3: If a host is e superhost, the WTP of a guest increases. 
@@ -166,6 +166,7 @@ str(d.listings_clean)
 ```
 
 
+# Feature Engineering
 
 First Feature Engineering for the airbnb_listings data
 
@@ -236,7 +237,7 @@ str(d.airbnb_listings_feat)
 ```
 
 
-Exploratory Data Analysis
+# Exploratory Data Analysis
 
 ```{r}
 hist(d.airbnb_listings_feat$price)
@@ -304,7 +305,7 @@ d.airbnb_listings_feat <- d.airbnb_listings_feat %>%
 ```
 
 
-Davide's EDA
+# Davide's EDA
 ```{r}
 # --- 1. Distribution of the Target Variable (Price) ---
 # Upgrading base R hist() to ggplot2 for a more professional look.

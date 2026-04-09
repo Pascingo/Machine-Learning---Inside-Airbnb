@@ -24,6 +24,10 @@ Pascal:
 Timon: 
 - a Linear Model --> lm(price ~ rewview_rating + Superhost T/F) --> für unterscheidung und kontrolle. -> INPROGRESS
 - NA Handling untersuchen
+  |-> NA vorwiegend bei ratings und rates vor. Verdacht: wenn nie eine Vermietung gemacht wurde erhalten wir einen NA in den Ratings
+  TODO: schauen ob wenn wir mit den Variablen rechnen, NA's einen negativen Einfluss haben. Wie zählen NA in ein Modell hinein?
+        --> beim lm keinen Einfluss, da diese Zeilen einfach weggelassen werden. 
+        --> bei anderen Modellen muss aufgepasst werden. 
 – a Support Vector Machine --> Overpriced & Underpriced & Right Price (Davide und Timon)
 
 
@@ -41,7 +45,6 @@ Davide:
                                     bedrooms,   
                                     family = gaussian(link="log"),   
                                     data = df_clean)
-
 
 
 Infos zu bedenken: 

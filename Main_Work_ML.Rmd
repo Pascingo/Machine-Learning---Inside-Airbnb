@@ -75,7 +75,6 @@ WTP is the hypothetical value, how much a customer is willing to pay for a locat
 H1: If the review-score of a host is better, the WTP of a guest increases. 
 H2: If a host has more reviews, the WTP of a guest increases. 
 H3: If a host is e superhost, the WTP of a guest increases. 
-H4: 
 
 WTP is measured in the Price displayed. We assume, that the mean of prices is similar to the WTP and residuals even out. Therefore we can work with the effective prices displayed on AirBnb. 
 

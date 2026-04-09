@@ -114,6 +114,8 @@ library(ggplot2)
 library(patchwork)
 library(knitr)
 library(performance)
+library(naniar)
+library(visdat)
 ```
 
 
@@ -124,7 +126,7 @@ path_listings <- "./Data_Vaud_all/listings-2.csv"
 d.raw_data_listings <- read.csv(path_listings, header = TRUE)
 ```
 
-Cleaning the Airbnb-Listings Data. 
+Cleaning the Airbnb-Listings Data. We keep only the variables needed for our project. We redouce the amount of variables to exact 20, according to the requirements by our lecturers.
 
 ```{r cleaning Dataset}
 d.airbnb_listings <- d.raw_data_listings %>%
@@ -156,8 +158,7 @@ d.listings_clean <- d.listings_clean %>%
          -calculated_host_listings_count_shared_rooms, -reviews_per_month, -bedrooms, -review_scores_value)
 ```
 
-Das ist unser definitives Datenset!
-
+This is our final, cleaned Dataset.
 ```{r final Call cleaned Dataset}
 str(d.listings_clean)
 ```
@@ -180,10 +181,10 @@ d.airbnb_listings_feat <- d.listings_clean %>%
 
 ```{r FE for lm (TIMON)}
 
-#removing % from responserate and make it binomial
+#removing % from response rate and make it binomial
 d.airbnb_listings_feat$host_response_rate <- as.numeric(sub("%", "", d.airbnb_listings_feat$host_response_rate)) / 100 
 
-#removing % from responserate and make it binomial
+#removing % from response rate and make it binomial
 d.airbnb_listings_feat$host_acceptance_rate <- as.numeric(sub("%", "", d.airbnb_listings_feat$host_acceptance_rate)) / 100 
 
 #change the values of host_is_superhost to TRUE/False
@@ -194,6 +195,16 @@ d.airbnb_listings_feat$host_is_superhost <- ifelse(d.airbnb_listings_feat$host_i
 
 ```
 wie gehen wir bei diesen Variablen mit den NA um?
+
+# Data Quality
+
+Wir prüfen ob und wieviele NA's vorhanden sind. Hierzu nutzen wir naniar und visdat, um die NA's auch visualisieren zu können. Die meisten NA-Werte sind bei den Rates, daher wir von Pascal angenommen, dass die Nullen nicht importiert wurden und deshalb es zu dieser grossen Anzahl NAs kam. Ich würde hier die NA durch 0 ersetzen.
+
+```{r}
+vis_miss(d.airbnb_listings_feat)
+gg_miss_var(d.airbnb_listings_feat)
+gg_miss_upset(d.airbnb_listings_feat)
+```
 
 
 #GLM set to binomial(Davide)

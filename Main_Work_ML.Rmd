@@ -118,6 +118,7 @@ library(knitr)
 library(performance)
 library(naniar)
 library(visdat)
+library(neuralnet)
 ```
 
 
@@ -202,6 +203,7 @@ wie gehen wir bei diesen Variablen mit den NA um?
 # Data Quality
 
 Wir prüfen ob und wieviele NA's vorhanden sind. Hierzu nutzen wir naniar und visdat, um die NA's auch visualisieren zu können. Die meisten NA-Werte sind bei den Rates, daher wir von Pascal angenommen, dass die Nullen nicht importiert wurden und deshalb es zu dieser grossen Anzahl NAs kam. Ich würde hier die NA durch 0 ersetzen.
+Entscheid: Da Ratings fehlen werden sie in Modellen omitted. Daten fehlen aus einem Grund und nicht random. 
 
 ```{r}
 vis_miss(d.airbnb_listings_feat)
@@ -643,3 +645,158 @@ Das ist ein stärkerer Befund als eine simple Bestätigung von H3 — es zeigt e
 
 Ein Host der Superhost-Status anstrebt, sollte seinen Preis nicht erhöhen, sondern durch kompetitive Preise Buchungen und Reviews sammeln. Der Superhost-Status zahlt sich dann indirekt über Auslastung aus, nicht über den Einzelpreis.
 
+# ANN: Hilfe durch AI, sehr kompliziert!
+
+```{r}
+d.airbnb_listings_feat_ANN <- d.airbnb_listings_feat %>%
+  select(
+    price,                  # Zielvariable (Willingness to Pay)
+    review_scores_rating,   # H1: Review Score
+    number_of_reviews,      # H2: Anzahl Reviews
+    host_is_superhost,      # H3: Superhost Status (0 oder 1)
+    accommodates            # Kontrollvariable (Anzahl Personen)
+  ) %>%
+  na.omit() # Für diesen simplen Ansatz werfen wir fehlende Werte einfach raus
+
+# 3. Skalierung (SEHR WICHTIG für neuralnet!)
+# Neuronale Netze funktionieren am besten, wenn alle Werte zwischen 0 und 1 liegen.
+normalize <- function(x) {
+  return ((x - min(x)) / (max(x) - min(x)))
+}
+d.airbnb_listings_feat_ANN_scaled <- as.data.frame(lapply(d.airbnb_listings_feat_ANN, normalize))
+
+# 4. Das Neuronale Netz trainieren
+# Wir nutzen 1 Hidden Layer mit 3 Neuronen (sehr simpel)
+set.seed(42) # Für reproduzierbare Ergebnisse
+nn_simple <- neuralnet(
+  price ~ review_scores_rating + number_of_reviews + host_is_superhost + accommodates,
+  data = d.airbnb_listings_feat_ANN_scaled,
+  hidden = 3,
+  linear.output = TRUE, # TRUE, da Regression! (Steht exakt so auf eurer Folie 26)
+  stepmax = 1e6         # Gibt dem Netz genug Zeit zum Rechnen
+)
+
+# 5. Das Netz visualisieren (Der "Aha!"-Moment)
+plot(nn_simple)
+
+
+# Durchschnittswerte für unser fiktives Airbnb berechnen
+mean_rating <- mean(d.airbnb_listings_feat_ANN_scaled$review_scores_rating)
+mean_reviews <- mean(d.airbnb_listings_feat_ANN_scaled$number_of_reviews)
+mean_acc <- mean(d.airbnb_listings_feat_ANN_scaled$accommodates)
+
+# Test für H3: Macht Superhost einen Unterschied?
+# Wir erfinden zwei Hosts: Exakt gleich, nur einer ist Superhost (1), der andere nicht (0)
+test_data_h3 <- data.frame(
+  review_scores_rating = c(mean_rating, mean_rating),
+  number_of_reviews = c(mean_reviews, mean_reviews),
+  host_is_superhost = c(0, 1), # <-- Hier ist der Unterschied!
+  accommodates = c(mean_acc, mean_acc)
+)
+
+# Das Netz den Preis vorhersagen lassen
+predictions_h3 <- compute(nn_simple, test_data_h3)
+
+# Skalierung rückgängig machen, um echte CHF-Preise zu sehen
+min_price <- min(d.airbnb_listings_feat_ANN$price)
+max_price <- max(d.airbnb_listings_feat_ANN$price)
+echte_preise <- predictions_h3$net.result * (max_price - min_price) + min_price
+
+print(echte_preise)
+```
+
+
+```{r}
+
+# --- 1. Datenaufbereitung & Reduzierung ---
+d_model_ready <- d.airbnb_listings_feat %>%
+  select(
+    price,                  
+    review_scores_rating,   
+    number_of_reviews,      
+    host_is_superhost,      
+    accommodates,
+    property_type,          
+    room_type               
+  ) %>%
+  na.omit() %>%
+  mutate(property_type = fct_lump_n(property_type, n = 4, other_level = "Other"))
+
+# --- 2. Dummy-Variablen erstellen (One-Hot-Encoding) ---
+
+d_dummies <- as.data.frame(model.matrix(~ . - 1, data = d_model_ready))
+
+# Leer- oder Sonderzeichen in Spaltennamen bringen neuralnet zum Absturz. 
+colnames(d_dummies) <- make.names(colnames(d_dummies))
+
+
+# --- 3. Skalierung ---
+normalize <- function(x) {
+  return ((x - min(x)) / (max(x) - min(x)))
+}
+# Wir wenden normalize auf alle Spalten an (bei den 0/1 Dummies passiert nichts Schlimmes, 
+# sie bleiben einfach 0 und 1).
+d_scaled <- as.data.frame(lapply(d_dummies, normalize))
+
+
+# --- 4. Das Neuronale Netz trainieren ---
+set.seed(42) 
+
+# Wir nutzen jetzt "price ~ ." -> Der Punkt bedeutet: Sage den Preis durch ALLE 
+# anderen Spalten im Datensatz voraus. So sparen wir uns das Abtippen aller Dummy-Spalten.
+nn_simple <- neuralnet(
+  price ~ .,
+  data = d_scaled,
+  hidden = 3,
+  linear.output = TRUE, 
+  stepmax = 1e6         
+)
+
+# 5. Das Netz visualisieren
+# (Achtung: Der Plot wird jetzt breiter, da wir mehr Input-Knoten wegen der Dummies haben!)
+plot(nn_simple)
+
+
+# --- 6. Vorhersage & Test für H3 ---
+# Um eine faire "Was-wäre-wenn"-Analyse zu machen, nehmen wir einfach von ALLEN 
+# Variablen im Datensatz den Durchschnitt (das repräsentiert das "durchschnittliche Airbnb").
+test_data_h3 <- as.data.frame(lapply(d_scaled, mean))
+# Wir verdoppeln diese Zeile, damit wir zwei identische "durchschnittliche" Hosts haben
+test_data_h3 <- rbind(test_data_h3, test_data_h3)
+
+# Jetzt verändern wir NUR den Superhost-Status:
+# Zeile 1 = Kein Superhost (0), Zeile 2 = Superhost (1)
+test_data_h3$host_is_superhostFALSE <- c(1, 0) 
+test_data_h3$host_is_superhostTRUE <- c(0, 1)
+
+# Das Netz den Preis vorhersagen lassen (Wir schließen die Preis-Spalte für den Test aus)
+predictions_h3 <- compute(nn_simple, test_data_h3 %>% select(-price))
+
+# Skalierung rückgängig machen mit den Werten aus d_model_ready (Originaldaten!)
+min_price <- min(d_model_ready$price)
+max_price <- max(d_model_ready$price)
+
+echte_preise <- predictions_h3$net.result * (max_price - min_price) + min_price
+
+print(echte_preise)
+```
+# Interpretation ANN
+Ausgangslage und Hypothesen
+Ziel der Untersuchung war es, eine datengetriebene Pricing-Strategie für Airbnb-Hosts im Kanton Waadt (Vaud) zu entwickeln. Im Fokus stand die Frage, welche Faktoren die Zahlungsbereitschaft (Willingness to Pay, WTP) der Gäste beeinflussen und wie Hosts ihre Preise entsprechend anpassen können. Eine zentrale Hypothese (H3) nahm an, dass der "Superhost"-Status eines Vermieters einen signifikanten Preisaufschlag rechtfertigt, da er höheres Vertrauen und eine bessere Servicequalität suggeriert. Als Proxy für die WTP wurden die tatsächlich aufgerufenen Preise der Inserate verwendet.
+
+Modell 1: Das naive Neuronale Netz (Omitted Variable Bias)
+In einem ersten, vereinfachten Ansatz wurde ein Neuronales Netz (Multilayer Perceptron) mit nur vier Variablen trainiert: Preis (Zielvariable), Bewertung (Review Score), Anzahl der Bewertungen und Superhost-Status (ja/nein), kontrolliert durch die maximale Gästeanzahl (accommodates).
+
+Ergebnis Modell 1: Entgegen der Erwartungen sagte das Netz für einen Superhost einen niedrigeren Preis (ca. 132 CHF) voraus als für einen regulären Host (ca. 160 CHF).
+
+Interpretation: Dieses Ergebnis ist ein klassischer Fall von "Omitted Variable Bias" (Verzerrung durch weggelassene Variablen). Superhosts erzielen ihren Status oft durch hohe Auslastung (viele Buchungen), was in der Praxis häufig über wettbewerbsfähige, tendenziell niedrigere Preise erreicht wird. Zudem fehlen in diesem Modell entscheidende Kontextinformationen wie die Art der Unterkunft: Luxuriöse, sehr teure Objekte werden oft von professionellen Agenturen verwaltet, die seltener über einen individuellen Superhost-Badge verfügen.
+
+Modell 2: Das erweiterte Modell (One-Hot-Encoding)
+Um diese Verzerrung zu korrigieren, wurde das Modell im zweiten Schritt um kategoriale Variablen erweitert: die Art der Unterkunft (room_type, z.B. Privatzimmer vs. ganze Wohnung) und den Immobilientyp (property_type, z.B. Apartment vs. Chalet). Da Neuronale Netze nur numerische Inputs verarbeiten können, wurden diese Kategorien mittels "One-Hot-Encoding" in binäre Dummy-Variablen übersetzt.
+
+Ergebnis Modell 2: Beim Test eines fiktiven, absolut durchschnittlichen Inserats (gleicher Raumtyp, gleiche Kapazität etc.) unterschied sich der Preis nur noch marginal: 483,29 CHF (kein Superhost) zu 482,64 CHF (Superhost).
+
+Interpretation: Wenn wir durch Dummy-Variablen sicherstellen, dass wir "Äpfel mit Äpfeln" vergleichen, verschwindet der vermeintliche Preisabschlag für Superhosts fast vollständig. Gleichzeitig wird unsere Ausgangshypothese (H3) widerlegt: Der reine Superhost-Status führt nicht zu einer signifikant höheren Zahlungsbereitschaft der Gäste.
+
+Fazit für den Business Case
+Für das Decision-Support-System bedeutet dies, dass Pricing-Empfehlungen primär auf strukturellen Faktoren (Größe, Lage, Art der Immobilie) basieren müssen. Sich den Superhost-Status zu erarbeiten, ist für Hosts aus betriebswirtschaftlicher Sicht zwar ratsam, um die Sichtbarkeit und Buchungswahrscheinlichkeit (Occupancy) zu erhöhen, rechtfertigt aber per se keinen spürbaren Preisaufschlag im Markt.

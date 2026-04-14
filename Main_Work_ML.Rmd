@@ -650,15 +650,15 @@ Ein Host der Superhost-Status anstrebt, sollte seinen Preis nicht erhöhen, sond
 ```{r}
 d.airbnb_listings_feat_ANN <- d.airbnb_listings_feat %>%
   select(
-    price,                  # Zielvariable (Willingness to Pay)
-    review_scores_rating,   # H1: Review Score
-    number_of_reviews,      # H2: Anzahl Reviews
-    host_is_superhost,      # H3: Superhost Status (0 oder 1)
-    accommodates            # Kontrollvariable (Anzahl Personen)
+    price,                  
+    review_scores_rating,   
+    number_of_reviews,      
+    host_is_superhost,      
+    accommodates            
   ) %>%
   na.omit() # Für diesen simplen Ansatz werfen wir fehlende Werte einfach raus
 
-# 3. Skalierung (SEHR WICHTIG für neuralnet!)
+# 3. 
 # Neuronale Netze funktionieren am besten, wenn alle Werte zwischen 0 und 1 liegen.
 normalize <- function(x) {
   return ((x - min(x)) / (max(x) - min(x)))
@@ -672,11 +672,11 @@ nn_simple <- neuralnet(
   price ~ review_scores_rating + number_of_reviews + host_is_superhost + accommodates,
   data = d.airbnb_listings_feat_ANN_scaled,
   hidden = 3,
-  linear.output = TRUE, # TRUE, da Regression! (Steht exakt so auf eurer Folie 26)
-  stepmax = 1e6         # Gibt dem Netz genug Zeit zum Rechnen
+  linear.output = TRUE,
+  stepmax = 1e6         
 )
 
-# 5. Das Netz visualisieren (Der "Aha!"-Moment)
+# 5. Das Netz visualisieren
 plot(nn_simple)
 
 
@@ -690,7 +690,7 @@ mean_acc <- mean(d.airbnb_listings_feat_ANN_scaled$accommodates)
 test_data_h3 <- data.frame(
   review_scores_rating = c(mean_rating, mean_rating),
   number_of_reviews = c(mean_reviews, mean_reviews),
-  host_is_superhost = c(0, 1), # <-- Hier ist der Unterschied!
+  host_is_superhost = c(0, 1), # <-- Hier Unterschied!
   accommodates = c(mean_acc, mean_acc)
 )
 
@@ -734,16 +734,14 @@ colnames(d_dummies) <- make.names(colnames(d_dummies))
 normalize <- function(x) {
   return ((x - min(x)) / (max(x) - min(x)))
 }
-# Wir wenden normalize auf alle Spalten an (bei den 0/1 Dummies passiert nichts Schlimmes, 
-# sie bleiben einfach 0 und 1).
+# Wir wenden normalize auf alle Spalten an. DummyVariabeln bleiben gelich
 d_scaled <- as.data.frame(lapply(d_dummies, normalize))
 
 
 # --- 4. Das Neuronale Netz trainieren ---
 set.seed(42) 
 
-# Wir nutzen jetzt "price ~ ." -> Der Punkt bedeutet: Sage den Preis durch ALLE 
-# anderen Spalten im Datensatz voraus. So sparen wir uns das Abtippen aller Dummy-Spalten.
+
 nn_simple <- neuralnet(
   price ~ .,
   data = d_scaled,
@@ -753,7 +751,6 @@ nn_simple <- neuralnet(
 )
 
 # 5. Das Netz visualisieren
-# (Achtung: Der Plot wird jetzt breiter, da wir mehr Input-Knoten wegen der Dummies haben!)
 plot(nn_simple)
 
 

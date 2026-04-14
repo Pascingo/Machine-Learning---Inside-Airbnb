@@ -497,7 +497,7 @@ kable(na_summary, caption = "Count of Missing Values per Variable")
 
 
 ```{r first real LM-Model by Timon}
-lm.main <- lm(price ~ review_scores_rating + as.factor(host_is_superhost), data = d.airbnb_listings_feat)
+lm.main <- lm(price ~ review_scores_rating + as.factor(host_is_superhost) + as.factor(room_type) + accommodates, data = d.airbnb_listings_feat)
 summary(lm.main)
 
 ggplot(data = d.airbnb_listings_feat, mapping = aes(review_scores_rating, log(price), color = host_is_superhost))+

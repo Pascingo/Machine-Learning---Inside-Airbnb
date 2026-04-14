@@ -23,11 +23,15 @@ Pascal:
 
 Timon: 
 - a Linear Model --> lm(price ~ rewview_rating + Superhost T/F) --> für unterscheidung und kontrolle. -> INPROGRESS
+
+
 - NA Handling untersuchen
   |-> NA vorwiegend bei ratings und rates vor. Verdacht: wenn nie eine Vermietung gemacht wurde erhalten wir einen NA in den Ratings
   TODO: schauen ob wenn wir mit den Variablen rechnen, NA's einen negativen Einfluss haben. Wie zählen NA in ein Modell hinein?
         --> beim lm keinen Einfluss, da diese Zeilen einfach weggelassen werden. 
         --> bei anderen Modellen muss aufgepasst werden. 
+        
+        
 – a Support Vector Machine --> Overpriced & Underpriced & Right Price (Davide und Timon)
 
 
@@ -490,43 +494,7 @@ kable(na_summary, caption = "Count of Missing Values per Variable")
 
 
 #LM (Timon)
-```{r lm overall by Timon}
 
-
-
-#das lm erstellen. 
-
-lm.overall <- lm(price ~ 
-                   host_response_rate + 
-                   host_acceptance_rate + 
-                   bathrooms + 
-                   beds + 
-                   minimum_nights +
-                   number_of_reviews + 
-                   estimated_occupancy_l365d +
-                   review_scores_rating +
-                   as.factor(host_response_time) + 
-                   as.factor(host_is_superhost) +
-                   as.factor(host_has_profile_pic) +
-                   as.factor(host_identity_verified) + 
-                   as.factor(property_type) + 
-                   as.factor(room_type),
-                 data = d.airbnb_listings_feat)
-
-summary(lm.overall)
-
-
-multicollinearity(lm.overall)
-
-# cor(df[, c(host_response_rate, host_acceptance_rate, bathrooms, beds, minimum_nights, number_of_reviews, estimated_occupancy_l365d, review_scores_rating , data = d.airbnb_listings_feat)])
-
-
-#fehlt: host_verifications, neighbourhood_group_cleansed, latitde, longitude, accomodates, log_price
-#Diese Variablen wurden aus verschiedenen Gründen nicht miteingebaut. 
-```
-Vorläufiges Fazit: 
-- die Variablen müssen noch angepasst werden. beispielsweise macht es möglicherweise sinn, private Rooms zusammenzufassen. ist ja eigentlich egal in welcher ARt gebäude.
-- wieso hat room_type so viele NA?
 
 ```{r first real LM-Model by Timon}
 lm.main <- lm(price ~ review_scores_rating + as.factor(host_is_superhost), data = d.airbnb_listings_feat)

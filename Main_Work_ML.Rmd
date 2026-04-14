@@ -512,20 +512,20 @@ ggplot(data = d.airbnb_listings_feat, mapping = aes(review_scores_rating, log(pr
 
 
 
-newdata <- expand.grid(
+d.lm_predict <- expand.grid(
   review_scores_rating = seq(3, 5, length.out = 100),
   host_is_superhost = c("TRUE", "FALSE"),
   room_type = "Entire home/apt",   # fixiert
   accommodates = mean(d.airbnb_listings_feat$accommodates, na.rm = TRUE)
 )
 
-newdata$pred <- predict(lm.main, newdata = newdata)
+d.lm_predict$pred <- predict(lm.main, newdata = d.lm_predict)
 
 
 ggplot(d.airbnb_listings_feat, 
        aes(review_scores_rating, log(price), color = host_is_superhost)) +
   geom_point(alpha = 0.3) +
-  geom_line(data = newdata, aes(y = pred), size = 1.2)
+  geom_line(data = d.lm_predict, aes(y = pred), size = 1.2)
 ```
 
 

@@ -21,6 +21,8 @@ Pascal:
 - Neural Network --> Ev. auch Kategorisierung analog SVM --> DONE
 
 
+
+
 Timon: 
 - a Linear Model --> lm(price ~ rewview_rating + Superhost T/F) --> für unterscheidung und kontrolle. -> INPROGRESS
 
@@ -49,6 +51,40 @@ Davide:
                                   data   = d.airbnb_listings_feat_gam)
 
 
+
+Tasks ab 15.4:
+
+Timon: 
+
+zeitkritisch: fixieren des zweiten svm- Modells für DAVIDE
+- Kommentare bei lm erweitern uns verbessern. (allenfalls translate)
+- ausarbeiten des svm-Models. 
+- schreiben des interpretationstextes lm
+- schreiben des interpretationstextes svm
+
+
+Pascal:
+- ausarbeiten des ANN und vereinfachung der Grafik? (Wenn möglich)
+- Pilot mit Auslastung analog zu poisson. wenn klar wird dsas auslastung besser ist als der PReis, können wir die Analyse noch shiften. 
+
+Davide:
+- nach GO von TIMON anpassen der Traffic-Lights-Benchmarks so dass das svm besser funktioniert. 
+- Blick über lm und poisson
+
+
+ALLE:
+Limitationen im Kapitel unten ergänzen. jeweils für die eigenen Modelle. 
+
+
+
+
+
+
+
+
+
+
+
 Infos zu bedenken: 
 ABGABEDATUM: 12 Juni
 
@@ -64,6 +100,8 @@ Coding Conventions.
 • these conventions are arbitrary, but hopefully useful to the reader
 
 
+
+
 # Research Questions
 
 What factors, which can be modified by Hosts on AirBnb, affect guest willingness to pay more for a certain room?
@@ -77,7 +115,7 @@ What are factors on which the guest can adjust their pricing model?
 WTP is the hypothetical value, how much a customer is willing to pay for a location or a room for a certain standard. This can rise, if for example the host provides the ability to wash clothes in the apartment. So for the same location, once with and once without a washing machine, the customers WTP might increase with the washer. In a more abstract example, if the host is a super host, the customer might trust the host more and his WTP is higher. 
 
 ## Hypothesis
-H1: If the review-score of a host is better, the WTP of a guest increases. 
+H1: If the review-score of a host is better, the WTP of a guest increases.
 H2: If a host has more reviews, the WTP of a guest increases. 
 H3: If a host is e superhost, the WTP of a guest increases. 
 
@@ -795,16 +833,16 @@ d.airbnb_listings_feat_gam$pct_diff <-
 
 # Ampel-Kategorien
 d.airbnb_listings_feat_gam$traffic_light <- case_when(
-  d.airbnb_listings_feat_gam$pct_diff <= -10 ~ "Good Deal (10%+ underpriced)",
-  d.airbnb_listings_feat_gam$pct_diff >=  10 ~ "Overpriced (10%+ overpriced)",
-  TRUE                                        ~ "Fair Price (within ±10%)"
+  d.airbnb_listings_feat_gam$pct_diff <= -15 ~ "Good Deal (15%+ underpriced)",  #hier können die Prozentzahlen angepasst werden
+  d.airbnb_listings_feat_gam$pct_diff >=  15 ~ "Overpriced (15%+ overpriced)",
+  TRUE                                        ~ "Fair Price (within ±15%)"
 )
 
 # Farbzuweisung
 color_map <- c(
-  "Good Deal (10%+ underpriced)" = "#1D9E75",  # grün
-  "Fair Price (within ±10%)"     = "#EF9F27",  # gelb/amber
-  "Overpriced (10%+ overpriced)" = "#D85A30"   # rot
+  "Good Deal (15%+ underpriced)" = "#1D9E75",  # grün
+  "Fair Price (within ±15%)"     = "#EF9F27",  # gelb/amber
+  "Overpriced (15%+ overpriced)" = "#D85A30"   # rot
 )
 
 d.airbnb_listings_feat_gam$marker_color <- 
@@ -836,9 +874,9 @@ leaflet() %>%
   addLegend(
     position = "bottomright",
     colors   = c("#1D9E75", "#EF9F27", "#D85A30"),
-    labels   = c("Good Deal (10%+ underpriced)",
-                 "Fair Price (within ±10%)",
-                 "Overpriced (10%+ overpriced)"),
+    labels   = c("Good Deal (15%+ underpriced)",
+                 "Fair Price (within ±15%)",
+                 "Overpriced (15%+ overpriced)"),
     title    = "Price vs. GAM Estimate",
     opacity  = 0.85
   )
@@ -893,7 +931,8 @@ s <- sample(3160,2528) #80% of data is in the test-dataset
 coloums <- c(
   "traffic_light",
   "accommodates",
-  "longitude") #here we can set the relevant coloums for the svm model out uf the dataset
+  "review_scores_rating",
+  "room_type") #here we can set the relevant coloums for the svm model out uf the dataset
 d.airbnb_listings_feat_gam_train <- d.airbnb_listings_feat_gam[s, coloums]
 d.airbnb_listings_feat_gam_test <- d.airbnb_listings_feat_gam[-s, coloums]
 
@@ -1084,3 +1123,11 @@ Interpretation: Wenn wir durch Dummy-Variablen sicherstellen, dass wir "Äpfel m
 
 Fazit für den Business Case
 Für das Decision-Support-System bedeutet dies, dass Pricing-Empfehlungen primär auf strukturellen Faktoren (Größe, Lage, Art der Immobilie) basieren müssen. Sich den Superhost-Status zu erarbeiten, ist für Hosts aus betriebswirtschaftlicher Sicht zwar ratsam, um die Sichtbarkeit und Buchungswahrscheinlichkeit (Occupancy) zu erhöhen, rechtfertigt aber per se keinen spürbaren Preisaufschlag im Markt.
+
+
+# Limitations
+akutelle Limitationen:
+
+- 
+- 
+- 

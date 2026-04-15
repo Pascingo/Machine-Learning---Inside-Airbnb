@@ -503,6 +503,7 @@ summary(lm.main)
 multicollinearity(lm.main) #kann werte von 1 - unendlich haben. 1 ist perfekt nicht kollinear
 
 ```
+
 ```{r lm controlled plot}
 
 ggplot(data = d.airbnb_listings_feat, mapping = aes(review_scores_rating, log(price), color = host_is_superhost))+

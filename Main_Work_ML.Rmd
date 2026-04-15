@@ -847,13 +847,14 @@ leaflet() %>%
 # SVM
 ```{r generating Split for SVM (TIMON)}
 s <- sample(3160,2528) #80% of data is in the test-dataset
-d.airbnb_listings_feat_gam_train <- d.airbnb_listings_feat_gam[s, ]
-d.airbnb_listings_feat_gam_test <- d.airbnb_listings_feat_gam[-s, ]
+coloums <- c("traffic_lights", "accommodates", "review_scores_rating") #here we can set the relevant coloums for the svm model out uf the dataset
+d.airbnb_listings_feat_gam_train <- d.airbnb_listings_feat_gam[s,coloums ]
+d.airbnb_listings_feat_gam_test <- d.airbnb_listings_feat_gam[-s, coloums]
 
 ```
 
 ```{r tuning model for optimal cost}
-svm.tune <- tune(svm, as.factor(traffic_light) ~ accommodates + review_scores_rating, data = d.airbnb_listings_feat_gam_train, kernel = "linear", ranges = list(cost = c(0.001, 0.01, 0.1, 1, 10, 100)))
+svm.tune <- tune(svm, as.factor(traffic_light) ~ ., data = d.airbnb_listings_feat_gam_train, kernel = "linear", ranges = list(cost = c(0.001, 0.01, 0.1, 1, 10, 100)))
 summary(svm.tune)
 
 ```
@@ -872,10 +873,10 @@ Parameter tuning of ‘svm’:
 
 
 ```{r}
-svm.model <- svm(as.factor(traffic_light) ~ accommodates + review_scores_rating, data = d.airbnb_listings_feat_gam_train, kernel = "linear", cost = 0.5, scale = FALSE)
+svm.model <- svm(as.factor(traffic_light) ~ ., data = d.airbnb_listings_feat_gam_train, kernel = "linear", cost = 0.5, scale = FALSE)
 
 print(svm.model)
-plot(svm.model, data = d.airbnb_listings_feat_gam_test[,c("traffic_light", "accommodates", "review_scores_rating")])
+plot(svm.model, data = d.airbnb_listings_feat_gam_test[,coloums])
 ```
 
 

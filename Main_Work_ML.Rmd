@@ -849,7 +849,7 @@ leaflet() %>%
 
 
 ```{r}
-s <- sample(3160,2528) #80% of data is in the test-dataset
+s <- sample(3875,3100) #80% of data is in the test-dataset
 coloums <- c("host_is_superhost",
              "price", "accommodates")
 d.airbnb_listings_feat_train <- d.airbnb_listings_feat[s, coloums]

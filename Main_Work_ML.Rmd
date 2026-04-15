@@ -846,20 +846,36 @@ leaflet() %>%
 
 # SVM
 ```{r generating Split for SVM (TIMON)}
-s <- sample(3160,2528)
+s <- sample(3160,2528) #80% of data is in the test-dataset
 d.airbnb_listings_feat_gam_train <- d.airbnb_listings_feat_gam[s, ]
 d.airbnb_listings_feat_gam_test <- d.airbnb_listings_feat_gam[-s, ]
 
 ```
 
-```{r}
+```{r tuning model for optimal cost}
 svm.tune <- tune(svm, as.factor(traffic_light) ~ accommodates + review_scores_rating, data = d.airbnb_listings_feat_gam_train, kernel = "linear", ranges = list(cost = c(0.001, 0.01, 0.1, 1, 10, 100)))
 summary(svm.tune)
 
-svm.model <- svm(as.factor(traffic_light) ~ accommodates + review_scores_rating, data = d.airbnb_listings_feat_gam_train, kernel = "linear", cost = 0.1, scale = FALSE)
+```
+> summary(svm.tune)
+
+Parameter tuning of ‘svm’:
+
+- sampling method: 10-fold cross validation 
+
+- best parameters:
+
+- best performance: 0.5399555 
+
+- Detailed performance results:
+
+
+
+```{r}
+svm.model <- svm(as.factor(traffic_light) ~ accommodates + review_scores_rating, data = d.airbnb_listings_feat_gam_train, kernel = "linear", cost = 0.5, scale = FALSE)
 
 print(svm.model)
-plot(svm.model)
+plot(svm.model, data = d.airbnb_listings_feat_gam_test[,c("traffic_light", "accommodates", "review_scores_rating")])
 ```
 
 

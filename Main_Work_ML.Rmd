@@ -202,6 +202,17 @@ d.airbnb_listings_feat$host_is_superhost <- ifelse(d.airbnb_listings_feat$host_i
 
 
 ```
+
+
+```{r FE for SVM (TIMON)}
+d.airbnb_listings_feat$estimated_revenue_365 <- d.airbnb_listings_feat$price * d.airbnb_listings_feat$estimated_occupancy_l365d
+
+summary(d.airbnb_listings_feat$estimated_revenue_365)
+hist(d.airbnb_listings_feat$estimated_revenue_365)
+print(quantile(d.airbnb_listings_feat$estimated_revenue_365))
+
+
+```
 wie gehen wir bei diesen Variablen mit den NA um?
 
 # Data Quality
@@ -831,6 +842,20 @@ leaflet() %>%
     opacity  = 0.85
   )
 ```
+
+
+# SVM
+```{r generating Split for SVM (TIMON)}
+s <- sample(3160,2528)
+d.airbnb_listings_feat_gam_train <- d.airbnb_listings_feat_gam[s, ]
+d.airbnb_listings_feat_gam_test <- d.airbnb_listings_feat_gam[-s, ]
+
+```
+
+
+
+
+
 
 # ANN: Hilfe durch AI, sehr kompliziert!
 

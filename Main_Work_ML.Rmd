@@ -930,7 +930,6 @@ svm.conf_matrix_price <- table(svm.test_pred_price, d.airbnb_listings_feat_test[
 s <- sample(3160,2528) #80% of data is in the test-dataset
 coloums <- c(
   "traffic_light",
-  "accommodates", 
   "review_scores_rating",
  "host_is_superhost") #here we can set the relevant coloums for the svm model out uf the dataset
 d.airbnb_listings_feat_gam_train <- d.airbnb_listings_feat_gam[s, coloums]
@@ -941,8 +940,18 @@ print(length(d.airbnb_listings_feat_gam_test$traffic_light))
 ```
 
 ```{r tuning model for optimal cost}
-svm.tune <- tune(svm, as.factor(traffic_light) ~ ., data = d.airbnb_listings_feat_gam_train, kernel = "linear", ranges = list(cost = c(0.001, 0.01, 0.1, 1, 10, 100)))
-summary(svm.tune)
+tuned <- tune(
+  svm,
+  as.factor(traffic_light) ~ .,
+  data = d.airbnb_listings_feat_gam_train,
+  kernel = "radial",
+  ranges = list(
+    cost = 2^(-2:5),
+    gamma = 2^(-5:2)
+  )
+)
+
+svm.test_pred <- predict(best.model, d.airbnb_listings_feat_gam_test)
 
 ```
 > summary(svm.tune)

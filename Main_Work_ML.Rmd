@@ -928,11 +928,9 @@ svm.conf_matrix_price <- table(svm.test_pred_price, d.airbnb_listings_feat_test[
 
 ```{r generating Split for SVM (TIMON)}
 s <- sample(3160,2528) #80% of data is in the test-dataset
-coloums <- c(
-  "traffic_light",
-  "review_scores_rating",
- "host_is_superhost") #here we can set the relevant coloums for the svm model out uf the dataset
-d.airbnb_listings_feat_gam_train <- d.airbnb_listings_feat_gam[s, coloums]
+coloums <- c("price","accommodates","review_scores_rating","number_of_reviews","room_type", "host_is_superhost","traffic_light") #here we can set the relevant coloums for the svm model out uf the dataset
+
+d.airbnb_listings_feat_gam_train <- d.airbnb_listings_feat_gam[s,coloums]
 d.airbnb_listings_feat_gam_test <- d.airbnb_listings_feat_gam[-s, coloums]
 
 print(length(d.airbnb_listings_feat_gam_test$traffic_light))
@@ -950,7 +948,7 @@ tuned <- tune(
     gamma = 2^(-5:2)
   )
 )
-
+best.model <- tuned$best.model
 svm.test_pred <- predict(best.model, d.airbnb_listings_feat_gam_test)
 
 ```
@@ -969,7 +967,7 @@ Parameter tuning of ‘svm’:
 
 
 ```{r}
-svm.model <- svm(as.factor(traffic_light) ~ ., data = d.airbnb_listings_feat_gam_train, kernel = "radial", cost = 0.1, scale = TRUE)
+svm.model <- svm(as.factor(traffic_light) ~ ., data = d.airbnb_listings_feat_gam_train, kernel = "radial", cost = 1, scale = TRUE)
 
 print(svm.model)
 #plot(svm.model, data = d.airbnb_listings_feat_gam_test)

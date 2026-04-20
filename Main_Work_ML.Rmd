@@ -691,7 +691,7 @@ Ein Host der Superhost-Status anstrebt, sollte seinen Preis nicht erhöhen, sond
 d.airbnb_listings_feat_gam <- d.airbnb_listings_feat %>%
   select(price, accommodates, review_scores_rating,
          number_of_reviews, longitude, latitude,
-         room_type, host_is_superhost, bathrooms, host_has_profile_pic, host_identity_verified, host_response_time, number_of_reviews) %>%
+         room_type, host_is_superhost, bathrooms, number_of_reviews) %>%
   na.omit()
 
 cat("Observations after na.omit():", nrow(d.airbnb_listings_feat_gam), "\n")

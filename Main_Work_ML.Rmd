@@ -691,7 +691,7 @@ Ein Host der Superhost-Status anstrebt, sollte seinen Preis nicht erhöhen, sond
 d.airbnb_listings_feat_gam <- d.airbnb_listings_feat %>%
   select(price, accommodates, review_scores_rating,
          number_of_reviews, longitude, latitude,
-         room_type, host_is_superhost, bathrooms, number_of_reviews) %>%
+         room_type, host_is_superhost, bathrooms) %>%
   na.omit()
 
 cat("Observations after na.omit():", nrow(d.airbnb_listings_feat_gam), "\n")
@@ -938,6 +938,7 @@ d.airbnb_listings_feat_gam_train <- d.airbnb_listings_feat_gam[s, coloums]
 d.airbnb_listings_feat_gam_test <- d.airbnb_listings_feat_gam[-s, coloums]
 
 print(length(d.airbnb_listings_feat_gam_test$traffic_light))
+print(length(d.airbnb_listings_feat_gam_train$traffic_light))
 
 ```
 
@@ -948,12 +949,18 @@ tuned <- tune(
   data = d.airbnb_listings_feat_gam_train,
   kernel = "radial",
   ranges = list(
-    cost = 2^(-2:5),
+    cost = 2^(-6:10),
     gamma = 2^(-5:2)
   )
 )
 
 tuned$best.parameters
+svm.model_cost <- as.numeric(tuned$best.parameters[1])
+svm.model_gamma <- as.numeric(tuned$best.parameters[2])
+print(svm.model_cost)
+print(svm.model_gamma)
+
+
 ```
 > summary(svm.tune)
 
@@ -970,7 +977,7 @@ Parameter tuning of ‘svm’:
 
 
 ```{r}
-svm.model <- svm(as.factor(traffic_light) ~ ., data = d.airbnb_listings_feat_gam_train, kernel = "radial", cost = 16,gamma = 0.5, scale = TRUE)
+svm.model <- svm(as.factor(traffic_light) ~ ., data = d.airbnb_listings_feat_gam_train, kernel = "radial", cost = svm.model_cost, gamma = svm.model_gamma, scale = TRUE)
 
 print(svm.model)
 #plot(svm.model, data = d.airbnb_listings_feat_gam_test)

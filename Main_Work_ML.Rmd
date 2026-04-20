@@ -691,7 +691,7 @@ Ein Host der Superhost-Status anstrebt, sollte seinen Preis nicht erhöhen, sond
 d.airbnb_listings_feat_gam <- d.airbnb_listings_feat %>%
   select(price, accommodates, review_scores_rating,
          number_of_reviews, longitude, latitude,
-         room_type, host_is_superhost, bathrooms) %>%
+         room_type, host_is_superhost, bathrooms, host_has_profile_pic, host_identity_verified, host_response_time, number_of_reviews) %>%
   na.omit()
 
 cat("Observations after na.omit():", nrow(d.airbnb_listings_feat_gam), "\n")
@@ -924,7 +924,9 @@ svm.conf_matrix_price <- table(svm.test_pred_price, d.airbnb_listings_feat_test[
 
 
 
-### SVM auf das GAM-DAtaset
+### SVM auf das GAM-Dataset
+
+plan: neues, eigenes Dataset erstellen, in der ebenfalls die traffic_light verwendet werden, oder aber schauen, ob ich neue Variablen in das Gam-DAtaset implementieren kann. 
 
 ```{r generating Split for SVM (TIMON)}
 
@@ -932,7 +934,7 @@ s <- sample(3160,2528) #80% of data is in the test-dataset
 coloums <- c("traffic_light","price","accommodates","review_scores_rating","number_of_reviews","room_type", "host_is_superhost") #here we can set the relevant coloums for the svm model out uf the dataset
 
 
-d.airbnb_listings_feat_gam_train <- d.airbnb_listings_feat_gam[s,coloums]
+d.airbnb_listings_feat_gam_train <- d.airbnb_listings_feat_gam[s, coloums]
 d.airbnb_listings_feat_gam_test <- d.airbnb_listings_feat_gam[-s, coloums]
 
 print(length(d.airbnb_listings_feat_gam_test$traffic_light))
@@ -950,9 +952,8 @@ tuned <- tune(
     gamma = 2^(-5:2)
   )
 )
-best.model <- tuned$best.model
-svm.test_pred <- predict(best.model, d.airbnb_listings_feat_gam_test)
 
+tuned$best.parameters
 ```
 > summary(svm.tune)
 
@@ -969,7 +970,7 @@ Parameter tuning of ‘svm’:
 
 
 ```{r}
-svm.model <- svm(as.factor(traffic_light) ~ ., data = d.airbnb_listings_feat_gam_train, kernel = "radial", cost = 1,gamma = 0.8, scale = TRUE)
+svm.model <- svm(as.factor(traffic_light) ~ ., data = d.airbnb_listings_feat_gam_train, kernel = "radial", cost = 16,gamma = 0.5, scale = TRUE)
 
 print(svm.model)
 #plot(svm.model, data = d.airbnb_listings_feat_gam_test)

@@ -927,8 +927,10 @@ svm.conf_matrix_price <- table(svm.test_pred_price, d.airbnb_listings_feat_test[
 ### SVM auf das GAM-DAtaset
 
 ```{r generating Split for SVM (TIMON)}
+
 s <- sample(3160,2528) #80% of data is in the test-dataset
 coloums <- c("traffic_light","price","accommodates","review_scores_rating","number_of_reviews","room_type", "host_is_superhost") #here we can set the relevant coloums for the svm model out uf the dataset
+
 
 d.airbnb_listings_feat_gam_train <- d.airbnb_listings_feat_gam[s,coloums]
 d.airbnb_listings_feat_gam_test <- d.airbnb_listings_feat_gam[-s, coloums]

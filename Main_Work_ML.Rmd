@@ -79,7 +79,18 @@ Limitationen im Kapitel unten ergänzen. jeweils für die eigenen Modelle.
 
 
 
+Tasks an 22.4
 
+- alle Modelle in die selbe Kapitelstruktur bringen ( 1. Modelname                      --> Pascal
+                                                      1.1 Introduction
+                                                      1.2 Model rechnen
+                                                      1.3 Interpretation + Limitation)
+- generelle Report-Strukur ajour bringen                                                --> Pascal
+- Umsetzung der Vorschläge von Davide in SVM, LM, ANN & GLM poisson                     --> Pascal, Timon
+- Kontrolle GAM                                                                         --> Timon
+- Kontrolle GLM Binomial                                                                --> Timon
+- Kontrolle Erwartungen --> va. Bezug Modelle                                           --> Davide
+                                                  
 
 
 

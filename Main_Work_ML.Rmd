@@ -1028,7 +1028,7 @@ We established the ground truth labels for these three categories based on the p
 By feeding the SVM both the listing characteristics (e.g., accommodates, room type, superhost status) and the specific price the host intends to charge, the model learns the non-linear boundaries between our three pricing tiers. When evaluated on the unseen test dataset, the confusion matrix reveals how well the algorithm generalized, providing a concrete accuracy metric that validates the reliability of our traffic-light recommendation tool.
 
 
-# ANN: Hilfe durch AI, sehr kompliziert!
+# ANN (PASCAL)
 
 ```{r}
 d.airbnb_listings_feat_ANN <- d.airbnb_listings_feat %>%

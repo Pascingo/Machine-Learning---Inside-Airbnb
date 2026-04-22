@@ -1050,9 +1050,9 @@ By feeding the SVM both the listing characteristics (e.g., accommodates, room ty
 
 # ANN (PASCAL)
 
-# Theory
+## Theory
 
-# Model
+## Model
 
 ```{r}
 d.airbnb_listings_feat_ANN <- d.airbnb_listings_feat %>%
@@ -1207,7 +1207,7 @@ Für das Decision-Support-System bedeutet dies, dass Pricing-Empfehlungen primä
 
 
 
-# ANN Try (DAVIDE)
+# ANN Try (DAVIDE) Identisch mit Pascal
 
 Hoi Davide! Neuronale Netze sind in der Tat ein ziemlich komplexes Biest, besonders in R mit dem neuralnet Package. Aber keine Sorge, euer Ansatz ist methodisch brillant! Zu zeigen, wie ein simples Modell durch "Omitted Variable Bias" (fehlende Variablen) verfälscht wird und dieses dann durch ein komplexeres Modell zu korrigieren, zeigt ein tiefes Verständnis für Data Science. Das wird sehr gute Punkte geben.
 
@@ -1364,12 +1364,17 @@ Interpretation: Once we utilize dummy variables to ensure an "apples-to-apples" 
 Business Case Conclusion
 For our Pricing Decision-Support System, this implies that price recommendations must be anchored primarily in structural features (capacity, location, property type). While striving for Superhost status remains highly advisable from a business perspective to increase listing visibility and overall booking volume (Occupancy), it does not inherently justify a noticeable markup on the nightly market rate.
 
+# Results
+
+# Conclusion
+
+
 # Limitations
 akutelle Limitationen:
 - 
 - 
 - 
 
-# Conclusion
+
 
 # Use of GenAI

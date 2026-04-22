@@ -101,9 +101,9 @@ Coding Conventions.
 • these conventions are arbitrary, but hopefully useful to the reader
 
 
+# Introduction
 
-
-# Research Questions
+## Research Questions
 
 What factors, which can be modified by Hosts on AirBnb, affect guest willingness to pay more for a certain room?
 
@@ -111,11 +111,11 @@ What are factors that influence the guest willingness to pay (WTP)
 
 What are factors on which the guest can adjust their pricing model?
 
-## Concepts: Willingness to pay (WTP)
+### Concepts: Willingness to pay (WTP)
 
 WTP is the hypothetical value, how much a customer is willing to pay for a location or a room for a certain standard. This can rise, if for example the host provides the ability to wash clothes in the apartment. So for the same location, once with and once without a washing machine, the customers WTP might increase with the washer. In a more abstract example, if the host is a super host, the customer might trust the host more and his WTP is higher. 
 
-## Hypothesis
+### Hypothesis
 H1: If the review-score of a host is better, the WTP of a guest increases.
 H2: If a host has more reviews, the WTP of a guest increases. 
 H3: If a host is e superhost, the WTP of a guest increases. 
@@ -124,7 +124,7 @@ WTP is measured in the Price displayed. We assume, that the mean of prices is si
 
 
 
-# Business Case
+## Business Case
 We propose a data-driven pricing decision-support system for Airbnb hosts in the
 Canton of Vaud, providing market-aligned price recommendations based on listing
 characteristics. The tool targets both new and existing hosts, using inputs such
@@ -138,8 +138,8 @@ recommended. From a business perspective, the system aims to increase booking
 rates, reduce price dispersion, and improve host satisfaction.
 The model is tailored to the Canton of Vaud to capture regional economic effects.
 
-
-# Editing of Dataset
+# Data Preparation
+## Editing of Dataset
 First step: Loading Packages
 
 ```{r Libraries, results = "hide", echo=FALSE}
@@ -253,21 +253,7 @@ print(quantile(d.airbnb_listings_feat$estimated_revenue_365))
 
 
 ```
-wie gehen wir bei diesen Variablen mit den NA um?
-
-# Data Quality
-
-Wir prüfen ob und wieviele NA's vorhanden sind. Hierzu nutzen wir naniar und visdat, um die NA's auch visualisieren zu können. Die meisten NA-Werte sind bei den Rates, daher wird von Pascal angenommen, dass die Nullen nicht importiert wurden und deshalb es zu dieser grossen Anzahl NAs kam. Ich würde hier die NA durch 0 ersetzen.
-Entscheid: Da Ratings fehlen werden sie in Modellen omitted. Daten fehlen aus einem Grund und nicht random. 
-
-```{r}
-vis_miss(d.airbnb_listings_feat)
-gg_miss_var(d.airbnb_listings_feat)
-gg_miss_upset(d.airbnb_listings_feat)
-```
-
-
-#GLM set to binomial(Davide)
+# GLM set to binomial(Davide)
 1. Schritt: Zielvariable binarisieren
 Aus Preis eine 0/1-Variable machen
 Der Median ist der sauberste Cutpoint — er ist robust gegenüber Ausreissern und teilt den Datensatz exakt in zwei Hälften
@@ -292,6 +278,20 @@ table(d.airbnb_listings_feat$price_high)
 ```{r final call of FE-dataset}
 str(d.airbnb_listings_feat)
 ```
+
+
+
+# Data Quality
+
+Wir prüfen ob und wieviele NA's vorhanden sind. Hierzu nutzen wir naniar und visdat, um die NA's auch visualisieren zu können. Die meisten NA-Werte sind bei den Rates, daher wird von Pascal angenommen, dass die Nullen nicht importiert wurden und deshalb es zu dieser grossen Anzahl NAs kam. Ich würde hier die NA durch 0 ersetzen.
+Entscheid: Da Ratings fehlen werden sie in Modellen omitted. Daten fehlen aus einem Grund und nicht random. 
+
+```{r}
+vis_miss(d.airbnb_listings_feat)
+gg_miss_var(d.airbnb_listings_feat)
+gg_miss_upset(d.airbnb_listings_feat)
+```
+
 
 
 # Exploratory Data Analysis
@@ -355,6 +355,7 @@ ggplot(data = d.airbnb_listings_feat, aes(x = longitude, y = latitude)) +
 
 *Important to mention*
 During our exploratory data analysis, we identified one 'Private room' listing with an unrealistically high price of 2'147'483'647 CHF. We excluded this single observation from our dataset as it is an extreme outlier that does not reflect the true market conditions and would negatively skew our predictive models.
+
 ```{r}
 # This keeps everything EXCEPT the row that is a Private room AND costs more than 5000
 d.airbnb_listings_feat <- d.airbnb_listings_feat %>%
@@ -441,8 +442,8 @@ ggplot(data = d.airbnb_listings_feat, aes(x = longitude, y = latitude)) +
   ) +
   theme_minimal()
 ```
-# Davide's overall Data Analysis
-## 1. Overall Market Overview (Prices & Capacity)
+## Davide's overall Data Analysis
+### 1. Overall Market Overview (Prices & Capacity)
 This is the absolute minimum, maximum, median, and mean for the most important numeric variables.
 ```{r}
 # Basic summary statistics for key numerical variables
@@ -454,7 +455,7 @@ print(summary_stats)
 ```
 Client Interpretation: "The average Airbnb in Vaud costs X CHF per night, but the median is Y CHF, indicating that a few extremely expensive luxury listings might be skewing the average upward. Prices range from a minimum of A CHF to a maximum of B CHF."
 
-## 2. Analysis by Room Type
+### 2. Analysis by Room Type
 Since we want to know how many different types of rooms there are, we group the data and calculate the counts, percentages, and price ranges for each type.
 ```{r}
 # Detailed breakdown by Room Type
@@ -474,7 +475,7 @@ print(room_type_analysis)
 ```
 Client Interpretation: "Entire homes/apartments dominate the Vaud market, making up 75% of all listings. As expected, the Hotel room command the highest median price (264.5 CHF), compared to shared rooms (47 CHF)."
 
-## 3. Superhost vs. Regular Host Breakdown
+### 3. Superhost vs. Regular Host Breakdown
 This business case specifically mentions superhost status. So we took a look to see how many there are and if they actually charge more or even less.
 ```{r}
 # Superhost statistics
@@ -492,7 +493,7 @@ print(superhost_analysis)
 ```
 
 
-## 1. Correlation Matrix (Crucial before Machine Learning)
+### 1. Correlation Matrix (Crucial before Machine Learning)
 Before we train our LM, GAM, or SVM, we need to know how our numerical variables relate to each other. This helps us identify multicollinearity (when two predictors provide the same information) and strong price drivers.
 
 ```{r}
@@ -509,7 +510,7 @@ kable(round(cor_matrix, 2), caption = "Correlation Matrix of Key Numerical Drive
 ```
 Client Interpretation: "As expected, accommodates shows the strongest positive correlation with price. It is also interesting to note the relationship between availability and number_of_reviews..."
 
-## 2. Detailed property_type Analysis
+### 2. Detailed property_type Analysis
 We already analyzed room_type, but Airbnb often has dozens of property_types (e.g., "Entire chalet", "Private room in castle", etc.). Summarizing the Top 10 property types in the Canton of Vaud provides maybe a great market insight.
 ```{r}
 # Top 10 Property Types by frequency and their median price
@@ -527,7 +528,7 @@ kable(top_properties, caption = "Top 10 Property Types in the Canton of Vaud")
 
 Client Interpretation: "While standard apartments like "entire rental unit" are the most common, specialty properties like chalets, homes and villas command a significant premium, which our model will need to capture."
 
-## 3. Missing Values (NA) Check
+### 3. Missing Values (NA) Check
 This step is less for the client and essential for your ML models. Most modeling functions (like lm() or svm()) will throw errors or silently drop entire rows if NAs are present. You need to know exactly where your data is missing!
 
 ```{r}
@@ -545,7 +546,9 @@ kable(na_summary, caption = "Count of Missing Values per Variable")
 
 
 #LM (TIMON - Davide translated to english and commments)
+## Theory
 
+## Code
 
 ```{r lm controlled by Timon}
 # --- LM controlled by Timon ---
@@ -591,9 +594,11 @@ ggplot(d.airbnb_listings_feat,
        y = "Log(Price)")
 ```
 
+##Interpretation
 
+# GLM Poisson (PASCAL - Davide translated to english and commments)
+## Theory
 
-# GLM set to poisson (PASCAL - Davide translated to english and commments)
 ```{r}
 # --- GLM set to Poisson (Pascal) ---
 # Fitting a Poisson model to predict 'estimated_occupancy_l365d' (which represents count data).
@@ -622,12 +627,11 @@ glm_quasipoisson <- glm(estimated_occupancy_l365d ~ price + host_is_superhost +
 
 summary(glm_quasipoisson)
 ```
-## Interpretation 
-### GLM-Poisson:
+## Interpretation GLM-Poisson:
 
 Das GLM mit Poissonverteilung hat wie erwartet eine Überdispersion produziert, da die Streuung der Airbnb-Daten zu erwarten war. Das Modell hat die Standardfehler zu klein berechnet, wweshalb im ersten Output alle Variablen hochsignifikant waren. Danach wurde die Dispersion berechnet und sie war grösser als 1, nämlich 56.53. Als Lösung wurde ein Quasipoissonmodell genutzt, welches die Standardfehler nach oben anpasst.
 
-### GLM-Quasipoisson
+## Interpretation GLM-Quasipoisson 
 Das GLM mit Quasipoissonverteilung hat die Überdispersion korrigiert. Die Standardfehler wurden nach oben angepasst (deutlich) und gibt nun ein realistisches Bild, welche Faktoren wirklich einen Einfluss auf die Auslastung haben.
 Interpretationen:
 - Price -> hochsignifikant negativ. Wie erwartet: Je höher der Preis, desto geringer die Auslastung
@@ -636,7 +640,7 @@ Interpretationen:
 - Kapazität: Positiv und signifikant. Je mehr Leute reinpassen, desto mehr Buchungen.
 - Zimmertypen: Im Intercept ist "Entire home/apt". Private Room ist signifikant schlechter gebucht als ganze Unterkunft. Shared Room hat hohen P-Wert. Statistisch kann man nicht sagen, ob sich die Auslastung eines geteilten Zimmers von der ganzen Wochnung unterscheidet.
 
-### GLM Quasi-Poisson Ergebnisse für Businesscase
+## GLM Quasi-Poisson Ergebnisse für Businesscase
 
 ```{r}
 # --- GLM Quasi-Poisson Results Extraction (Pascal) ---
@@ -658,7 +662,11 @@ print(d.results_glm_quasipoisson)
 
 
 
-### GLM Binomial (DAVIDE)
+# GLM Binomial (DAVIDE)
+
+## Theory
+
+## Model
 
 ```{r}
 # --- GLM Binomial (DAVIDE) ---
@@ -670,7 +678,7 @@ glm_binomial <- glm(price_high ~ host_is_superhost,
 
 summary(glm_binomial)
 ```
-### Interpretation GLM Binomial: Calculating Odds Ratios (DAVIDE)
+## Interpretation GLM Binomial: Calculating Odds Ratios (DAVIDE)
 Similar to the Poisson model, the coefficients in a binomial model with a logit link are log-odds.
 
 ```{r}
@@ -708,6 +716,10 @@ A host aspiring to reach Superhost status should not increase their prices. Inst
 
 # GAM Modell (DAVIDE)
 
+## Theory
+
+## Model
+
 ```{r}
 # --- GAM Model ---
 # Select only the necessary variables and remove NAs
@@ -737,6 +749,7 @@ gam.main <- gam(price ~
 summary(gam.main)
 ```
 
+## Interpretation
 Model Overview
 The Generalised Additive Model (GAM) was fitted with a Gaussian family and log link, using 3,160 observations after listwise deletion of missing values. The model explains 52.9% of deviance (adj. R² = 0.521), which is considered strong performance for hedonic price modelling in the short-term rental market.
 
@@ -873,6 +886,9 @@ leaflet() %>%
 
 
 # SVM (TIMON - Davide reviewed)
+
+## Theory
+
 Ich habe mir deinen Code genau angesehen und ein paar dringende Optimierungen vorgenommen, bevor wir ihn ins Englische übersetzen:
 
  - Hardcoding entfernt: Du hast sample(3160, 2528) geschrieben. Wenn sich eure Daten davor auch nur um eine Zeile ändern (z.B. ein weiteres NA), bricht der Code ab. Wir machen das jetzt dynamisch mit nrow().
@@ -884,6 +900,8 @@ Ich habe mir deinen Code genau angesehen und ein paar dringende Optimierungen vo
  - Accuracy Berechnung hinzugefügt: Nur die Confusion Matrix (Tabelle) auszudrucken ist etwas wenig. Ich habe zwei Zeilen hinzugefügt, die euch direkt die Accuracy in Prozent ausgeben.
 
 Hier sind die optimierten, komplett englisch kommentierten Chunks und ein Text für euren Report:
+
+## Model
 
 ```{r generating Split for SVM (TIMON) - Entfernen sobald OK von Timon da ist}
 
@@ -1020,6 +1038,7 @@ svm_accuracy <- sum(diag(svm.conf_matrix)) / sum(svm.conf_matrix)
 cat("\nSVM Test Accuracy:", round(svm_accuracy * 100, 2), "%\n")
 ```
 
+## Interpretion 
 *Interpretation SVM for the Report*
 Support Vector Machine (SVM) Classification
 To operationalize our pricing decision-support system, we trained a Support Vector Machine (SVM) using a radial basis function (RBF) kernel. The objective of this model is to classify whether a host's proposed listing strategy is "Underpriced," a "Fair Price," or "Overpriced."
@@ -1030,6 +1049,10 @@ By feeding the SVM both the listing characteristics (e.g., accommodates, room ty
 
 
 # ANN (PASCAL)
+
+# Theory
+
+# Model
 
 ```{r}
 d.airbnb_listings_feat_ANN <- d.airbnb_listings_feat %>%
@@ -1161,7 +1184,7 @@ echte_preise <- predictions_h3$net.result * (max_price - min_price) + min_price
 
 print(echte_preise)
 ```
-# Interpretation ANN
+## Interpretation ANN
 Ausgangslage und Hypothesen
 Ziel der Untersuchung war es, eine datengetriebene Pricing-Strategie für Airbnb-Hosts im Kanton Waadt (Vaud) zu entwickeln. Im Fokus stand die Frage, welche Faktoren die Zahlungsbereitschaft (Willingness to Pay, WTP) der Gäste beeinflussen und wie Hosts ihre Preise entsprechend anpassen können. Eine zentrale Hypothese (H3) nahm an, dass der "Superhost"-Status eines Vermieters einen signifikanten Preisaufschlag rechtfertigt, da er höheres Vertrauen und eine bessere Servicequalität suggeriert. Als Proxy für die WTP wurden die tatsächlich aufgerufenen Preise der Inserate verwendet.
 
@@ -1320,7 +1343,7 @@ print("Predicted Prices (Expanded Model): Regular Host vs. Superhost")
 print(real_prices_expanded)
 ```
 
-# Interpretation ANN
+## Interpretation ANN
 Context and Hypotheses
 The objective of this analysis was to develop a data-driven pricing strategy for Airbnb hosts in the Canton of Vaud. The focus was on identifying the factors that influence a guest's Willingness to Pay (WTP) and how hosts can adjust their pricing accordingly. A central hypothesis (H3) posited that a host's "Superhost" status justifies a significant price premium, as it signals higher trust and superior service quality. The actual listed prices were used as a proxy for WTP.
 

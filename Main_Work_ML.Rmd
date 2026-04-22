@@ -1017,12 +1017,16 @@ cat("\nSVM Test Accuracy:", round(svm_accuracy * 100, 2), "%\n")
 ```
 
 *Interpretation SVM for the Report*
+
 Support Vector Machine (SVM) Classification
 To operationalize our pricing decision-support system, we trained a Support Vector Machine (SVM) using a radial basis function (RBF) kernel. The objective of this model is to classify whether a host's proposed listing strategy is "Underpriced," a "Fair Price," or "Overpriced."
 
 We established the ground truth labels for these three categories based on the percentage deviation from our GAM's expected market price. The data was split into an 80% training set and a 20% test set. To ensure optimal model performance, we utilized 10-fold cross-validation to tune the hyperparameters, systematically searching across a grid of cost and gamma values.
 
 By feeding the SVM both the listing characteristics (e.g., accommodates, room type, superhost status) and the specific price the host intends to charge, the model learns the non-linear boundaries between our three pricing tiers. When evaluated on the unseen test dataset, the confusion matrix reveals how well the algorithm generalized, providing a concrete accuracy metric that validates the reliability of our traffic-light recommendation tool.
+
+Wir schaffen es mithilfe der im DAtaset enthaltenen Variablen und einem gezielten tuning eine genauigkeit von knapp 63% zu erhalten. Probleme hat das Model vor allem darin, zu definieren ob ein Preis fair ist oder nicht. das sieht man nicht nur in der Kateogrie "Fair Price" sondern auch in den anderen beiden, bei welchen die grösste Gruppe der falschen Vorhersagen die "Fair Price"-Gruppe ist. 
+Ein klares Defizit für das Model stellen aber die Daten dar. die Vorhersage ohne eine Operationalisierung der Location ist kaum möglich. wir haben zwar die Koordinaten, diese alleine sind aber kaum aussagekräftig. wichtig wären beispielsweise die Distanz zu Stadtzentren oder Sehenswürdigkeiten um eine bessere Kategorisierung zu ermöglichen. 
 
 
 # ANN (PASCAL)

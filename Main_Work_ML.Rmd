@@ -142,7 +142,7 @@ The model is tailored to the Canton of Vaud to capture regional economic effects
 # Editing of Dataset
 First step: Loading Packages
 
-```{r Libraries, results = "hide"}
+```{r Libraries, results = "hide", echo=FALSE}
 library(tidyverse)
 library(janitor)
 library(mgcv)
@@ -168,14 +168,14 @@ library(leaflet.extras)
 
 
 Second step: Reading all available Datasets
-```{r reading Dataset}
+```{r reading Dataset, echo=FALSE}
 path_listings <- "./Data_Vaud_all/listings-2.csv"
 d.raw_data_listings <- read.csv(path_listings, header = TRUE)
 ```
 
-Cleaning the Airbnb-Listings Data. We keep only the variables needed for our project. We redouce the amount of variables to exact 20, according to the requirements by our lecturers.
+Cleaning the Airbnb-Listings Data. We keep only the variables needed for our project. We reduce the amount of variables to exact 20, according to the requirements by our lecturers.
 
-```{r cleaning Dataset}
+```{r cleaning Dataset, echo=FALSE}
 d.airbnb_listings <- d.raw_data_listings %>%
   clean_names()
 
@@ -206,7 +206,7 @@ d.listings_clean <- d.listings_clean %>%
 ```
 
 This is our final, cleaned Dataset.
-```{r final Call cleaned Dataset}
+```{r final Call cleaned Dataset, echo=TRUE}
 str(d.listings_clean)
 ```
 
@@ -215,7 +215,7 @@ str(d.listings_clean)
 
 First Feature Engineering for the airbnb_listings data
 
-```{r FE for XXX (XXX)}
+```{r FE for EDA (Pascal), echo=FALSE}
 
 #Für Model XXXX 
 d.airbnb_listings_feat <- d.listings_clean %>%
@@ -257,7 +257,7 @@ wie gehen wir bei diesen Variablen mit den NA um?
 
 # Data Quality
 
-Wir prüfen ob und wieviele NA's vorhanden sind. Hierzu nutzen wir naniar und visdat, um die NA's auch visualisieren zu können. Die meisten NA-Werte sind bei den Rates, daher wir von Pascal angenommen, dass die Nullen nicht importiert wurden und deshalb es zu dieser grossen Anzahl NAs kam. Ich würde hier die NA durch 0 ersetzen.
+Wir prüfen ob und wieviele NA's vorhanden sind. Hierzu nutzen wir naniar und visdat, um die NA's auch visualisieren zu können. Die meisten NA-Werte sind bei den Rates, daher wird von Pascal angenommen, dass die Nullen nicht importiert wurden und deshalb es zu dieser grossen Anzahl NAs kam. Ich würde hier die NA durch 0 ersetzen.
 Entscheid: Da Ratings fehlen werden sie in Modellen omitted. Daten fehlen aus einem Grund und nicht random. 
 
 ```{r}

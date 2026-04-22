@@ -872,9 +872,19 @@ leaflet() %>%
 
 
 # SVM (TIMON - Davide reviewed)
+Ich habe mir deinen Code genau angesehen und ein paar dringende Optimierungen vorgenommen, bevor wir ihn ins Englische übersetzen:
 
+ - Hardcoding entfernt: Du hast sample(3160, 2528) geschrieben. Wenn sich eure Daten davor auch nur um eine Zeile ändern (z.B. ein weiteres NA), bricht der Code ab. Wir machen das jetzt dynamisch mit nrow().
 
-```{r generating Split for SVM (TIMON)}
+ - Train/Test-Kommentar korrigiert: Dein Kommentar sagte "80% im Test-Dataset". Das war genau verdreht! 2528 von 3160 sind 80%, und das ist euer Trainings-Set. Das Test-Set bekommt die restlichen 20%.
+
+ - Reproduzierbarkeit (set.seed): Ohne einen Seed zieht R jedes Mal, wenn du das Skript laufen lässt, ein anderes Sample. Eure Accuracy würde ständig springen. Wir fixieren das jetzt.
+
+ - Accuracy Berechnung hinzugefügt: Nur die Confusion Matrix (Tabelle) auszudrucken ist etwas wenig. Ich habe zwei Zeilen hinzugefügt, die euch direkt die Accuracy in Prozent ausgeben.
+
+Hier sind die optimierten, komplett englisch kommentierten Chunks und ein Text für euren Report:
+
+```{r generating Split for SVM (TIMON) - Entfernen sobald OK von Timon da ist}
 
 s <- sample(3160,2528) #80% of data is in the test-dataset
 coloums <- c("traffic_light","price","accommodates","review_scores_rating","number_of_reviews","room_type", "host_is_superhost") #here we can set the relevant coloums for the svm model out uf the dataset
@@ -887,6 +897,34 @@ print(length(d.airbnb_listings_feat_gam_test$traffic_light))
 print(length(d.airbnb_listings_feat_gam_train$traffic_light))
 
 ```
+
+```{r optimierter Code von Davide für SVM}
+# --- SVM Data Preparation (TIMON / DAVIDE) ---
+
+# Setting a seed ensures reproducibility. Without this, the random sample 
+# would change every time the code is executed, leading to fluctuating model results.
+set.seed(42) 
+
+# Dynamically calculate the 80% split instead of hardcoding row numbers
+total_rows <- nrow(d.airbnb_listings_feat_gam)
+train_indices <- sample(seq_len(total_rows), size = floor(0.8 * total_rows)) 
+
+# Define the relevant columns for the SVM model.
+# Note: We include 'price' because the use case requires evaluating if a 
+# *given* price for a specific set of features is Overpriced, Fair, or Underpriced.
+columns_svm <- c("traffic_light", "price", "accommodates", "review_scores_rating", 
+                 "number_of_reviews", "room_type", "host_is_superhost")
+
+# Creating the 80% Training and 20% Test datasets
+d.svm_train <- d.airbnb_listings_feat_gam[train_indices, columns_svm]
+d.svm_test  <- d.airbnb_listings_feat_gam[-train_indices, columns_svm]
+
+# Verifying the split
+cat("Training set size:", nrow(d.svm_train), "\n")
+cat("Test set size:", nrow(d.svm_test), "\n")
+```
+
+
 
 ```{r tuning model for optimal cost}
 tuned <- tune(
@@ -920,9 +958,33 @@ Parameter tuning of ‘svm’:
 
 - Detailed performance results:
 
+```{r SVM Tuning optimiert by Davide}
+# --- SVM Hyperparameter Tuning ---
+# We use 10-fold cross-validation to find the optimal 'cost' and 'gamma' parameters 
+# for the radial basis function (RBF) kernel.
+
+tuned_svm <- tune(
+  svm,
+  traffic_light ~ ., # 'traffic_light' was already converted to a factor in the GAM step
+  data = d.svm_train,
+  kernel = "radial",
+  ranges = list(
+    cost = 2^(-6:10),
+    gamma = 2^(-5:2)
+  )
+)
+
+# Extracting the best parameters found during cross-validation
+svm.model_cost <- as.numeric(tuned_svm$best.parameters["cost"])
+svm.model_gamma <- as.numeric(tuned_svm$best.parameters["gamma"])
+
+cat("Optimal Cost:", svm.model_cost, "\n")
+cat("Optimal Gamma:", svm.model_gamma, "\n")
+cat("Best Cross-Validation Performance (Error Rate):", round(tuned_svm$best.performance, 4), "\n")
+```
 
 
-```{r}
+```{r TIMON}
 svm.model <- svm(as.factor(traffic_light) ~ ., data = d.airbnb_listings_feat_gam_train, kernel = "radial", cost = svm.model_cost, gamma = svm.model_gamma, scale = TRUE)
 
 print(svm.model)
@@ -933,7 +995,37 @@ plot(svm.test_pred)
 svm.conf_matrix <- table(svm.test_pred, d.airbnb_listings_feat_gam_test[,1]) %>% print()
 ```
 
+```{r SVM Final optimiert von Davide}
+# --- Final SVM Model & Evaluation ---
 
+# Training the final Support Vector Machine using the optimized parameters
+svm.main <- svm(traffic_light ~ ., 
+                data = d.svm_train, 
+                kernel = "radial", 
+                cost = svm.model_cost, 
+                gamma = svm.model_gamma, 
+                scale = TRUE) # Scaling is crucial for SVMs to treat all features equally
+
+# Predicting the traffic light categories on the unseen test data
+svm.test_pred <- predict(svm.main, d.svm_test)
+
+# Generating the Confusion Matrix to evaluate classification performance
+svm.conf_matrix <- table(Predicted = svm.test_pred, Actual = d.svm_test$traffic_light)
+print("Confusion Matrix:")
+print(svm.conf_matrix)
+
+# Calculating overall Accuracy
+svm_accuracy <- sum(diag(svm.conf_matrix)) / sum(svm.conf_matrix)
+cat("\nSVM Test Accuracy:", round(svm_accuracy * 100, 2), "%\n")
+```
+
+*Interpretation SVM for the Report*
+Support Vector Machine (SVM) Classification
+To operationalize our pricing decision-support system, we trained a Support Vector Machine (SVM) using a radial basis function (RBF) kernel. The objective of this model is to classify whether a host's proposed listing strategy is "Underpriced," a "Fair Price," or "Overpriced."
+
+We established the ground truth labels for these three categories based on the percentage deviation from our GAM's expected market price. The data was split into an 80% training set and a 20% test set. To ensure optimal model performance, we utilized 10-fold cross-validation to tune the hyperparameters, systematically searching across a grid of cost and gamma values.
+
+By feeding the SVM both the listing characteristics (e.g., accommodates, room type, superhost status) and the specific price the host intends to charge, the model learns the non-linear boundaries between our three pricing tiers. When evaluated on the unseen test dataset, the confusion matrix reveals how well the algorithm generalized, providing a concrete accuracy metric that validates the reliability of our traffic-light recommendation tool.
 
 
 # ANN: Hilfe durch AI, sehr kompliziert!

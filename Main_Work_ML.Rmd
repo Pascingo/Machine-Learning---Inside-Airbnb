@@ -1025,8 +1025,9 @@ We established the ground truth labels for these three categories based on the p
 
 By feeding the SVM both the listing characteristics (e.g., accommodates, room type, superhost status) and the specific price the host intends to charge, the model learns the non-linear boundaries between our three pricing tiers. When evaluated on the unseen test dataset, the confusion matrix reveals how well the algorithm generalized, providing a concrete accuracy metric that validates the reliability of our traffic-light recommendation tool.
 
-Wir schaffen es mithilfe der im DAtaset enthaltenen Variablen und einem gezielten tuning eine genauigkeit von knapp 63% zu erhalten. Probleme hat das Model vor allem darin, zu definieren ob ein Preis fair ist oder nicht. das sieht man nicht nur in der Kateogrie "Fair Price" sondern auch in den anderen beiden, bei welchen die grösste Gruppe der falschen Vorhersagen die "Fair Price"-Gruppe ist. 
-Ein klares Defizit für das Model stellen aber die Daten dar. die Vorhersage ohne eine Operationalisierung der Location ist kaum möglich. wir haben zwar die Koordinaten, diese alleine sind aber kaum aussagekräftig. wichtig wären beispielsweise die Distanz zu Stadtzentren oder Sehenswürdigkeiten um eine bessere Kategorisierung zu ermöglichen. 
+Using the variables contained in the dataset and some targeted tuning, we’ve managed to achieve an accuracy of just under 63%. The model’s main challenge lies in determining whether a price is fair or not. This is evident not only in the “Fair Price” category but also in the other two, where the largest group of incorrect predictions is found in the “Fair Price” group. 
+
+However, the data itself represents a clear shortcoming for the model. Prediction is virtually impossible without operationalizing the location. While we have the coordinates, these alone are hardly meaningful. For example, the distance to city centers or landmarks would be important to enable better categorization. 
 
 
 # ANN (PASCAL)

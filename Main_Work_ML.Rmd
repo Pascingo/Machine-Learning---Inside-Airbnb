@@ -361,7 +361,7 @@ d.airbnb_listings_feat <- d.airbnb_listings_feat %>%
 ```
 
 
-# Davide's EDA
+# EDA (DAVIDE)
 ```{r}
 # --- 1. Distribution of the Target Variable (Price) ---
 # Upgrading base R hist() to ggplot2 for a more professional look.
@@ -543,47 +543,60 @@ kable(na_summary, caption = "Count of Missing Values per Variable")
 
 
 
-#LM (Timon)
+#LM (TIMON - Davide translated to english and commments)
 
 
 ```{r lm controlled by Timon}
-lm.main <- lm(log(price) ~ review_scores_rating + as.factor(host_is_superhost) + as.factor(room_type) + accommodates, data = d.airbnb_listings_feat)
+# --- LM controlled by Timon ---
+# Fitting a Multiple Linear Regression model to predict the log-transformed price.
+# We use log(price) to account for the right-skewed distribution of Airbnb prices.
+lm.main <- lm(log(price) ~ review_scores_rating + as.factor(host_is_superhost) + 
+              as.factor(room_type) + accommodates, data = d.airbnb_listings_feat)
+
 summary(lm.main)
 
-multicollinearity(lm.main) #kann werte von 1 - unendlich haben. 1 ist perfekt nicht kollinear
-
+# Checking for multicollinearity using Variance Inflation Factor (VIF).
+# Values range from 1 to infinity. A value of exactly 1 indicates no collinearity.
+# Values > 5-10 suggest problematic multicollinearity among the predictor variables.
+multicollinearity(lm.main)
 ```
-
-```{r lm controlled plot}
-
-ggplot(data = d.airbnb_listings_feat, mapping = aes(review_scores_rating, log(price), color = host_is_superhost))+
-  geom_point()+
+# LM Controlled Plots (TIMON - Davide translated to english and commments)
+```{r}
+# --- LM controlled plots ---
+# Visualizing the raw relationship between review scores, log(price), and superhost status.
+ggplot(data = d.airbnb_listings_feat, mapping = aes(review_scores_rating, log(price), color = host_is_superhost)) +
+  geom_point(alpha = 0.4) +
   geom_smooth(method = "lm")
 
-
-
-
+# Creating a grid of hypothetical data to predict and plot the fitted LM lines cleanly.
+# We hold 'room_type' and 'accommodates' constant to isolate the specific effects of reviews and superhost status.
 d.lm_predict <- expand.grid(
   review_scores_rating = seq(3, 5, length.out = 100),
   host_is_superhost = c("TRUE", "FALSE"),
-  room_type = "Entire home/apt",   # fixiert
-  accommodates = mean(d.airbnb_listings_feat$accommodates, na.rm = TRUE)
+  room_type = "Entire home/apt",   # Fixed reference category
+  accommodates = mean(d.airbnb_listings_feat$accommodates, na.rm = TRUE) # Fixed at mean value
 )
 
+# Generating predictions based on the trained LM model
 d.lm_predict$pred <- predict(lm.main, newdata = d.lm_predict)
 
-
+# Plotting the actual data points alongside our model's predicted regression lines
 ggplot(d.airbnb_listings_feat, 
        aes(review_scores_rating, log(price), color = host_is_superhost)) +
   geom_point(alpha = 0.3) +
-  geom_line(data = d.lm_predict, aes(y = pred), size = 1.2)
+  geom_line(data = d.lm_predict, aes(y = pred), size = 1.2) +
+  labs(title = "LM Predictions: Log(Price) vs. Review Rating",
+       x = "Review Scores Rating",
+       y = "Log(Price)")
 ```
 
 
 
-# GLM set to poisson (Pascal)
-```{r, Pascals GLM}
-# Poisson-Modell zum Auslastung vorherzusagen
+# GLM set to poisson (PASCAL - Davide translated to english and commments)
+```{r}
+# --- GLM set to Poisson (Pascal) ---
+# Fitting a Poisson model to predict 'estimated_occupancy_l365d' (which represents count data).
+# Note: Price cannot be used as a response in a Poisson model as it is continuous, not discrete counts.
 
 glm_poisson <- glm(estimated_occupancy_l365d ~ price + host_is_superhost + 
                      review_scores_rating + accommodates + room_type, 
@@ -592,10 +605,15 @@ glm_poisson <- glm(estimated_occupancy_l365d ~ price + host_is_superhost +
 
 summary(glm_poisson)
 
-# Gibt es Overdispersion? Poisson-Annahme ist, dass Mittelwert exakt gleich der Varianz ist. Airbnbs sind viele günstig und wenige sehr teuer!
+# Checking for Overdispersion.
+# A strict assumption of the Poisson distribution is that the mean exactly equals the variance.
+# Since Airbnb bookings fluctuate heavily (many cheap listings, few very expensive ones), overdispersion is expected.
 dispersion_ratio <- glm_poisson$deviance / glm_poisson$df.residual
 print(paste("Dispersion Ratio:", dispersion_ratio))
 
+# The dispersion ratio is significantly larger than 1, confirming overdispersion.
+# To correct this, we switch to a Quasi-Poisson model. This properly scales up the standard errors
+# to prevent the model from identifying false-positive (overly significant) variables.
 glm_quasipoisson <- glm(estimated_occupancy_l365d ~ price + host_is_superhost + 
                           review_scores_rating + accommodates + room_type, 
                         data = d.airbnb_listings_feat, 
@@ -619,21 +637,22 @@ Interpretationen:
 
 ## GLM Quasi-Poisson Ergebnisse für Businesscase
 
-```{r, Pascal}
-
-# Extract model results and calculate the percentage change for each variable
+```{r}
+# --- GLM Quasi-Poisson Results Extraction (Pascal) ---
+# Extract model results into a clean dataframe using broom::tidy()
 d.results_glm_quasipoisson <- tidy(glm_quasipoisson) %>%
-  # Calculate the percentage
+  # Calculate the percentage change for easier business interpretation.
+  # Since Poisson models use a log-link function, we must exponentiate the coefficients (estimates) 
+  # to interpret them as multiplicative effects on the expected count (occupancy).
   mutate(
     pct_change = (exp(estimate) - 1) * 100,
-    # Round the percentage change to 2 
+    # Round the percentage change to 2 decimal places for readability
     pct_change = round(pct_change, 2)
   ) %>%
-  # Select only the relevant columns for business case
+  # Select only the columns most relevant for communicating insights to the client
   select(term, estimate, pct_change, p.value)
 
 print(d.results_glm_quasipoisson)
-
 ```
 
 
@@ -641,16 +660,22 @@ print(d.results_glm_quasipoisson)
 # GLM Binomial (DAVIDE)
 
 ```{r}
+# --- GLM Binomial (DAVIDE) ---
+# Fitting a Logistic Regression (Binomial GLM) to predict if a listing is priced above the market median.
+# The target variable 'price_high' is binary (1 = above median price, 0 = below median price).
 glm_binomial <- glm(price_high ~ host_is_superhost,
                     data   = d.airbnb_listings_feat,
                     family = binomial(link = "logit"))
 
 summary(glm_binomial)
 ```
-# Interpretation GLM Binomial - Odds Ratio berechnen (DAVIDE)
-Genau wie Pascal exp() für seinen Quasipoisson gebraucht hat, brauchst du das hier auch. Bei Binomial sind es Odds Ratios:
+# Interpretation GLM Binomial: Calculating Odds Ratios (DAVIDE)
+Similar to the Poisson model, the coefficients in a binomial model with a logit link are log-odds.
 
 ```{r}
+# --- Interpretation GLM Binomial: Calculating Odds Ratios ---
+# Similar to the Poisson model, the coefficients in a binomial model with a logit link are log-odds.
+# We exponentiate the estimates (exp) to convert them into easily interpretable Odds Ratios.
 d.results_glm_binomial <- tidy(glm_binomial) %>%
   mutate(
     odds_ratio = round(exp(estimate), 3),
@@ -660,27 +685,25 @@ d.results_glm_binomial <- tidy(glm_binomial) %>%
 
 print(d.results_glm_binomial)
 ```
-Was der Output sagt
-Der Koeffizient für host_is_superhost ist negativ (-0.2217) und signifikant (p = 0.002). Das Odds Ratio von 0.801 bedeutet: Superhosts haben ~20% geringere Odds, über dem Medianpreis zu liegen — *somit sind Superhosts tendenziell günstiger, nicht teurer.*
-Das klingt zuerst wie ein Widerspruch zu H3. Ist es aber nicht.
-Die eigentlich spannende Erkenntnis: kombiniere das mit Pascals Ergebnis
 
-Pascals Quasipoisson hat gezeigt: 
-Superhost-Status steigert die Auslastung um Faktor 2.6. Dein Binomial zeigt: Superhosts liegen eher unter dem Medianpreis.
-Das ergibt zusammen ein kohärentes Bild der Superhost-Strategie:
+What the Output Tells Us:
+The coefficient for host_is_superhost is negative (-0.2217) and highly significant (p = 0.002). The calculated Odds Ratio of 0.801 means that Superhosts have roughly 20% lower odds of pricing their listings above the median market price compared to regular hosts. Consequently, Superhosts tend to be cheaper, not more expensive.
 
-Superhost = niedrigerer Preis  +  viel höhere Auslastung
-Normal Host = höherer Preis    +  deutlich weniger Buchungen
+At first glance, this seems to contradict our Hypothesis 3 (H3: "If a host is a superhost, the WTP of a guest increases / they charge more"). However, the real business insight emerges when we combine this finding with Pascal's Quasi-Poisson model.
 
-*Superhosts optimieren auf Volumen statt Marge.* Das macht auch betriebswirtschaftlich Sinn: um den Superhost-Status zu halten, braucht man viele Buchungen und gute Reviews — das funktioniert besser mit kompetitiven Preisen.
+The Superhost Strategy: Volume over Margin
+Pascal's model demonstrated that having Superhost status increases occupancy by a factor of 2.6. The Binomial GLM shows that Superhosts are more likely to price below the median. Together, this creates a coherent picture of the Superhost business strategy:
 
-H3 wird nicht bestätigt im Sinne von "Superhosts können mehr verlangen".
-Stattdessen zeigt sich das Gegenteil: *Superhosts preisen strategisch*
-günstiger, erzielen dafür aber massiv mehr Buchungen (Pascal's Modell).
-Das ist ein stärkerer Befund als eine simple Bestätigung von H3 — es zeigt eine echte Preisstrategie.
+  - Superhost = Lower Price + Significantly Higher Occupancy
 
-Ein Host der Superhost-Status anstrebt, sollte seinen Preis nicht erhöhen, sondern durch kompetitive Preise Buchungen und Reviews sammeln. Der Superhost-Status zahlt sich dann indirekt über Auslastung aus, nicht über den Einzelpreis.
+  - Regular Host = Higher Price + Significantly Lower Bookings
 
+Superhosts actively optimize for volume rather than margin. This makes perfect business sense: to achieve and maintain Superhost status on Airbnb, hosts need a high volume of bookings and a consistent stream of positive reviews. This is much easier to achieve with highly competitive pricing.
+
+Therefore, while H3 is not confirmed in the sense that "Superhosts charge a premium," the models reveal the opposite, which is a much stronger strategic finding: Superhosts price strategically lower but achieve massively more bookings as a result. 
+
+Recommendation for Hosts:
+A host aspiring to reach Superhost status should not increase their prices. Instead, they should use competitive pricing to gather bookings and reviews. The financial reward of the Superhost status pays off indirectly through high occupancy rates, rather than a higher nightly single-booking price.
 
 # GAM Modell (DAVIDE)
 
@@ -782,47 +805,8 @@ The GAM results provide three actionable insights for the pricing decision-suppo
 
 #Interactive Map of Canton Vaude with the GAM
 ```{r}
-# ── Echte Listings mit GAM-Fitted Values ──
-
-d.airbnb_listings_feat_gam$fitted_price <- fitted(gam.main)
-
-# Farbpalette
-pal_pts <- colorNumeric(
-  palette = "viridis",
-  domain  = d.airbnb_listings_feat_gam$fitted_price
-)
-
-# ── KARTE ──
-leaflet() %>%
-  addProviderTiles(providers$CartoDB.Positron) %>%
-  setView(lng = 6.65, lat = 46.52, zoom = 9) %>%
-  addCircleMarkers(
-    data        = d.airbnb_listings_feat_gam,
-    lng         = ~longitude,
-    lat         = ~latitude,
-    radius      = 4,
-    color       = ~pal_pts(fitted_price),
-    fillOpacity = 0.8,
-    stroke      = FALSE,
-    popup       = ~paste0(
-      "<b>Actual Price:</b> CHF ", round(price), "<br>",
-      "<b>GAM Fitted:</b> CHF ", round(fitted_price), "<br>",
-      "<b>Room Type:</b> ", room_type, "<br>",
-      "<b>Superhost:</b> ", host_is_superhost, "<br>",
-      "<b>Accommodates:</b> ", accommodates
-    )
-  ) %>%
-  addLegend(
-    position = "bottomright",
-    pal      = pal_pts,
-    values   = d.airbnb_listings_feat_gam$fitted_price,
-    title    = "Fitted price<br>per listing (CHF)"
-  )
-```
-
-
-```{r}
 # ── Echte Listings mit Ampelsystem (%-Abweichung vom GAM) ──
+# Angepasst auf die Host-Perspektive für das SVM-Modell
 
 d.airbnb_listings_feat_gam$fitted_price <- fitted(gam.main)
 
@@ -831,24 +815,28 @@ d.airbnb_listings_feat_gam$pct_diff <-
   (d.airbnb_listings_feat_gam$price - d.airbnb_listings_feat_gam$fitted_price) / 
   d.airbnb_listings_feat_gam$fitted_price * 100
 
-# Ampel-Kategorien
+# Ampel-Kategorien (Host-Sicht)
+# Kurze Labels helfen dem SVM-Modell, die Klassen sauberer zu trennen.
 d.airbnb_listings_feat_gam$traffic_light <- case_when(
-  d.airbnb_listings_feat_gam$pct_diff <= -15 ~ "Good Deal (15%+ underpriced)",  #hier können die Prozentzahlen angepasst werden
-  d.airbnb_listings_feat_gam$pct_diff >=  15 ~ "Overpriced (15%+ overpriced)",
-  TRUE                                        ~ "Fair Price (within ±15%)"
+  d.airbnb_listings_feat_gam$pct_diff <= -15 ~ "Underpriced",  # Host lässt Geld auf dem Tisch
+  d.airbnb_listings_feat_gam$pct_diff >=  15 ~ "Overpriced",   # Host riskiert Leerstand
+  TRUE                                        ~ "Fair Price"    # Optimaler Bereich
 )
 
-# Farbzuweisung
+# Für das SVM zwingend in einen Faktor umwandeln
+d.airbnb_listings_feat_gam$traffic_light <- as.factor(d.airbnb_listings_feat_gam$traffic_light)
+
+# Farbzuweisung für die Map (Grün = Gut für Host, Rot/Orange = Warnungen)
 color_map <- c(
-  "Good Deal (15%+ underpriced)" = "#1D9E75",  # grün
-  "Fair Price (within ±15%)"     = "#EF9F27",  # gelb/amber
-  "Overpriced (15%+ overpriced)" = "#D85A30"   # rot
+  "Underpriced" = "#EF9F27",  # orange/gelb (Warnung: Preis anheben)
+  "Fair Price"  = "#1D9E75",  # grün (Optimal)
+  "Overpriced"  = "#D85A30"   # rot (Warnung: Preis senken)
 )
 
 d.airbnb_listings_feat_gam$marker_color <- 
-  color_map[d.airbnb_listings_feat_gam$traffic_light]
+  color_map[as.character(d.airbnb_listings_feat_gam$traffic_light)]
 
-# ── KARTE ──
+# ── KARTE (Host Perspective) ──
 leaflet() %>%
   addProviderTiles(providers$CartoDB.Positron) %>%
   setView(lng = 6.65, lat = 46.52, zoom = 9) %>%
@@ -861,9 +849,9 @@ leaflet() %>%
     fillOpacity = 0.85,
     stroke      = FALSE,
     popup       = ~paste0(
-      "<b>Verdict:</b> ", traffic_light, "<br>",
+      "<b>Host Verdict:</b> ", traffic_light, "<br>",
       "<b>Actual Price:</b> CHF ", round(price), "<br>",
-      "<b>GAM Fitted:</b> CHF ", round(fitted_price), "<br>",
+      "<b>GAM Recommended:</b> CHF ", round(fitted_price), "<br>",
       "<b>Difference:</b> ", round(pct_diff, 1), "%", "<br>",
       "<hr>",
       "<b>Room Type:</b> ", room_type, "<br>",
@@ -873,11 +861,11 @@ leaflet() %>%
   ) %>%
   addLegend(
     position = "bottomright",
-    colors   = c("#1D9E75", "#EF9F27", "#D85A30"),
-    labels   = c("Good Deal (15%+ underpriced)",
-                 "Fair Price (within ±15%)",
-                 "Overpriced (15%+ overpriced)"),
-    title    = "Price vs. GAM Estimate",
+    colors   = c("#EF9F27", "#1D9E75", "#D85A30"),
+    labels   = c("Underpriced (Increase Price)",
+                 "Fair Price (Optimal ±15%)",
+                 "Overpriced (Decrease Price)"),
+    title    = "Pricing Strategy vs. Market (GAM)",
     opacity  = 0.85
   )
 ```

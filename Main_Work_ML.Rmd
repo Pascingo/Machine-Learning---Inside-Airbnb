@@ -708,9 +708,9 @@ A host aspiring to reach Superhost status should not increase their prices. Inst
 # GAM Modell (DAVIDE)
 
 ```{r}
-
+# --- GAM Model ---
 # Select only the necessary variables and remove NAs
-# GAM cannot handle NA's in df → na.omit() neccessary
+# GAM cannot handle NA's in the dataframe → na.omit() is necessary
 d.airbnb_listings_feat_gam <- d.airbnb_listings_feat %>%
   select(price, accommodates, review_scores_rating,
          number_of_reviews, longitude, latitude,
@@ -721,7 +721,7 @@ cat("Observations after na.omit():", nrow(d.airbnb_listings_feat_gam), "\n")
 ```
 
 ```{r}
-# GAM Modell
+# Fitting the GAM Model
 gam.main <- gam(price ~
                   s(accommodates) +
                   s(review_scores_rating) +
@@ -762,7 +762,7 @@ This convergence across fundamentally different model architectures — parametr
 
 
 
-# GAM Visualisation
+# GAM Visualisation (DAVIDE)
 ```{r}
 # Partial effect plots—this is the main advantage of GAM over LM
 par(mfrow = c(2, 3))
@@ -805,38 +805,38 @@ The GAM results provide three actionable insights for the pricing decision-suppo
 
 #Interactive Map of Canton Vaude with the GAM
 ```{r}
-# ── Echte Listings mit Ampelsystem (%-Abweichung vom GAM) ──
-# Angepasst auf die Host-Perspektive für das SVM-Modell
+# ── Actual Listings with Traffic Light System (% Deviation from GAM) ──
+# Adapted to the host perspective for the SVM model
 
 d.airbnb_listings_feat_gam$fitted_price <- fitted(gam.main)
 
-# Prozentuale Abweichung: (Actual - Fitted) / Fitted * 100
+# Percentage deviation: (Actual - Fitted) / Fitted * 100
 d.airbnb_listings_feat_gam$pct_diff <- 
   (d.airbnb_listings_feat_gam$price - d.airbnb_listings_feat_gam$fitted_price) / 
   d.airbnb_listings_feat_gam$fitted_price * 100
 
-# Ampel-Kategorien (Host-Sicht)
-# Kurze Labels helfen dem SVM-Modell, die Klassen sauberer zu trennen.
+# Traffic Light Categories (Host Perspective)
+# Short labels help the SVM model to separate the classes more cleanly.
 d.airbnb_listings_feat_gam$traffic_light <- case_when(
-  d.airbnb_listings_feat_gam$pct_diff <= -15 ~ "Underpriced",  # Host lässt Geld auf dem Tisch
-  d.airbnb_listings_feat_gam$pct_diff >=  15 ~ "Overpriced",   # Host riskiert Leerstand
-  TRUE                                        ~ "Fair Price"    # Optimaler Bereich
+  d.airbnb_listings_feat_gam$pct_diff <= -15 ~ "Underpriced",  # Host is leaving money on the table
+  d.airbnb_listings_feat_gam$pct_diff >=  15 ~ "Overpriced",   # Host risks vacancy
+  TRUE                                        ~ "Fair Price"    # Optimal range
 )
 
-# Für das SVM zwingend in einen Faktor umwandeln
+# Mandatory conversion to a factor for the SVM
 d.airbnb_listings_feat_gam$traffic_light <- as.factor(d.airbnb_listings_feat_gam$traffic_light)
 
-# Farbzuweisung für die Map (Grün = Gut für Host, Rot/Orange = Warnungen)
+# Color assignment for the map (Green = Good for Host, Red/Orange = Warnings)
 color_map <- c(
-  "Underpriced" = "#EF9F27",  # orange/gelb (Warnung: Preis anheben)
-  "Fair Price"  = "#1D9E75",  # grün (Optimal)
-  "Overpriced"  = "#D85A30"   # rot (Warnung: Preis senken)
+  "Underpriced" = "#EF9F27",  # orange/yellow (Warning: increase price)
+  "Fair Price"  = "#1D9E75",  # green (Optimal)
+  "Overpriced"  = "#D85A30"   # red (Warning: decrease price)
 )
 
 d.airbnb_listings_feat_gam$marker_color <- 
   color_map[as.character(d.airbnb_listings_feat_gam$traffic_light)]
 
-# ── KARTE (Host Perspective) ──
+# ── MAP (Host Perspective) ──
 leaflet() %>%
   addProviderTiles(providers$CartoDB.Positron) %>%
   setView(lng = 6.65, lat = 46.52, zoom = 9) %>%
@@ -871,7 +871,7 @@ leaflet() %>%
 ```
 
 
-# SVM
+# SVM (TIMON - Davide reviewed)
 
 
 ```{r generating Split for SVM (TIMON)}

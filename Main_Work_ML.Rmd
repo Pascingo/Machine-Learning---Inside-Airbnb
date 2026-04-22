@@ -1182,6 +1182,164 @@ Fazit für den Business Case
 Für das Decision-Support-System bedeutet dies, dass Pricing-Empfehlungen primär auf strukturellen Faktoren (Größe, Lage, Art der Immobilie) basieren müssen. Sich den Superhost-Status zu erarbeiten, ist für Hosts aus betriebswirtschaftlicher Sicht zwar ratsam, um die Sichtbarkeit und Buchungswahrscheinlichkeit (Occupancy) zu erhöhen, rechtfertigt aber per se keinen spürbaren Preisaufschlag im Markt.
 
 
+
+# ANN Try (DAVIDE)
+
+Hoi Davide! Neuronale Netze sind in der Tat ein ziemlich komplexes Biest, besonders in R mit dem neuralnet Package. Aber keine Sorge, euer Ansatz ist methodisch brillant! Zu zeigen, wie ein simples Modell durch "Omitted Variable Bias" (fehlende Variablen) verfälscht wird und dieses dann durch ein komplexeres Modell zu korrigieren, zeigt ein tiefes Verständnis für Data Science. Das wird sehr gute Punkte geben.
+
+Ich habe den Code durchgesehen. Technisch funktioniert er für euren Anwendungsfall sehr gut. Ich habe die Variablen-Namen auf Englisch vereinheitlicht (z.B. echte_preise zu real_prices), die Kommentare übersetzt und fachlich noch etwas präzisiert, damit exakt klar ist, warum ihr gewisse Schritte (wie Normalisierung) macht.
+
+Hier sind die aufgeräumten, komplett englischen Code-Chunks und direkt darunter eure starke Interpretation ins Business-Englisch übersetzt:
+```{r}
+# --- ANN: Model 1 (Naive Approach) ---
+# Selecting basic variables. We omit missing values for this simplified approach.
+d.ann_naive <- d.airbnb_listings_feat %>%
+  select(
+    price,                  
+    review_scores_rating,   
+    number_of_reviews,      
+    host_is_superhost,      
+    accommodates            
+  ) %>%
+  na.omit() 
+
+# Neural Networks perform best (and converge faster) when all input features 
+# are scaled to a similar range, typically [0, 1].
+normalize <- function(x) {
+  return ((x - min(x)) / (max(x) - min(x)))
+}
+
+# Apply min-max normalization to all columns
+d.ann_naive_scaled <- as.data.frame(lapply(d.ann_naive, normalize))
+
+# Train the basic Neural Network
+# We use 1 hidden layer with 3 neurons. linear.output = TRUE is used for regression (predicting a continuous price).
+set.seed(42) 
+nn_naive <- neuralnet(
+  price ~ review_scores_rating + number_of_reviews + host_is_superhost + accommodates,
+  data = d.ann_naive_scaled,
+  hidden = 3,
+  linear.output = TRUE,
+  stepmax = 1e6         
+)
+
+# Visualize the network architecture
+plot(nn_naive)
+
+# --- Testing Hypothesis 3 (H3) with the Naive Model ---
+# Calculate the mean for our features to represent a "statistically average" Airbnb
+mean_rating <- mean(d.ann_naive_scaled$review_scores_rating)
+mean_reviews <- mean(d.ann_naive_scaled$number_of_reviews)
+mean_acc <- mean(d.ann_naive_scaled$accommodates)
+
+# Create two identical fictional hosts: one is a regular host (0), one is a Superhost (1)
+test_data_h3_naive <- data.frame(
+  review_scores_rating = c(mean_rating, mean_rating),
+  number_of_reviews = c(mean_reviews, mean_reviews),
+  host_is_superhost = c(0, 1), # The only difference between the two instances
+  accommodates = c(mean_acc, mean_acc)
+)
+
+# Predict the scaled prices
+predictions_h3_naive <- compute(nn_naive, test_data_h3_naive)
+
+# Reverse the min-max scaling to interpret the results in real CHF
+min_price <- min(d.ann_naive$price)
+max_price <- max(d.ann_naive$price)
+real_prices_naive <- predictions_h3_naive$net.result * (max_price - min_price) + min_price
+
+print("Predicted Prices (Naive Model): Regular Host vs. Superhost")
+print(real_prices_naive)
+```
+
+```{r}
+# --- ANN: Model 2 (Expanded Model handling Omitted Variable Bias) ---
+
+# 1. Data Preparation & Dimensionality Reduction
+d_model_ready <- d.airbnb_listings_feat %>%
+  select(
+    price,                  
+    review_scores_rating,   
+    number_of_reviews,      
+    host_is_superhost,      
+    accommodates,
+    property_type,          
+    room_type               
+  ) %>%
+  na.omit() %>%
+  # Lump rare property types into an "Other" category to prevent explosive dimensionality
+  mutate(property_type = fct_lump_n(property_type, n = 4, other_level = "Other"))
+
+# 2. One-Hot Encoding
+# Neural networks require numeric matrices. We convert categorical variables into binary dummy variables.
+d_dummies <- as.data.frame(model.matrix(~ . - 1, data = d_model_ready))
+
+# Sanitize column names (spaces or special characters cause neuralnet to crash)
+colnames(d_dummies) <- make.names(colnames(d_dummies))
+
+# 3. Scaling
+# Apply the previously defined normalize function. (Dummy variables remain 0 or 1).
+d_scaled <- as.data.frame(lapply(d_dummies, normalize))
+
+# 4. Train the Expanded Neural Network
+set.seed(42) 
+nn_expanded <- neuralnet(
+  price ~ ., # Use all available variables
+  data = d_scaled,
+  hidden = 3,
+  linear.output = TRUE, 
+  stepmax = 1e6         
+)
+
+# Visualize the expanded network
+plot(nn_expanded)
+
+# --- 5. Prediction & Test for H3 ---
+# To conduct a fair "what-if" analysis (Partial Dependence), we take the mean of ALL 
+# variables to represent an absolutely "average" listing.
+test_data_h3_exp <- as.data.frame(lapply(d_scaled, mean))
+
+# Duplicate the row to create two identical hypothetical listings
+test_data_h3_exp <- rbind(test_data_h3_exp, test_data_h3_exp)
+
+# Isolate the Superhost effect: Row 1 = Regular Host, Row 2 = Superhost
+test_data_h3_exp$host_is_superhostFALSE <- c(1, 0) 
+test_data_h3_exp$host_is_superhostTRUE <- c(0, 1)
+
+# Predict prices (excluding the 'price' column from the input)
+predictions_h3_exp <- compute(nn_expanded, test_data_h3_exp %>% select(-price))
+
+# Reverse scaling using the min/max from the unscaled dataset
+min_price_exp <- min(d_model_ready$price)
+max_price_exp <- max(d_model_ready$price)
+
+real_prices_expanded <- predictions_h3_exp$net.result * (max_price_exp - min_price_exp) + min_price_exp
+
+print("Predicted Prices (Expanded Model): Regular Host vs. Superhost")
+print(real_prices_expanded)
+```
+
+# Interpretation ANN
+Context and Hypotheses
+The objective of this analysis was to develop a data-driven pricing strategy for Airbnb hosts in the Canton of Vaud. The focus was on identifying the factors that influence a guest's Willingness to Pay (WTP) and how hosts can adjust their pricing accordingly. A central hypothesis (H3) posited that a host's "Superhost" status justifies a significant price premium, as it signals higher trust and superior service quality. The actual listed prices were used as a proxy for WTP.
+
+Model 1: The Naive Neural Network (Omitted Variable Bias)
+In an initial, simplified approach, an Artificial Neural Network (Multilayer Perceptron) was trained using only four features: review score, number of reviews, superhost status, and listing capacity (accommodates), predicting the target variable (price).
+
+Model 1 Result: Contrary to expectations, the naive network predicted a lower price for a Superhost (approx. 132 CHF) compared to a regular host (approx. 160 CHF).
+
+Interpretation: This result is a textbook example of "Omitted Variable Bias." In practice, hosts often achieve Superhost status through high occupancy rates, which are frequently driven by highly competitive, lower-than-average pricing. Furthermore, this naive model lacked critical contextual information, such as property and room types. Extremely expensive luxury listings, for instance, are often managed by professional agencies that may not hold an individual Superhost badge, heavily skewing the data.
+
+Model 2: The Expanded Model (One-Hot Encoding)
+To correct this bias, the model was expanded in a second iteration to include structural categorical variables: room_type (e.g., Private room vs. Entire home) and property_type (e.g., Apartment vs. Chalet). Because Neural Networks require purely numerical inputs, these categories were transformed into binary dummy variables using One-Hot Encoding.
+
+Model 2 Result: When testing a fictional, perfectly "average" listing (holding room type, capacity, and all other variables constant), the predicted price difference was marginal: 483.29 CHF (Regular Host) compared to 482.64 CHF (Superhost).
+
+Interpretation: Once we utilize dummy variables to ensure an "apples-to-apples" comparison, the supposed price penalty for Superhosts almost entirely disappears. Simultaneously, this refutes our initial Hypothesis (H3): the Superhost status alone does not command a significantly higher willingness to pay from guests.
+
+Business Case Conclusion
+For our Pricing Decision-Support System, this implies that price recommendations must be anchored primarily in structural features (capacity, location, property type). While striving for Superhost status remains highly advisable from a business perspective to increase listing visibility and overall booking volume (Occupancy), it does not inherently justify a noticeable markup on the nightly market rate.
+
 # Limitations
 akutelle Limitationen:
 

@@ -636,7 +636,7 @@ Interpretationen:
 - Kapazität: Positiv und signifikant. Je mehr Leute reinpassen, desto mehr Buchungen.
 - Zimmertypen: Im Intercept ist "Entire home/apt". Private Room ist signifikant schlechter gebucht als ganze Unterkunft. Shared Room hat hohen P-Wert. Statistisch kann man nicht sagen, ob sich die Auslastung eines geteilten Zimmers von der ganzen Wochnung unterscheidet.
 
-## GLM Quasi-Poisson Ergebnisse für Businesscase
+### GLM Quasi-Poisson Ergebnisse für Businesscase
 
 ```{r}
 # --- GLM Quasi-Poisson Results Extraction (Pascal) ---
@@ -658,7 +658,7 @@ print(d.results_glm_quasipoisson)
 
 
 
-# GLM Binomial (DAVIDE)
+### GLM Binomial (DAVIDE)
 
 ```{r}
 # --- GLM Binomial (DAVIDE) ---
@@ -670,7 +670,7 @@ glm_binomial <- glm(price_high ~ host_is_superhost,
 
 summary(glm_binomial)
 ```
-# Interpretation GLM Binomial: Calculating Odds Ratios (DAVIDE)
+### Interpretation GLM Binomial: Calculating Odds Ratios (DAVIDE)
 Similar to the Poisson model, the coefficients in a binomial model with a logit link are log-odds.
 
 ```{r}

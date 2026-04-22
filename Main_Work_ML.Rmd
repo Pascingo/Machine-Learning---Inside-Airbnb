@@ -1343,7 +1343,10 @@ For our Pricing Decision-Support System, this implies that price recommendations
 
 # Limitations
 akutelle Limitationen:
+- 
+- 
+- 
 
-- 
-- 
-- 
+# Conclusion
+
+# Use of GenAI

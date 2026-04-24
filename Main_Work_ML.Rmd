@@ -900,17 +900,6 @@ leaflet() %>%
 
 ## Theory
 
-Ich habe mir deinen Code genau angesehen und ein paar dringende Optimierungen vorgenommen, bevor wir ihn ins Englische übersetzen:
-
- - Hardcoding entfernt: Du hast sample(3160, 2528) geschrieben. Wenn sich eure Daten davor auch nur um eine Zeile ändern (z.B. ein weiteres NA), bricht der Code ab. Wir machen das jetzt dynamisch mit nrow().
-
- - Train/Test-Kommentar korrigiert: Dein Kommentar sagte "80% im Test-Dataset". Das war genau verdreht! 2528 von 3160 sind 80%, und das ist euer Trainings-Set. Das Test-Set bekommt die restlichen 20%.
-
- - Reproduzierbarkeit (set.seed): Ohne einen Seed zieht R jedes Mal, wenn du das Skript laufen lässt, ein anderes Sample. Eure Accuracy würde ständig springen. Wir fixieren das jetzt.
-
- - Accuracy Berechnung hinzugefügt: Nur die Confusion Matrix (Tabelle) auszudrucken ist etwas wenig. Ich habe zwei Zeilen hinzugefügt, die euch direkt die Accuracy in Prozent ausgeben.
-
-Hier sind die optimierten, komplett englisch kommentierten Chunks und ein Text für euren Report:
 
 ## Model
 
@@ -994,7 +983,6 @@ cat("\nSVM Test Accuracy:", round(svm_accuracy * 100, 2), "%\n")
 
 
 ## Interpretion 
-*Interpretation SVM for the Report*
 
 Support Vector Machine (SVM) Classification
 To operationalize our pricing decision-support system, we trained a Support Vector Machine (SVM) using a radial basis function (RBF) kernel. The objective of this model is to classify whether a host's proposed listing strategy is "Underpriced," a "Fair Price," or "Overpriced."
@@ -1003,7 +991,7 @@ We established the ground truth labels for these three categories based on the p
 
 By feeding the SVM both the listing characteristics (e.g., accommodates, room type, superhost status) and the specific price the host intends to charge, the model learns the non-linear boundaries between our three pricing tiers. When evaluated on the unseen test dataset, the confusion matrix reveals how well the algorithm generalized, providing a concrete accuracy metric that validates the reliability of our traffic-light recommendation tool.
 
-Using the variables contained in the dataset and some targeted tuning, we’ve managed to achieve an accuracy of just under 63%. The model’s main challenge lies in determining whether a price is fair or not. This is evident not only in the “Fair Price” category but also in the other two, where the largest group of incorrect predictions is found in the “Fair Price” group. 
+Using the variables contained in the dataset and some targeted tuning, we’ve managed to achieve an accuracy of 62%. The model’s main challenge lies in determining whether a price is fair or not, where it only performed little better than randomness. This is evident not only in the “Fair Price” category but also in the other two, where the largest group of incorrect predictions is found in the “Fair Price” group. 
 
 However, the data itself represents a clear shortcoming for the model. Prediction is virtually impossible without operationalizing the location. While we have the coordinates, these alone are hardly meaningful. For example, the distance to city centers or landmarks would be important to enable better categorization. 
 

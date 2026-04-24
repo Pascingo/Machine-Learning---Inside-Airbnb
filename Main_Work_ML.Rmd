@@ -916,40 +916,28 @@ Hier sind die optimierten, komplett englisch kommentierten Chunks und ein Text f
 
 ```{r generating Split for SVM (TIMON) - Entfernen sobald OK von Timon da ist}
 
-s <- sample(3160,2528) #80% of data is in the test-dataset
-coloums <- c("traffic_light","price","accommodates","review_scores_rating","number_of_reviews","room_type", "host_is_superhost") #here we can set the relevant coloums for the svm model out uf the dataset
-
-
-d.airbnb_listings_feat_gam_train <- d.airbnb_listings_feat_gam[s, coloums]
-d.airbnb_listings_feat_gam_test <- d.airbnb_listings_feat_gam[-s, coloums]
-
-```
-
-```{r optimierter Code von Davide für SVM}
-# --- SVM Data Preparation (TIMON / DAVIDE) ---
-
 # Setting a seed ensures reproducibility. 
 set.seed(42) 
 
 #calculate the 80% split
-total_rows <- nrow(d.airbnb_listings_feat_gam)
-train_indices <- sample(seq_len(total_rows), size = floor(0.8 * total_rows)) 
+svm.total_rows <- nrow(d.airbnb_listings_feat_gam)
+svm.train_indices <- sample(seq_len(svm.total_rows), size = floor(0.8 * svm.total_rows)) 
 
 # Define the relevant columns for the SVM model.
 # We include 'price' because the use case requires evaluating if a 
 # *given* price for a specific set of features is Overpriced, Fair, or Underpriced.
-columns_svm <- c("traffic_light", "price", "accommodates", "review_scores_rating", 
+svm.coloums <- c("traffic_light", "price", "accommodates", "review_scores_rating", 
                  "number_of_reviews", "room_type", "host_is_superhost")
 
 # Creating the 80% Training and 20% Test datasets
-d.svm_train <- d.airbnb_listings_feat_gam[train_indices, columns_svm]
-d.svm_test  <- d.airbnb_listings_feat_gam[-train_indices, columns_svm]
+d.svm_train <- d.airbnb_listings_feat_gam[svm.train_indices, svm.coloums]
+d.svm_test  <- d.airbnb_listings_feat_gam[-svm.train_indices, svm.coloums]
 
-# Verifying the split
+# Verifying the split visually
 cat("Training set size:", nrow(d.svm_train), "\n")
 cat("Test set size:", nrow(d.svm_test), "\n")
-```
 
+```
 
 
 ```{r tuning model for optimal cost}

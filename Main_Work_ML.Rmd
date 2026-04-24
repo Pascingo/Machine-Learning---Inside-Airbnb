@@ -941,38 +941,6 @@ cat("Test set size:", nrow(d.svm_test), "\n")
 
 
 ```{r tuning model for optimal cost}
-tuned <- tune(
-  svm,
-  as.factor(traffic_light) ~ .,
-  data = d.airbnb_listings_feat_gam_train,
-  kernel = "radial",
-  ranges = list(
-    cost = 2^(-6:10),
-    gamma = 2^(-5:2)
-  )
-)
-
-tuned$best.parameters
-svm.model_cost <- as.numeric(tuned$best.parameters[1])
-svm.model_gamma <- as.numeric(tuned$best.parameters[2])
-print(svm.model_cost)
-print(svm.model_gamma)
-
-
-```
-> summary(svm.tune)
-
-Parameter tuning of ‘svm’:
-
-- sampling method: 10-fold cross validation 
-
-- best parameters:
-
-- best performance: 0.5399555 
-
-- Detailed performance results:
-
-```{r SVM Tuning optimiert by Davide}
 # We use 10-fold cross-validation to find the optimal 'cost' and 'gamma' parameters 
 # for the radial basis function (RBF) kernel.
 
@@ -991,10 +959,12 @@ tuned_svm <- tune(
 svm.model_cost <- as.numeric(tuned_svm$best.parameters["cost"])
 svm.model_gamma <- as.numeric(tuned_svm$best.parameters["gamma"])
 
+
 #displaying Parameters for visual confirmation
 cat("Optimal Cost:", svm.model_cost, "\n")
 cat("Optimal Gamma:", svm.model_gamma, "\n")
 cat("Best Cross-Validation Performance (Error Rate):", round(tuned_svm$best.performance, 4), "\n")
+
 ```
 
 

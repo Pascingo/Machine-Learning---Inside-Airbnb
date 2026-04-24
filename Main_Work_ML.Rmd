@@ -93,7 +93,7 @@ Tasks an 22.4
                                                   
 
 
-
+✓
 
 
 
@@ -559,8 +559,8 @@ kable(na_summary, caption = "Count of Missing Values per Variable")
 #LM (TIMON - Davide translated to english and commments)
 ## Theory
 
-## Code
-
+## Model
+### calculating Models
 ```{r lm controlled by Timon}
 # --- LM controlled by Timon ---
 # Fitting a Multiple Linear Regression model to predict the log-transformed price.
@@ -570,12 +570,15 @@ lm.main <- lm(log(price) ~ review_scores_rating + as.factor(host_is_superhost) +
 
 summary(lm.main)
 
+
 # Checking for multicollinearity using Variance Inflation Factor (VIF).
 # Values range from 1 to infinity. A value of exactly 1 indicates no collinearity.
 # Values > 5-10 suggest problematic multicollinearity among the predictor variables.
 multicollinearity(lm.main)
 ```
-# LM Controlled Plots (TIMON - Davide translated to english and commments)
+
+
+### LM Controlled Plots (TIMON - Davide translated to english and commments)
 ```{r}
 # --- LM controlled plots ---
 # Visualizing the raw relationship between review scores, log(price), and superhost status.
@@ -605,7 +608,7 @@ ggplot(d.airbnb_listings_feat,
        y = "Log(Price)")
 ```
 
-##Interpretation
+## Interpretation
 
 # GLM Poisson (PASCAL - Davide translated to english and commments)
 ## Theory

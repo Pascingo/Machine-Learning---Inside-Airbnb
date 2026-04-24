@@ -969,17 +969,6 @@ cat("Best Cross-Validation Performance (Error Rate):", round(tuned_svm$best.perf
 
 
 ```{r TIMON}
-svm.model <- svm(as.factor(traffic_light) ~ ., data = d.airbnb_listings_feat_gam_train, kernel = "radial", cost = svm.model_cost, gamma = svm.model_gamma, scale = TRUE)
-
-print(svm.model)
-#plot(svm.model, data = d.airbnb_listings_feat_gam_test)
-
-svm.test_pred <- predict(svm.model, d.airbnb_listings_feat_gam_test)
-plot(svm.test_pred)
-svm.conf_matrix <- table(svm.test_pred, d.airbnb_listings_feat_gam_test[,1]) %>% print()
-```
-
-```{r SVM Final optimiert von Davide}
 # --- Final SVM Model & Evaluation ---
 
 # Training the final Support Vector Machine using the optimized parameters
@@ -990,7 +979,7 @@ svm.main <- svm(traffic_light ~ .,
                 gamma = svm.model_gamma, 
                 scale = TRUE) # Scaling to treat all features equally
 
-# Predicting the traffic light categories on the unseen test data
+# Predicting the traffic light categories on test-data
 svm.test_pred <- predict(svm.main, d.svm_test)
 
 # Generating the Confusion Matrix to evaluate classification performance
@@ -1002,6 +991,7 @@ print(svm.conf_matrix)
 svm_accuracy <- sum(diag(svm.conf_matrix)) / sum(svm.conf_matrix)
 cat("\nSVM Test Accuracy:", round(svm_accuracy * 100, 2), "%\n")
 ```
+
 
 ## Interpretion 
 *Interpretation SVM for the Report*

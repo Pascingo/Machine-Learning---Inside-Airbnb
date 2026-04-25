@@ -836,6 +836,12 @@ d.airbnb_listings_feat_gam <- d.airbnb_listings_feat %>%
 
 cat("Observations after na.omit():", nrow(d.airbnb_listings_feat_gam), "\n")
 ```
+FEEDBACK TIMON:
+keine beanstandungen. 
+
+
+
+
 
 ```{r}
 # Fitting the GAM Model
@@ -852,6 +858,15 @@ gam.main <- gam(price ~
 
 summary(gam.main)
 ```
+
+```{r Tests von TIMON}
+summary(d.airbnb_listings_feat_gam$price)
+summary(d.airbnb_listings_feat_gam$bathrooms)
+```
+FEEDBACK TIMON, zur Kenntnis DAVIDE
+
+- s(log1p(number_of_reviews)). allenfalls kann man das noch probieren, es könnte sein, dass diese Variable einen selbstverstärkenden Effekt hat und dann könnte man sie noch logarithmieren. 
+- ChatGPT: gam(..., method = "REML") noch ergänzen. 
 
 ## Interpretation
 

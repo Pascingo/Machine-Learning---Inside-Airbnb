@@ -70,9 +70,9 @@ Tasks an 22.4
   Limitation)
 - generelle Report-Strukur ajour bringen --\> Pascal
 - Umsetzung der Vorschläge von Davide in SVM, LM, ANN & GLM poisson --\>
-  Pascal, Timon
-- Kontrolle GAM --\> Timon
-- Kontrolle GLM Binomial --\> Timon
+  Pascal, Timon (soweit erledigt)
+- Kontrolle GAM --\> Timon (erledigt)
+- Kontrolle GLM Binomial --\> Timon (erledigt)
 - Kontrolle Erwartungen --\> va. Bezug Modelle --\> Davide
 
 ✓

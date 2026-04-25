@@ -779,6 +779,7 @@ print(d.results_glm_binomial)
 ```
 FEEDBACK TIMON
 Soweit keine beanstandungen.sieht gut aus. Chatgpt hat noch vorgeschlagen allenfalls ein Konfidenzintervall zu rechnen für diese Werte, aber ich weiss nicht ob das in diesem Rahmen nötig sein würde. 
+-> eine ARt der Visualisierung wäre für dieses Model sicher auchnoch wichtig. 
 
 What the Output Tells Us: The coefficient for host_is_superhost is
 negative (-0.2217) and highly significant (p = 0.002). The calculated
@@ -925,12 +926,13 @@ Quasi-Poisson model demonstrates, they achieve 2.6× higher occupancy
 through competitive pricing. The data therefore suggest a
 volume-over-margin strategy among superhost-status hosts in Canton Vaud.
 
-# GAM Visualisation (DAVIDE)
+## GAM Visualisation (DAVIDE)
 
 ```{r}
 # Partial effect plots—this is the main advantage of GAM over LM
-par(mfrow = c(2, 3))
+
 plot(gam.main, 
+     pages = 1,
      shade      = TRUE, 
      col        = "steelblue", 
      shade.col  = "lightblue",
@@ -938,7 +940,7 @@ plot(gam.main,
 
 # EDF table: shows whether splines are truly nonlinear
 # edf ≈ 1 → nearly linear (spline hardly necessary)
-# edf > 2 → clearly nonlinear (spline justified)
+# Higher EDF values indicate stronger nonlinearity (spline justified)
 edf_table <- as.data.frame(summary(gam.main)$s.table) %>%
   round(3)
 kable(edf_table, caption = "Smooth Terms: Estimated Degrees of Freedom (EDF)")
@@ -961,6 +963,41 @@ cat("GAM R-squared: 0.521\n")
 AIC(lm.gam_comparison, gam.main)
 ```
 
+FEEDBACK TIMON
+- lm.main und gam.main haben nicht die gleiche zielvariable. ChatGPT: 
+          Euer GAM verwendet:
+          price
+          family = gaussian(link = "log")
+          Das LM verwendet:
+          lm(log(price) ~ ...)
+          Diese Modelle sind ähnlich — aber nicht identisch.
+          Warum das wichtig ist
+          GAM:
+          E(price|x) = exp(...)
+          mit Gaussian-Fehlern auf der Response-Skala.
+          LM:
+          log(price) = ...
+          mit Gaussian-Fehlern auf der Log-Skala.
+          Das sind unterschiedliche Likelihoods.
+          
+das sei methodisch heikel, aber nicht verboten. bei der interpretation muss man dabei vorsichtig sein. 
+Lösung von ChatGPT: für das Gam den preis auch logarithmieren: gam(log(price) ~ ...)
+
+          Entscheidet euch klar zwischen:
+          Variante 1
+          gam(price, link="log")
+          oder
+          Variante 2
+          gam(log(price))
+          Und vergleicht danach konsistent mit LM.
+
+ANPASSUNGEN TIMON:
+- ich habe beim ursprünglichen Model noch pages = 1 ergänzt um alles auf eine Seite zu bringen. sei robuster als das gelöschte: "par(mfrow = c(2,3))"
+- EDF > 2 habe ich in den kommentaren umgeschrieben von "# edf > 2 → clearly nonlinear" zu "# Higher EDF values indicate stronger nonlinearity"
+- 
+
+
+
 Business Case Implications The GAM results provide three actionable
 insights for the pricing decision-support tool: *Firstly*, physical
 listing characteristics (room type, bathroom count, guest capacity) are
@@ -976,7 +1013,7 @@ price competitively to accumulate bookings and reviews, with the
 understanding that revenue gains come from higher occupancy rather than
 a higher nightly rate.
 
-#Interactive Map of Canton Vaude with the GAM
+## Interactive Map of Canton Vaude with the GAM
 
 ```{r}
 # ── Actual Listings with Traffic Light System (% Deviation from GAM) ──
@@ -1043,6 +1080,17 @@ leaflet() %>%
     opacity  = 0.85
   )
 ```
+
+FEEDBACK TIMON
+- allenfalls muss man hier darauf hinweisen, dass die 15% subjektiv gewählt sind. allenfalls finden wir dazu noch etwas. 
+- ALLGEMEINE FRAGE: haben wir hier ein target-leakage für die SVM? müssen wir die Trainingsdaten und die TEstdaten bereits vor dem definieren der Kategorien definieren damit wir nicht einen Bias drin haben? allenfalls müssen wir das noch besprechen. ChatGPT:
+                                        Saubere Lösung
+                                        Idealerweise:
+                                        Train/Test Split
+                                        GAM nur auf Train fitten
+                                        Labels erzeugen
+                                        SVM trainieren
+                                        Test separat evaluieren
 
 # SVM (TIMON - Davide reviewed)
 

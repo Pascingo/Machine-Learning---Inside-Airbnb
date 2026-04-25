@@ -598,8 +598,7 @@ hypothesis is as follows: the better the rating for a rental property,
 the higher the price. For this, we use the *review_scores_rating*. We
 also include the factor *host_is_superhost* to distinguish between the
 two groups. We measure willingness to pay here using the effective price
-of the rental property. Additionally, we introduce two control
-variables. First, the size of the rental property, as this obviously
+of the rental property. Additionally, we introduce two control variables. First, the size of the rental property, as this obviously
 influences and skews the rental price, and second, the type of room.
 This also significantly influences the price.
 
@@ -754,6 +753,11 @@ glm_binomial <- glm(price_high ~ host_is_superhost,
 
 summary(glm_binomial)
 ```
+FEEDBACK TIMON: 
+
+- eher simpel, kann man hier allenfalls mindestens noch auf accommodates kontrollieren? ich bin nicht ganz sicher ob man das inerhalb eines solchen glms darf, aber eigentlich ist eine einzige UV schon zu wenig.     
+
+
 
 ## Interpretation GLM Binomial: Calculating Odds Ratios (DAVIDE)
 
@@ -773,6 +777,8 @@ d.results_glm_binomial <- tidy(glm_binomial) %>%
 
 print(d.results_glm_binomial)
 ```
+FEEDBACK TIMON
+Soweit keine beanstandungen.sieht gut aus. Chatgpt hat noch vorgeschlagen allenfalls ein Konfidenzintervall zu rechnen für diese Werte, aber ich weiss nicht ob das in diesem Rahmen nötig sein würde. 
 
 What the Output Tells Us: The coefficient for host_is_superhost is
 negative (-0.2217) and highly significant (p = 0.002). The calculated

@@ -77,6 +77,26 @@ Tasks an 22.4
 
 ✓
 
+Task ab 26.4
+- target LEakage untersuchen --> Davide & Timon
+- crossvalidation im SVM einbauen (zb radial vs. linear; vers.                --> Timon + Davide Kontrolle
+                                    SVM 1: Kernel = linear, C = 1
+                                    SVM 2: Kernel = RBF, C = 1
+                                    SVM 3: Kernel = RBF, C = 10)
+- Businesscase mehr einbauen in den einzelnen Paragraphen.                    --> Alle in individuellen Modellen
+- understand the data. was sind die Daten genau. sauber auflisten und kurz erklären. --> Pascal
+- Data Quality kontrollieren & übersetzen.                                           --> Timon  
+- EDA --> alles drin was wir müssen? mehr auch Verteilungen zeigen der Daten.        --> Davide
+
+
+
+ToDos later:
+- beautyfying HTML-Doc                                              --> 
+- complete README-File                                              -->
+
+
+
+
 Infos zu bedenken: ABGABEDATUM: 12 Juni
 
 - Outlier Handling definieren. --\> falsche Datenpunkte sollten gelöscht
@@ -277,6 +297,8 @@ table(d.airbnb_listings_feat$price_high)
 ```{r final call of FE-dataset}
 str(d.airbnb_listings_feat)
 ```
+# Understanding the Data
+ --> hier den Outlier im Preis rauswerfen. 
 
 # Data Quality
 

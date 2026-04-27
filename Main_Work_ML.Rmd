@@ -163,7 +163,7 @@ to the Canton of Vaud to capture regional economic effects.
 
 First step: Loading Packages
 
-```{r Libraries, results = "hide", echo=FALSE}
+```{r Libraries, results = "hide", echo=FALSE, warning=FALSE}
 library(tidyverse)
 library(janitor)
 library(mgcv)
@@ -183,7 +183,10 @@ library(visdat)
 library(neuralnet)
 library(leaflet)
 library(leaflet.extras)
+library(patchwork)
 
+
+theme_set(theme_minimal())
 ```
 
 Second step: Reading all available Datasets
@@ -299,6 +302,220 @@ str(d.airbnb_listings_feat)
 ```
 # Understanding the Data
  --> hier den Outlier im Preis rauswerfen. 
+ 
+ 
+ 
+```{r}
+# Calculate percentage of missing values per column
+missing_data <- d.airbnb_listings_feat %>%
+  summarise(across(everything(), ~ mean(is.na(.)) * 100)) %>%
+  pivot_longer(everything(), names_to = "Variable", values_to = "Missing_Percentage") %>%
+  filter(Missing_Percentage > 0) %>%
+  arrange(desc(Missing_Percentage))
+
+# Plot missing values
+ggplot(missing_data, aes(x = reorder(Variable, Missing_Percentage), y = Missing_Percentage)) +
+  geom_bar(stat = "identity", fill = "steelblue") +
+  coord_flip() +
+  labs(title = "Percentage of Missing Values per Variable",
+       x = "Variables",
+       y = "% Missing")
+```
+ 
+```{r}
+# Histogram for raw price
+p1 <- ggplot(d.airbnb_listings_feat, aes(x = price)) +
+  geom_histogram(bins = 50, fill = "darkred", color = "white", alpha = 0.7) +
+  labs(title = "Distribution of Raw Price", x = "Price", y = "Count")
+
+# Histogram for log_price
+p2 <- ggplot(d.airbnb_listings_feat, aes(x = log_price)) +
+  geom_histogram(bins = 50, fill = "darkgreen", color = "white", alpha = 0.7) +
+  labs(title = "Distribution of Log Price", x = "Log Price", y = "Count")
+
+p1 + p2
+```
+ 
+```{r}
+# Histogram for accommodates
+p_acc <- ggplot(d.airbnb_listings_feat, aes(x = accommodates)) +
+  geom_histogram(binwidth = 1, fill = "dodgerblue", color = "white") +
+  scale_x_continuous(breaks = seq(1, max(d.airbnb_listings_feat$accommodates, na.rm = TRUE), by = 1)) +
+  labs(title = "Listing Capacity", x = "Accommodates (Guests)", y = "Count")
+
+# Histogram for review scores
+p_rev <- ggplot(d.airbnb_listings_feat, aes(x = review_scores_rating)) +
+  geom_histogram(bins = 30, fill = "purple", color = "white", alpha = 0.7) +
+  labs(title = "Review Scores Rating Distribution", x = "Rating", y = "Count")
+
+p_acc + p_rev
+```
+ 
+```{r}
+# Bar plot for room type
+p_room <- ggplot(d.airbnb_listings_feat, aes(x = room_type, fill = room_type)) +
+  geom_bar(show.legend = FALSE) +
+  labs(title = "Proportion of Room Types", x = "Room Type", y = "Count") +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+
+# Bar plot for Superhost status
+p_host <- ggplot(d.airbnb_listings_feat %>% filter(!is.na(host_is_superhost)), aes(x = as.factor(host_is_superhost), fill = as.factor(host_is_superhost))) +
+  geom_bar(show.legend = FALSE) +
+  scale_fill_manual(values = c("tomato", "seagreen")) +
+  labs(title = "Superhost Status", x = "Is Superhost?", y = "Count")
+
+p_room + p_host
+```
+
+```{r}
+# Boxplot: Log Price by Room Type
+ggplot(d.airbnb_listings_feat, aes(x = room_type, y = log_price, fill = room_type)) +
+  geom_boxplot(alpha = 0.7, show.legend = FALSE) +
+  labs(title = "Log Price by Room Type", x = "Room Type", y = "Log Price") +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+
+# Boxplot: Log Price by Neighbourhood Group (Top 10 to keep it readable)
+top_neighborhoods <- d.airbnb_listings_feat %>% 
+  count(neighbourhood_group_cleansed, sort = TRUE) %>% 
+  top_n(10, n) %>% 
+  pull(neighbourhood_group_cleansed)
+
+ggplot(d.airbnb_listings_feat %>% filter(neighbourhood_group_cleansed %in% top_neighborhoods), 
+       aes(x = reorder(neighbourhood_group_cleansed, log_price, FUN = median), y = log_price)) +
+  geom_boxplot(fill = "lightblue", alpha = 0.7) +
+  coord_flip() +
+  labs(title = "Log Price by Top 10 Neighbourhood Groups", 
+       x = "Neighbourhood Group", 
+       y = "Log Price")
+```
+
+
+
+```{r host_features, fig.height=8, fig.width=12, message=FALSE, warning=FALSE}
+# Response Time
+p_resp_time <- ggplot(d.airbnb_listings_feat %>% filter(host_response_time != "N/A" & !is.na(host_response_time)), aes(x = host_response_time)) +
+  geom_bar(fill = "cadetblue") +
+  labs(title = "Host Response Time", x = "Response Time", y = "Count") +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+
+# Response & Acceptance Rates
+p_resp_rate <- ggplot(d.airbnb_listings_feat, aes(x = host_response_rate)) +
+  geom_histogram(bins = 20, fill = "cadetblue", color = "white") +
+  labs(title = "Host Response Rate", x = "Rate (0 to 1)", y = "Count")
+
+p_acc_rate <- ggplot(d.airbnb_listings_feat, aes(x = host_acceptance_rate)) +
+  geom_histogram(bins = 20, fill = "cadetblue", color = "white") +
+  labs(title = "Host Acceptance Rate", x = "Rate (0 to 1)", y = "Count")
+
+# Identity & Profile Pic (converted to factors)
+p_pic <- ggplot(d.airbnb_listings_feat %>% filter(!is.na(host_has_profile_pic)), aes(x = host_has_profile_pic)) +
+  geom_bar(fill = "khaki4") +
+  labs(title = "Has Profile Pic", x = "t = True, f = False", y = "Count")
+
+p_verified <- ggplot(d.airbnb_listings_feat %>% filter(!is.na(host_identity_verified)), aes(x = host_identity_verified)) +
+  geom_bar(fill = "khaki4") +
+  labs(title = "Identity Verified", x = "t = True, f = False", y = "Count")
+
+(p_resp_time | p_resp_rate | p_acc_rate) / (p_pic | p_verified)
+
+```
+
+```{r}
+
+# Top 10 Property Types
+p_prop <- d.airbnb_listings_feat %>%
+  count(property_type) %>%
+  top_n(10, n) %>%
+  ggplot(aes(x = reorder(property_type, n), y = n)) +
+  geom_bar(stat = "identity", fill = "coral") +
+  coord_flip() +
+  labs(title = "Top 10 Property Types", x = "Property Type", y = "Count")
+
+# Top 10 Neighbourhoods (Counts)
+p_neigh <- d.airbnb_listings_feat %>%
+  count(neighbourhood_group_cleansed) %>%
+  top_n(10, n) %>%
+  ggplot(aes(x = reorder(neighbourhood_group_cleansed, n), y = n)) +
+  geom_bar(stat = "identity", fill = "coral3") +
+  coord_flip() +
+  labs(title = "Top 10 Neighbourhood Groups", x = "Neighbourhood", y = "Count")
+
+(p_prop / p_neigh)
+```
+
+```{r}
+# Bathrooms
+p_baths <- ggplot(d.airbnb_listings_feat, aes(x = bathrooms)) +
+  geom_histogram(binwidth = 0.5, fill = "plum4", color = "white") +
+  scale_x_continuous(breaks = seq(0, max(d.airbnb_listings_feat$bathrooms, na.rm = TRUE), by = 1)) +
+  labs(title = "Number of Bathrooms", x = "Bathrooms", y = "Count")
+
+# Beds
+p_beds <- ggplot(d.airbnb_listings_feat, aes(x = beds)) +
+  geom_histogram(binwidth = 1, fill = "plum4", color = "white") +
+  scale_x_continuous(breaks = seq(0, max(d.airbnb_listings_feat$beds, na.rm = TRUE), by = 2)) +
+  labs(title = "Number of Beds", x = "Beds", y = "Count")
+
+p_baths | p_beds
+```
+
+```{r}
+# Minimum Nights (Log scale due to extreme outliers like 365+ nights)
+p_nights <- ggplot(d.airbnb_listings_feat, aes(x = minimum_nights)) +
+  geom_histogram(bins = 30, fill = "olivedrab", color = "white") +
+  scale_x_log10() +
+  labs(title = "Minimum Nights (Log10 Scale)", x = "Minimum Nights", y = "Count")
+
+# Number of Reviews
+p_num_rev <- ggplot(d.airbnb_listings_feat, aes(x = number_of_reviews)) +
+  geom_histogram(bins = 30, fill = "olivedrab", color = "white") +
+  labs(title = "Total Number of Reviews", x = "Reviews", y = "Count")
+
+# Estimated Occupancy
+p_occ <- ggplot(d.airbnb_listings_feat, aes(x = estimated_occupancy_l365d)) +
+  geom_histogram(bins = 30, fill = "olivedrab", color = "white") +
+  labs(title = "Estimated Occupancy (Last 365 Days)", x = "Occupied Days", y = "Count")
+
+p_nights | p_num_rev | p_occ
+```
+
+```{r}
+# Price per Guest (with zoom-in to exclude massive outliers)
+p_ppg <- ggplot(d.airbnb_listings_feat, aes(x = price_per_guest)) +
+  geom_histogram(bins = 40, fill = "goldenrod", color = "white") +
+  coord_cartesian(xlim = c(0, quantile(d.airbnb_listings_feat$price_per_guest, 0.95, na.rm=TRUE))) +
+  labs(title = "Price Per Guest (Bottom 95%)", x = "Price", y = "Count")
+
+# Estimated Revenue
+p_rev <- ggplot(d.airbnb_listings_feat, aes(x = estimated_revenue_365)) +
+  geom_histogram(bins = 40, fill = "goldenrod", color = "white") +
+  coord_cartesian(xlim = c(0, quantile(d.airbnb_listings_feat$estimated_revenue_365, 0.95, na.rm=TRUE))) +
+  labs(title = "Est. Revenue 365d (Bottom 95%)", x = "Revenue", y = "Count")
+
+# High Demand (Binary)
+p_demand <- ggplot(d.airbnb_listings_feat, aes(x = as.factor(high_demand))) +
+  geom_bar(fill = "sienna") +
+  labs(title = "High Demand Classification", x = "0 = No, 1 = Yes", y = "Count")
+
+# Price High (Binary)
+p_price_high <- ggplot(d.airbnb_listings_feat, aes(x = as.factor(price_high))) +
+  geom_bar(fill = "sienna") +
+  labs(title = "High Price Classification", x = "0 = No, 1 = Yes", y = "Count")
+
+(p_ppg | p_rev) / (p_demand | p_price_high)
+```
+
+```{r}
+d.airbnb_listings_feat %>%
+  count(host_verifications) %>%
+  top_n(5, n) %>%
+  ggplot(aes(x = reorder(host_verifications, n), y = n)) +
+  geom_bar(stat = "identity", fill = "grey50") +
+  coord_flip() +
+  labs(title = "Top 5 Host Verification Combinations", x = "Verification Methods", y = "Count")
+```
+
+
 
 # Data Quality
 

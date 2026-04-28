@@ -145,6 +145,12 @@ H2: When location-centered indicators improve, tenants’ willingness to pay inc
 Host-centered indicators are those that relate to the host’s performance, such as ratings or Superhost status. In contrast, location-centered indicators are those that relate to factors such as the size of the rental property. 
 
 
+**Note**
+
+**Es sollte Möglich sein, die jeweiligen Modell in einer oder beiden Hypothesen zu verordnen. Sprich: ich untersuche mit meinem Modell H1 und finde dass mehr reviews den Preis steigen lassen blablabla. Zudem kann es in gewissen Modellen sinn machen, beide Hypothesen anzuschauen und zu beantworten. es kann aber auch sein, dass man zb H1 anschaut und mit Faktoren wie "accommodates" kontrolliert. dann habe ich zwar location-sided-Indicators, jedoch habe ich keinen Fokus auf die H2.**
+**Eine dritte Option ist, dass ich nicht eine der beiden Hypothesen untersuche, sondern die zweite Forshcungsfrage und versuche vorhersagen zu treffen. dies macht beispielsweise beim SVM sinn. da müsst ihr selbst enscheiden, welchen FOkus ihr setzen wollt**
+
+
 # Data Preparation
 
 ## Editing of Dataset

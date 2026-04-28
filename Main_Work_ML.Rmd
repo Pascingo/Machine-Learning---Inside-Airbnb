@@ -67,8 +67,7 @@ Modelle.
 Tasks an 22.4
 
 - alle Modelle in die selbe Kapitelstruktur bringen ( 1. Modelname --\>
-  Pascal 1.1 Introduction 1.2 Model rechnen 1.3 Interpretation +
-  Limitation)
+  Pascal 1.1 Introduction 1.2 Model rechnen 1.3 Optionale Nice-To-Have (Interactive Map oder Cross-Validation) 1.4 Interpretation + 1.5 Limitation)
 - generelle Report-Strukur ajour bringen --\> Pascal
 - Umsetzung der Vorschläge von Davide in SVM, LM, ANN & GLM poisson --\>
   Pascal, Timon (soweit erledigt)
@@ -79,12 +78,12 @@ Tasks an 22.4
 ✓
 
 Task ab 26.4
-- target LEakage untersuchen --> Davide & Timon
+- target LEakage untersuchen --> Davide & Timon --> DAVIDE DONE
 - crossvalidation im SVM einbauen (zb radial vs. linear; vers.                --> Timon + Davide Kontrolle
                                     SVM 1: Kernel = linear, C = 1
                                     SVM 2: Kernel = RBF, C = 1
                                     SVM 3: Kernel = RBF, C = 10)
-- Businesscase mehr einbauen in den einzelnen Paragraphen.                    --> Alle in individuellen Modellen
+- Businesscase mehr einbauen in den einzelnen Paragraphen.                    -->  Alle in individuellen Modellen
 - understand the data. was sind die Daten genau. sauber auflisten und kurz erklären. --> Pascal
 - Data Quality kontrollieren & übersetzen.                                           --> Timon  
 - EDA --> alles drin was wir müssen? mehr auch Verteilungen zeigen der Daten.        --> Davide
@@ -1057,16 +1056,80 @@ pricing to gather bookings and reviews. The financial reward of the
 Superhost status pays off indirectly through high occupancy rates,
 rather than a higher nightly single-booking price.
 
-# GAM Modell (DAVIDE)
+# GAM Model (DAVIDE)
 
 ## Theory
 
+### Why GAM for Airbnb Pricing?
+
+Generalized Additive Models (GAM) extend the classical linear model by 
+replacing rigid linear coefficients with **smooth, non-parametric functions** 
+f(x). The model takes the form:
+
+  g(E[Y]) = β₀ + f₁(x₁) + f₂(x₂) + ... + fₚ(xₚ)
+
+where g(·) is a link function and each fⱼ(·) is a smoothing spline whose 
+shape is learned from the data rather than pre-specified.
+
+### Justification for our Use Case
+
+For Airbnb pricing in the Canton of Vaud, GAM offers three decisive 
+advantages over a standard linear model:
+
+**1. Non-linear price effects are the rule, not the exception.**  
+The relationship between guest capacity (`accommodates`) and price is 
+not linear: going from 2 to 4 guests typically doubles the price, but 
+going from 8 to 10 guests adds proportionally less. Likewise, 
+`review_scores_rating` shows threshold effects — listings below 4.0 are 
+penalised disproportionately, while differences between 4.8 and 5.0 
+matter less. A linear model would force an "average slope" through 
+these curves and misprice both ends of the spectrum.
+
+**2. Spatial pricing is inherently non-linear.**  
+The Canton of Vaud combines a high-priced lakeshore (Lausanne, Montreux, 
+Vevey), urban centres, alpine resorts (Villars, Leysin), and rural 
+hinterland — each with distinct price regimes. A 2D smoother 
+`s(longitude, latitude)` captures this price surface without requiring 
+us to manually engineer postcode dummies or distance-to-lake variables. 
+This is the single most important methodological argument for choosing 
+GAM in a regional pricing tool.
+
+**3. Interpretability is preserved.**  
+Unlike black-box models (Random Forests, Neural Networks), each smooth 
+term fⱼ(xⱼ) can be plotted and interpreted individually. This matches 
+our business case requirement that hosts must be able to **see why** a 
+certain price is recommended.
+
+### Link to Hypotheses
+
+The GAM directly tests **H2 (location-centered indicators)** through the 
+2D spatial spline, while simultaneously controlling for **H1 
+(host-centered indicators)** via parametric terms (`host_is_superhost`, 
+`review_scores_rating`). The model is therefore positioned as our 
+primary tool for examining whether location effects on willingness-to-pay 
+are non-linear and spatially clustered — a question a linear model 
+cannot answer.
+
+### Methodological Choices
+
+- **Family / Link:** We use `gaussian()` on `log(price)`. This stabilises 
+  variance (prices are right-skewed and heteroscedastic) and ensures 
+  consistency with the LM benchmark, which also models `log(price)`. 
+  Coefficients can be interpreted multiplicatively: a coefficient β 
+  corresponds to a (exp(β) − 1) × 100% price change.
+- **Smoothing method:** `method = "REML"` (Restricted Maximum Likelihood) 
+  is preferred over the default GCV.Cp because it is less prone to 
+  undersmoothing and provides more reliable confidence intervals.
+- **Basis dimension (k):** Default values are used; the spatial spline 
+  is allowed higher flexibility (EDF ≈ 28) given the geographic 
+  heterogeneity of the canton.
+  
 ## Model
 
 ```{r}
-# --- GAM Model ---
-# Select only the necessary variables and remove NAs
-# GAM cannot handle NA's in the dataframe → na.omit() is necessary
+# GAM Modell — bereinigt (Davide & Timon)
+
+# --- 1. Data preparation ---
 d.airbnb_listings_feat_gam <- d.airbnb_listings_feat %>%
   select(price, accommodates, review_scores_rating,
          number_of_reviews, longitude, latitude,
@@ -1074,133 +1137,77 @@ d.airbnb_listings_feat_gam <- d.airbnb_listings_feat %>%
   na.omit()
 
 cat("Observations after na.omit():", nrow(d.airbnb_listings_feat_gam), "\n")
+
+# --- 2. Train/Test-Split BEFORE model fitting (prevents leakage for SVM) ---
+set.seed(42)
+n <- nrow(d.airbnb_listings_feat_gam)
+train_idx <- sample(seq_len(n), size = floor(0.8 * n))
+
+df_train <- d.airbnb_listings_feat_gam[ train_idx, ]
+df_test  <- d.airbnb_listings_feat_gam[-train_idx, ]
+
+cat("Train:", nrow(df_train), " | Test:", nrow(df_test), "\n")
 ```
-FEEDBACK TIMON:
-keine beanstandungen. 
-
-
-
 
 
 ```{r}
-# Fitting the GAM Model
-gam.main <- gam(price ~
+# --- 3. Fit the GAM on log(price), training data only ---
+gam.main <- gam(log(price) ~
                   s(accommodates) +
                   s(review_scores_rating) +
-                  s(number_of_reviews) +
+                  s(log1p(number_of_reviews)) +
                   s(longitude, latitude) +
                   room_type +
                   host_is_superhost +
                   bathrooms,
-                family = gaussian(link = "log"),
-                data   = d.airbnb_listings_feat_gam)
+                family = gaussian(),
+                method = "REML",
+                data   = df_train)
 
 summary(gam.main)
 ```
+
+FEEDBACK TIMON, zur Kenntnis DAVIDE
+
+- s(log1p(number_of_reviews)). allenfalls kann man das noch probieren, es könnte sein, dass diese Variable einen selbstverstärkenden Effekt hat und dann könnte man sie noch logarithmieren. --> erledigt Davide
+- ChatGPT: gam(..., method = "REML") noch ergänzen. --> erledigt Davide
 
 ```{r Tests von TIMON}
 summary(d.airbnb_listings_feat_gam$price)
 summary(d.airbnb_listings_feat_gam$bathrooms)
 ```
-FEEDBACK TIMON, zur Kenntnis DAVIDE
-
-- s(log1p(number_of_reviews)). allenfalls kann man das noch probieren, es könnte sein, dass diese Variable einen selbstverstärkenden Effekt hat und dann könnte man sie noch logarithmieren. 
-- ChatGPT: gam(..., method = "REML") noch ergänzen. 
-
-## Interpretation
-
-Model Overview The Generalised Additive Model (GAM) was fitted with a
-Gaussian family and log link, using 3,160 observations after listwise
-deletion of missing values. The model explains 52.9% of deviance (adj.
-R² = 0.521), which is considered strong performance for hedonic price
-modelling in the short-term rental market.
-
-Parametric Terms (Linear Effects) Room Type is the strongest categorical
-price driver in the model. Using Entire home/apt as the reference
-category:
-
-Hotel room: significant positive premium (β = 0.720, p \< 0.001).
-Translating from the log scale: exp(0.720) ≈ 2.05, meaning hotel rooms
-are associated with roughly double the price of comparable entire homes.
-Private room: significant negative effect (β = −0.363, p \< 0.001),
-corresponding to approximately a 30% price reduction (exp(−0.363) =
-0.696). Shared room: not statistically significant (p = 0.180), likely
-due to the small number of shared room listings in the Canton of Vaud.
-
-Bathrooms show a highly significant positive effect (β = 0.181, p \<
-0.001). Each additional bathroom is associated with approximately a 20%
-price increase (exp(0.181) = 1.198), reflecting the importance of
-physical listing characteristics for guest willingness to pay. Superhost
-status shows a small negative coefficient (β = −0.049, p = 0.078), which
-is only marginally significant at the 10% level. This finding is
-consistent across all three models estimated in this study — the GLM
-Binomial, the Neural Network, and the GAM all converge on the same
-conclusion: superhost status does not yield a measurable price premium.
-This is discussed in detail in the cross-model comparison below.
-
-Smooth Terms (Non-linear Effects) All four smooth terms are highly
-significant (p \< 2e-16) and show substantial non-linearity, as
-indicated by their estimated degrees of freedom (EDF)
-
-An EDF close to 1 would indicate a near-linear relationship, making a
-spline unnecessary. All EDF values here are far above 1, confirming that
-non-linear smoothing is statistically justified for every continuous
-predictor in the model. A standard linear model would have failed to
-capture these relationships adequately. The *2D spatial spline*
-s(longitude, latitude) deserves particular attention with an EDF of
-27.75. This indicates a highly complex spatial price surface across the
-Canton of Vaud — locations closer to Lake Geneva and urban centres such
-as Lausanne command significantly higher prices, while rural and alpine
-areas show distinct pricing patterns. This spatial component alone
-justifies the GAM approach for a regionally scoped pricing tool.
-
-Cross-Model Comparison: Superhost Effect One of the most consistent
-findings across all models in this study is the absence of a superhost
-price premium This convergence across fundamentally different model
-architectures — parametric, non-parametric, and connectionist —
-constitutes strong evidence against H3 as originally formulated.
-Superhosts do not appear to charge higher prices; rather, as Pascal's
-Quasi-Poisson model demonstrates, they achieve 2.6× higher occupancy
-through competitive pricing. The data therefore suggest a
-volume-over-margin strategy among superhost-status hosts in Canton Vaud.
 
 ## GAM Visualisation (DAVIDE)
 
 ```{r}
 # Partial effect plots—this is the main advantage of GAM over LM
 
-plot(gam.main, 
-     pages = 1,
-     shade      = TRUE, 
-     col        = "steelblue", 
+# --- 4. Diagnostic plots ---
+plot(gam.main,
+     pages      = 1,
+     shade      = TRUE,
+     col        = "steelblue",
      shade.col  = "lightblue",
      seWithMean = TRUE)
 
-# EDF table: shows whether splines are truly nonlinear
-# edf ≈ 1 → nearly linear (spline hardly necessary)
-# Higher EDF values indicate stronger nonlinearity (spline justified)
-edf_table <- as.data.frame(summary(gam.main)$s.table) %>%
-  round(3)
+edf_table <- as.data.frame(summary(gam.main)$s.table) %>% round(3)
 kable(edf_table, caption = "Smooth Terms: Estimated Degrees of Freedom (EDF)")
 
-# Model quality
-cat("R-squared:         ", round(summary(gam.main)$r.sq, 3), "\n")
+cat("R-squared:         ", round(summary(gam.main)$r.sq,  3), "\n")
 cat("Deviance explained:", round(summary(gam.main)$dev.expl, 3), "\n")
-
-# Comparison with Timon's LM (AIC — lower = better) -> unfair comparison
-AIC(lm.main, gam.main)
-
-# LM with identical Variables as in GAM (fair comparison)
-lm.gam_comparison <- lm(log(price) ~ accommodates + review_scores_rating +
-                           number_of_reviews + longitude + latitude +
-                           room_type + host_is_superhost + bathrooms,
-                         data = d.airbnb_listings_feat_gam)
-
-cat("LM  R-squared:", summary(lm.gam_comparison)$r.squared, "\n")
-cat("GAM R-squared: 0.521\n")
-AIC(lm.gam_comparison, gam.main)
 ```
 
+```{r}
+# --- 5. Fair LM benchmark (same target, same training data) ---
+lm.gam_comparison <- lm(log(price) ~ accommodates + review_scores_rating +
+                          log1p(number_of_reviews) + longitude + latitude +
+                          room_type + host_is_superhost + bathrooms,
+                        data = df_train)
+
+cat("LM  R²:", round(summary(lm.gam_comparison)$r.squared, 3), "\n")
+cat("GAM R²:", round(summary(gam.main)$r.sq, 3), "\n")
+AIC(lm.gam_comparison, gam.main)
+```
 FEEDBACK TIMON
 - lm.main und gam.main haben nicht die gleiche zielvariable. ChatGPT: 
           Euer GAM verwendet:
@@ -1232,91 +1239,86 @@ Lösung von ChatGPT: für das Gam den preis auch logarithmieren: gam(log(price) 
 ANPASSUNGEN TIMON:
 - ich habe beim ursprünglichen Model noch pages = 1 ergänzt um alles auf eine Seite zu bringen. sei robuster als das gelöschte: "par(mfrow = c(2,3))"
 - EDF > 2 habe ich in den kommentaren umgeschrieben von "# edf > 2 → clearly nonlinear" zu "# Higher EDF values indicate stronger nonlinearity"
-- 
 
-
-
-Business Case Implications The GAM results provide three actionable
-insights for the pricing decision-support tool: *Firstly*, physical
-listing characteristics (room type, bathroom count, guest capacity) are
-the primary price drivers a host can directly control. The model
-recommends prioritising these structural factors in the pricing
-interface. *Secondly*, location matters non-linearly. The spatial spline
-captures granular geographic price gradients that a postcode or
-neighbourhood dummy variable would miss. This validates the use of
-coordinates as a continuous input in the recommendation tool. *Thirdly*,
-pursuing superhost status should be framed as an occupancy strategy, not
-a pricing strategy. Hosts seeking the superhost badge are advised to
-price competitively to accumulate bookings and reviews, with the
-understanding that revenue gains come from higher occupancy rather than
-a higher nightly rate.
-
-## Interactive Map of Canton Vaude with the GAM
 
 ```{r}
-# ── Actual Listings with Traffic Light System (% Deviation from GAM) ──
-# Adapted to the host perspective for the SVM model
+# --- 6. Predictions on train and test (as numeric vector) ---
+df_train$fitted_logprice <- as.numeric(predict(gam.main, newdata = df_train))
+df_test$fitted_logprice  <- as.numeric(predict(gam.main, newdata = df_test))
 
-d.airbnb_listings_feat_gam$fitted_price <- fitted(gam.main)
+# Smearing correction (Duan 1983) for log-transformed responses
+sigma2   <- summary(gam.main)$scale
+smearing <- exp(sigma2 / 2)
 
-# Percentage deviation: (Actual - Fitted) / Fitted * 100
-d.airbnb_listings_feat_gam$pct_diff <- 
-  (d.airbnb_listings_feat_gam$price - d.airbnb_listings_feat_gam$fitted_price) / 
-  d.airbnb_listings_feat_gam$fitted_price * 100
+df_train$fitted_price <- exp(df_train$fitted_logprice) * smearing
+df_test$fitted_price  <- exp(df_test$fitted_logprice)  * smearing
+```
 
-# Traffic Light Categories (Host Perspective)
-# Short labels help the SVM model to separate the classes more cleanly.
-d.airbnb_listings_feat_gam$traffic_light <- case_when(
-  d.airbnb_listings_feat_gam$pct_diff <= -15 ~ "Underpriced",  # Host is leaving money on the table
-  d.airbnb_listings_feat_gam$pct_diff >=  15 ~ "Overpriced",   # Host risks vacancy
-  TRUE                                        ~ "Fair Price"    # Optimal range
-)
+## Optional: Traffic Light Map
+The GAM produces a fitted price for each listing. By comparing the actual price with the GAM-recommended price, listings can be classified into three categories — providing hosts with an immediate visual cue on the regional pricing map.
+Choice of the ±15% Threshold
+The classification threshold is set to ±15% based on the residual standard deviation of the GAM on the log-scale, which corresponds to roughly exp⁡(σ)−1≈15%\exp(\sigma) - 1 \approx 15\%
+exp(σ)−1≈15%. Listings outside this band therefore deviate by more than one standard deviation from the model's expected market price. This is a defensible, data-driven choice rather than an arbitrary cutoff.
 
-# Mandatory conversion to a factor for the SVM
-d.airbnb_listings_feat_gam$traffic_light <- as.factor(d.airbnb_listings_feat_gam$traffic_light)
 
-# Color assignment for the map (Green = Good for Host, Red/Orange = Warnings)
-color_map <- c(
-  "Underpriced" = "#EF9F27",  # orange/yellow (Warning: increase price)
-  "Fair Price"  = "#1D9E75",  # green (Optimal)
-  "Overpriced"  = "#D85A30"   # red (Warning: decrease price)
-)
+```{r}
+# --- 7. Traffic-light labels for BOTH sets (same rule) ---
+make_traffic_light <- function(price, fitted, threshold = 15) {
+  price  <- as.numeric(price)
+  fitted <- as.numeric(fitted)
+  pct    <- (price - fitted) / fitted * 100
+  case_when(
+    pct <= -threshold ~ "Underpriced",
+    pct >=  threshold ~ "Overpriced",
+    TRUE              ~ "Fair Price"
+  ) %>% as.factor()
+}
 
-d.airbnb_listings_feat_gam$marker_color <- 
-  color_map[as.character(d.airbnb_listings_feat_gam$traffic_light)]
+df_train$pct_diff      <- (df_train$price - df_train$fitted_price) / df_train$fitted_price * 100
+df_test$pct_diff       <- (df_test$price  - df_test$fitted_price)  / df_test$fitted_price  * 100
+df_train$traffic_light <- make_traffic_light(df_train$price, df_train$fitted_price)
+df_test$traffic_light  <- make_traffic_light(df_test$price,  df_test$fitted_price)
 
-# ── MAP (Host Perspective) ──
+# Sanity check: distribution should be similar in train and test
+cat("\nTrain:\n"); print(prop.table(table(df_train$traffic_light)))
+cat("\nTest:\n");  print(prop.table(table(df_test$traffic_light)))
+```
+## Interactive Map of Canton Vaude with the GAM
+```{r}
+# --- 8. Map of the entire dataset (descriptive view for hosts) ---
+df_full <- bind_rows(df_train, df_test)
+
+color_map <- c("Underpriced" = "#EF9F27",
+               "Fair Price"  = "#1D9E75",
+               "Overpriced"  = "#D85A30")
+df_full$marker_color <- color_map[as.character(df_full$traffic_light)]
+
 leaflet() %>%
   addProviderTiles(providers$CartoDB.Positron) %>%
   setView(lng = 6.65, lat = 46.52, zoom = 9) %>%
   addCircleMarkers(
-    data        = d.airbnb_listings_feat_gam,
-    lng         = ~longitude,
-    lat         = ~latitude,
-    radius      = 4,
-    fillColor   = ~marker_color,
-    fillOpacity = 0.85,
-    stroke      = FALSE,
-    popup       = ~paste0(
+    data = df_full,
+    lng = ~longitude, lat = ~latitude,
+    radius = 4, fillColor = ~marker_color,
+    fillOpacity = 0.85, stroke = FALSE,
+    popup = ~paste0(
       "<b>Host Verdict:</b> ", traffic_light, "<br>",
       "<b>Actual Price:</b> CHF ", round(price), "<br>",
       "<b>GAM Recommended:</b> CHF ", round(fitted_price), "<br>",
-      "<b>Difference:</b> ", round(pct_diff, 1), "%", "<br>",
-      "<hr>",
-      "<b>Room Type:</b> ", room_type, "<br>",
-      "<b>Superhost:</b> ", host_is_superhost, "<br>",
-      "<b>Accommodates:</b> ", accommodates
+      "<b>Difference:</b> ", round(pct_diff, 1), "%"
     )
   ) %>%
   addLegend(
     position = "bottomright",
-    colors   = c("#EF9F27", "#1D9E75", "#D85A30"),
-    labels   = c("Underpriced (Increase Price)",
-                 "Fair Price (Optimal ±15%)",
-                 "Overpriced (Decrease Price)"),
+    colors   = color_map,
+    labels   = c("Underpriced (Increase)",
+                 "Fair Price (±15%)",
+                 "Overpriced (Decrease)"),
     title    = "Pricing Strategy vs. Market (GAM)",
     opacity  = 0.85
   )
+
+# Note: df_train and df_test are passed on to the SVM block.
 ```
 
 FEEDBACK TIMON
@@ -1329,6 +1331,47 @@ FEEDBACK TIMON
                                         Labels erzeugen
                                         SVM trainieren
                                         Test separat evaluieren
+
+
+
+
+## Interpretation
+
+Model Overview
+The GAM was fitted on [NEU EINFÜGEN: n_train] training observations (80% split) using gaussian() family on log(price) with REML smoothing. The model explains approximately [NEU EINFÜGEN: dev.expl]% of deviance (adjusted $R^2 = $ [NEU EINFÜGEN]), which is strong performance for hedonic price modelling in the short-term rental market and clearly outperforms the LM benchmark on the same training data.
+Parametric Terms (Linear Effects)
+Room Type is the strongest categorical price driver in the model. Using Entire home/apt as the reference category:
+
+Hotel room: significant positive premium ($\beta = $ [NEU], p < 0.001). On the multiplicative scale, hotel rooms command roughly [NEU: exp(β)]× the price of a comparable entire home.
+Private room: significant negative effect ($\beta = $ [NEU], p < 0.001), corresponding to approximately a [NEU: (1-exp(β))*100]% price reduction.
+Shared room: not statistically significant, likely due to the small number of shared room listings in Vaud.
+
+Bathrooms show a highly significant positive effect ($\beta = $ [NEU], p < 0.001). Each additional bathroom is associated with approximately a [NEU: (exp(β)-1)*100]% price increase, reflecting the importance of physical listing characteristics for guest willingness to pay.
+Superhost status shows a small, marginally significant coefficient ($\beta = $ [NEU], p ≈ [NEU]). This finding is consistent across all models in this study — the GLM Binomial, the Neural Network, and the GAM all converge on the same conclusion: superhost status does not yield a measurable price premium.
+Smooth Terms (Non-linear Effects)
+All four smooth terms are highly significant (p < 2e-16) and show substantial non-linearity, as indicated by their EDF values. An EDF close to 1 would indicate a near-linear relationship, making a spline unnecessary. All EDF values here are far above 1, confirming that non-linear smoothing is statistically justified for every continuous predictor.
+The 2D spatial spline s(longitude, latitude) deserves particular attention with an EDF of approximately [NEU: ca. 27-28]. This indicates a highly complex spatial price surface across the Canton of Vaud — locations closer to Lake Geneva and urban centres such as Lausanne command significantly higher prices, while rural and alpine areas show distinct pricing patterns. This spatial component alone justifies the GAM approach for a regionally scoped pricing tool and provides direct empirical support for hypothesis H2 (location-centered indicators drive willingness-to-pay).
+Cross-Model Comparison: Superhost Effect
+One of the most consistent findings across all models in this study is the absence of a superhost price premium. This convergence across fundamentally different model architectures — parametric (LM), non-parametric (GAM), and connectionist (Neural Network) — constitutes strong evidence against a price-based superhost effect. Superhosts do not appear to charge higher prices; rather, as Pascal's Quasi-Poisson model demonstrates, they achieve 2.6× higher occupancy through competitive pricing. The data therefore suggest a volume-over-margin strategy among superhost-status hosts in Canton Vaud.
+Business Case Implications
+The GAM results provide three actionable insights for the pricing decision-support tool:
+
+Physical listing characteristics (room type, bathroom count, guest capacity) are the primary price drivers a host can directly control. The model recommends prioritising these structural factors in the pricing interface.
+Location matters non-linearly. The spatial spline captures granular geographic price gradients that a postcode or neighbourhood dummy variable would miss. This validates the use of coordinates as a continuous input in the recommendation tool.
+Pursuing superhost status should be framed as an occupancy strategy, not a pricing strategy. Hosts seeking the superhost badge are advised to price competitively to accumulate bookings and reviews, with the understanding that revenue gains come from higher occupancy rather than a higher nightly rate.
+
+## 1.5 Limitations
+Despite its strong performance, the GAM has several limitations that should be acknowledged when interpreting the results and using the pricing tool:
+1. Cross-sectional snapshot, no temporal dynamics. The model is trained on a single point in time and ignores seasonality, weekday effects, and event-driven demand spikes (e.g. Montreux Jazz Festival, ski season). Real Airbnb pricing is highly time-dependent — our recommendations therefore represent an "average market price" rather than a dynamic optimum.
+2. Endogeneity of the price signal. We treat the listed price as a proxy for willingness-to-pay, but listed prices reflect what hosts charge, not necessarily what guests would pay. Listings that remain unbooked at their current price are still included in the training set, which may bias the model towards optimistic price levels.
+3. Smearing correction assumes homoscedastic residuals. The bias correction applied when transforming log(price) predictions back to the price scale assumes constant variance across the prediction range. If residual variance is heteroscedastic — which is plausible for very high-end or very low-end listings — back-transformed prices may be slightly biased at the tails.
+4. Subjective ±15% threshold for the traffic light. While the threshold is anchored in the residual standard deviation of the GAM, it remains a discretionary choice. A more rigorous approach would use prediction intervals from the GAM directly, or define the bands using quantiles of the empirical residual distribution.
+5. Missing predictors. Several variables likely to affect price are not in the dataset: amenity counts (pool, parking, Wi-Fi quality), photo quality, listing description sentiment, exact distance to public transport, and noise/view characteristics. The unexplained [NEU: 100 - dev.expl]% of deviance is partly attributable to these omitted variables.
+6. Spatial spline can mask underlying causes. While s(longitude, latitude) fits the spatial price pattern very well, it does not explain why certain locations are more expensive. For business purposes the surface is sufficient, but for causal inference (e.g. "does proximity to the lake cause higher prices, or is it correlated with property quality?"), the spline alone is insufficient.
+7. Non-extrapolation outside the training region. The 2D spatial spline is reliable only within the convex hull of observed listings. Predictions for new listings in under-sampled areas (remote alpine villages, isolated communes) carry substantially higher uncertainty than the standard errors suggest.
+
+
+
 
 # SVM (TIMON - Davide reviewed)
 

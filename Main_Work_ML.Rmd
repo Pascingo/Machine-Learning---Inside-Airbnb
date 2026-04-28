@@ -112,14 +112,29 @@ the reader
 
 # Introduction
 
+## Business Case
+
+We propose a data-driven pricing decision-support system for Airbnb
+hosts in the Canton of Vaud, providing market-aligned price
+recommendations based on listing characteristics. The tool targets both
+new and existing hosts, using inputs such as location, room type, guest
+capacity, availability, ratings, and superhost status. Machine learning
+models, including LM, GLM, GAM, SVM, and Neural Networks, will be
+applied to identify key price drivers and generate accurate predictions.
+The objective is to balance revenue and occupancy, helping hosts
+understand their market value. A key feature is interpretability,
+enabling users to see why a certain price is recommended. From a
+business perspective, the system aims to increase booking rates, reduce
+price dispersion, and improve host satisfaction. The model is tailored
+to the Canton of Vaud to capture regional economic effects.
+
 ## Research Questions
 
-What factors, which can be modified by Hosts on AirBnb, affect guest
-willingness to pay more for a certain room?
+Aus dem Business Case können mehrere Fragen abgeleitet werden. Diese sollen uns dabei helfen, die PReisbeschaffenheit zu untersuchen und die Preispolitik für Airbnb zu erleichtern. zunächst muss herausgefunden werden, welche Faktoren die Zahelungsbereitschaft der Gäste beeinflusst. zudem ist natürlich die Richtung dieser beeinflussung zentral. 
+Wenn diese Faktoren identifiziert sind, stellt sich unmittelbar eine zweite Frage: inwiefern können diese Faktoren genutzt werden um vorherzusagen, ob die Preise eines Mietobjektes gerechtfertigt sind. 
 
-What are factors that influence the guest willingness to pay (WTP)
+die Zahlungsbereitschaft ist hierbei eigentlich die zentrale Variable. Jedoch ist diese nicht einfach zu messen, weshalb anderst vorgegangen werden muss. der Weg der von uns gewählt wurde entspringt dem Gedanken, dass der Markt grundsätzlich gut funktioniert und die Vermieter intuitiv sich bereits der Zahlungsbereitschaft angleichen. Dadurch kann der existierende Preis für ein Mietobjekt auch als der Preis angenommen werden, welchen die Mieter bereit sind zu zahlen. allfällige abweichungen werden in unseren folgenden Berechnungen durch die hohe Anzahl an beobachtungen ausgeglichen. so wird im Durchschnitt der effektive Preis mit dem Preis den die Mieter bereit sind zu zahlen übereinstimmen. 
 
-What are factors on which the guest can adjust their pricing model?
 
 ### Concepts: Willingness to pay (WTP)
 
@@ -141,21 +156,7 @@ WTP is measured in the Price displayed. We assume, that the mean of
 prices is similar to the WTP and residuals even out. Therefore we can
 work with the effective prices displayed on AirBnb.
 
-## Business Case
 
-We propose a data-driven pricing decision-support system for Airbnb
-hosts in the Canton of Vaud, providing market-aligned price
-recommendations based on listing characteristics. The tool targets both
-new and existing hosts, using inputs such as location, room type, guest
-capacity, availability, ratings, and superhost status. Machine learning
-models, including LM, GLM, GAM, SVM, and Neural Networks, will be
-applied to identify key price drivers and generate accurate predictions.
-The objective is to balance revenue and occupancy, helping hosts
-understand their market value. A key feature is interpretability,
-enabling users to see why a certain price is recommended. From a
-business perspective, the system aims to increase booking rates, reduce
-price dispersion, and improve host satisfaction. The model is tailored
-to the Canton of Vaud to capture regional economic effects.
 
 # Data Preparation
 

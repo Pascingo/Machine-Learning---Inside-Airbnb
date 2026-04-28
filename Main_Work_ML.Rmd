@@ -839,7 +839,6 @@ also examined.
 ## calculating Models
 
 ```{r lm controlled by Timon}
-# --- LM controlled by Timon ---
 # Fitting a Multiple Linear Regression model to predict the log-transformed price.
 # We use log(price) to account for the right-skewed distribution of Airbnb prices.
 lm.main <- lm(log(price) ~ 
@@ -892,6 +891,8 @@ ggplot(d.airbnb_listings_feat,
 ```
 
 ## Interpretation
+Im Model erkennen wir, dass sowohl das rating der hosts, als auch ihr Superhost status einen signifikanten EInfluss haben. das rating hat einen positiven Einfluss von `r round(lm.main$coefficients[2], digits = 3)`. Der Superhost-Status hat hingegen einen negativen Einfluss `r round(lm.main$coefficients[3], digits = 3)`. Die Annahme, dass Mieter bei einem Superhost bereit sind mehr zu zahlen scheint nicht unbedingt zu stimmen. Eine Erklärung für dieses Phänomen könnte sein, dass die SUperhosts eine bessere Einschätzung für den Markt haben, weil sie bereits länger dabei sind und entprechend einen tieferen Preis nehmen um mehr Vermieten zu können. 
+
 
 # GLM Poisson (PASCAL - Davide translated to english and commments)
 

@@ -822,21 +822,19 @@ kable(na_summary, caption = "Count of Missing Values per Variable")
 
 ## Theory
 
-What factors, which can be modified by Hosts on AirBnb, affect guest
-willingness to pay more for a certain room?
+With this initial model, we aim to examine the first hypothesis and investigate which host-centered indicators influence the price of a rental property. 
 
-To answer the question of which factors influence willingness to pay, we
-would like to examine initial factors using a linear model. The
-hypothesis is as follows: the better the rating for a rental property,
-the higher the price. For this, we use the *review_scores_rating*. We
+For this, we use the *review_scores_rating*. We
 also include the factor *host_is_superhost* to distinguish between the
 two groups. We measure willingness to pay here using the effective price
-of the rental property. Additionally, we introduce two control variables. First, the size of the rental property, as this obviously
-influences and skews the rental price, and second, the type of room.
-This also significantly influences the price.
+of the rental property. Additionally, we introduce two control variables. First, the size of the rental property, as this obviously influences and skews the rental price, and second, the type of room. This also significantly influences the price.
 
 Since there is a high risk of multicollinearity in our data, this is
 also examined.
+
+
+**Hier muss noch ein Teil rein bezüglich den Vorgaben des Models und inwiefern diese erfüllt sind.**
+
 
 ## calculating Models
 
@@ -844,8 +842,15 @@ also examined.
 # --- LM controlled by Timon ---
 # Fitting a Multiple Linear Regression model to predict the log-transformed price.
 # We use log(price) to account for the right-skewed distribution of Airbnb prices.
-lm.main <- lm(log(price) ~ review_scores_rating + as.factor(host_is_superhost) + 
-                accommodates + as.factor(room_type), data = d.airbnb_listings_feat)
+lm.main <- lm(log(price) ~ 
+                review_scores_rating + 
+                as.factor(host_is_superhost) +
+                host_has_profile_pic + 
+                host_acceptance_rate +
+                host_response_rate +
+                accommodates + 
+                as.factor(room_type), 
+              data = d.airbnb_listings_feat)
 
 summary(lm.main)
 

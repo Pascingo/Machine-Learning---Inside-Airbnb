@@ -136,16 +136,6 @@ Once these factors are identified, a second question immediately arises: to what
 Willingness to pay is actually the central variable here. However, it is not easy to measure, which is why a different approach must be taken. The approach we have chosen stems from the idea that the market generally functions well and that landlords intuitively already align with willingness to pay. As a result, the existing price for a rental property can also be assumed to be the price that tenants are willing to pay. Any deviations are offset in our subsequent calculations by the large number of observations. Thus, on average, the actual price will correspond to the price that tenants are willing to pay. 
 
 
-### Concepts: Willingness to pay (WTP)
-
-WTP is the hypothetical value, how much a customer is willing to pay for
-a location or a room for a certain standard. This can rise, if for
-example the host provides the ability to wash clothes in the apartment.
-So for the same location, once with and once without a washing machine,
-the customers WTP might increase with the washer. In a more abstract
-example, if the host is a super host, the customer might trust the host
-more and his WTP is higher.
-
 ### Hypothesis
 
 H1: If the review-score of a host is better, the WTP of a guest

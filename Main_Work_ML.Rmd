@@ -139,10 +139,10 @@ Willingness to pay is actually the central variable here. However, it is not eas
 ### Hypothesis
 
 
-H1: Wenn host-zentrierte Indikatoren sich verbessern, steigt  die Zahlungsbereitschaft der Mieter. 
-H2: Wenn Location-zentrierte Indikatoren sich verbessern, steigt die Zahlungsbereitschaft der Mieter. 
+H1: When host-centered indicators improve, tenants' willingness to pay increases. 
+H2: When location-centered indicators improve, tenants’ willingness to pay increases. 
 
-host-zentrierte Indikatoren sind jene, die sich mit der Arbeit des hosts beschäftigen. dabei geht es um die ratings oder auch den superhost-Status. Hingegen sind Location-zentrierte Indikatoren jene, die sich beispielsweise mit der Grösse des Mietobjektes beschäftigen. 
+Host-centered indicators are those that relate to the host’s performance, such as ratings or Superhost status. In contrast, location-centered indicators are those that relate to factors such as the size of the rental property. 
 
 
 # Data Preparation

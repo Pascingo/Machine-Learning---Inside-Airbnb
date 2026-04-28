@@ -130,10 +130,10 @@ to the Canton of Vaud to capture regional economic effects.
 
 ## Research Questions
 
-Aus dem Business Case können mehrere Fragen abgeleitet werden. Diese sollen uns dabei helfen, die PReisbeschaffenheit zu untersuchen und die Preispolitik für Airbnb zu erleichtern. zunächst muss herausgefunden werden, welche Faktoren die Zahelungsbereitschaft der Gäste beeinflusst. zudem ist natürlich die Richtung dieser beeinflussung zentral. 
-Wenn diese Faktoren identifiziert sind, stellt sich unmittelbar eine zweite Frage: inwiefern können diese Faktoren genutzt werden um vorherzusagen, ob die Preise eines Mietobjektes gerechtfertigt sind. 
+Several questions can be derived from the business case. These questions are intended to help us examine pricing dynamics and facilitate the development of a pricing strategy for Airbnb. First, we need to determine which factors influence guests’ willingness to pay. Furthermore, the nature of this influence is, of course, central to our analysis. 
+Once these factors are identified, a second question immediately arises: to what extent can these factors be used to predict whether the prices of a rental property are justified? 
 
-die Zahlungsbereitschaft ist hierbei eigentlich die zentrale Variable. Jedoch ist diese nicht einfach zu messen, weshalb anderst vorgegangen werden muss. der Weg der von uns gewählt wurde entspringt dem Gedanken, dass der Markt grundsätzlich gut funktioniert und die Vermieter intuitiv sich bereits der Zahlungsbereitschaft angleichen. Dadurch kann der existierende Preis für ein Mietobjekt auch als der Preis angenommen werden, welchen die Mieter bereit sind zu zahlen. allfällige abweichungen werden in unseren folgenden Berechnungen durch die hohe Anzahl an beobachtungen ausgeglichen. so wird im Durchschnitt der effektive Preis mit dem Preis den die Mieter bereit sind zu zahlen übereinstimmen. 
+Willingness to pay is actually the central variable here. However, it is not easy to measure, which is why a different approach must be taken. The approach we have chosen stems from the idea that the market generally functions well and that landlords intuitively already align with willingness to pay. As a result, the existing price for a rental property can also be assumed to be the price that tenants are willing to pay. Any deviations are offset in our subsequent calculations by the large number of observations. Thus, on average, the actual price will correspond to the price that tenants are willing to pay. 
 
 
 ### Concepts: Willingness to pay (WTP)

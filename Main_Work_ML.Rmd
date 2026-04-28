@@ -846,8 +846,6 @@ lm.main <- lm(log(price) ~
                 review_scores_rating + 
                 as.factor(host_is_superhost) +
                 host_has_profile_pic + 
-                host_acceptance_rate +
-                host_response_rate +
                 accommodates + 
                 as.factor(room_type), 
               data = d.airbnb_listings_feat)
@@ -876,6 +874,7 @@ d.lm_predict <- expand.grid(
   review_scores_rating = seq(3, 5, length.out = 100),
   host_is_superhost = c("TRUE", "FALSE"),
   room_type = "Entire home/apt",   # Fixed reference category
+  host_has_profile_pic = c("t", "f"),
   accommodates = mean(d.airbnb_listings_feat$accommodates, na.rm = TRUE) # Fixed at mean value
 )
 

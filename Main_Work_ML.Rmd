@@ -5,6 +5,7 @@ date: "2026-03-22"
 output:
   html_document:
     df_print: paged
+    code_folding: hide
 editor_options: 
   markdown: 
     wrap: 72

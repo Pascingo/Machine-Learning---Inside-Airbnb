@@ -16,7 +16,7 @@ editor_options:
 ---
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE, cache = TRUE, comment = NA)
+knitr::opts_chunk$set(echo = TRUE, cache = TRUE, comment = NA, warning = FALSE)
 
 ```
 
@@ -95,7 +95,7 @@ Task ab 26.4
 
 
 
-ToDos later:
+ToDos backlog:
 - beautyfying HTML-Doc                                              --> 
 - complete README-File                                              -->
 
@@ -896,7 +896,8 @@ ggplot(d.airbnb_listings_feat,
 ```
 
 ## Interpretation
-The model shows that both the hosts’ rating and their Superhost status have a significant influence. The rating has a positive effect of `r round(lm.main$coefficients[2], digits = 3)`. In contrast, Superhost status has a negative effect of `r round(lm.main$coefficients[3], digits = 3)`. The assumption that tenants are willing to pay more when renting from a Superhost therefore does not necessarily seem to hold true. One possible explanation for this phenomenon is that Superhosts may have a better understanding of the market because they have been active for a longer time, and therefore set lower prices in order to achieve a higher occupancy rate.
+The model shows that both the hosts’ rating and their Superhost status have a significant influence. The rating has a positive effect of *`r round(lm.main$coefficients[2], digits = 3)`*. In contrast, Superhost status has a negative effect of *`r round(lm.main$coefficients[3], digits = 3)`*. The assumption that tenants are willing to pay more when renting from a Superhost therefore does not necessarily seem to hold true. One possible explanation for this phenomenon is that Superhosts may have a better understanding of the market because they have been active for a longer time, and therefore set lower prices in order to achieve a higher occupancy rate.
+This is relevant for Airbnb, as these results show that reviews on the host side are a key factor in price setting. It is also interesting that Superhosts apparently develop their own understanding for how prices can be set. The exact reasons underlying this difference cannot be examined within the scope of this paper. However, these findings provide Airbnb with clarified insights that can serve as a basis for further work.
 
 # GLM Poisson (PASCAL - Davide translated to english and commments)
 

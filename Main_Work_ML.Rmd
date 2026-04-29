@@ -88,7 +88,7 @@ Task ab 26.4
                                     SVM 2: Kernel = RBF, C = 1
                                     SVM 3: Kernel = RBF, C = 10)
 - Businesscase mehr einbauen in den einzelnen Paragraphen.                    -->  Alle in individuellen Modellen
-- understand the data. was sind die Daten genau. sauber auflisten und kurz erklären. --> Pascal
+- understand the data. was sind die Daten genau. sauber auflisten und **kurz erklären**. --> Pascal
 - Data Quality kontrollieren & übersetzen.                                           --> Timon  
 - EDA --> alles drin was wir müssen? mehr auch Verteilungen zeigen der Daten.        --> Davide
 
@@ -314,22 +314,7 @@ d.airbnb_listings_feat <- d.airbnb_listings_feat %>%
  
  
  
-```{r}
-# Calculate percentage of missing values per column
-missing_data <- d.airbnb_listings_feat %>%
-  summarise(across(everything(), ~ mean(is.na(.)) * 100)) %>%
-  pivot_longer(everything(), names_to = "Variable", values_to = "Missing_Percentage") %>%
-  filter(Missing_Percentage > 0) %>%
-  arrange(desc(Missing_Percentage))
 
-# Plot missing values
-ggplot(missing_data, aes(x = reorder(Variable, Missing_Percentage), y = Missing_Percentage)) +
-  geom_bar(stat = "identity", fill = "steelblue") +
-  coord_flip() +
-  labs(title = "Percentage of Missing Values per Variable",
-       x = "Variables",
-       y = "% Missing")
-```
  
 ```{r}
 # Histogram for raw price
@@ -438,7 +423,7 @@ p_prop <- d.airbnb_listings_feat %>%
   ggplot(aes(x = reorder(property_type, n), y = n)) +
   geom_bar(stat = "identity", fill = "coral") +
   coord_flip() +
-  labs(title = "Top 10 Property Types", x = "Property Type", y = "Count")
+  labs(title = "Top 10 Property Types (Count)", x = "Property Type", y = "Count")
 
 # Top 10 Neighbourhoods (Counts)
 p_neigh <- d.airbnb_listings_feat %>%
@@ -447,7 +432,7 @@ p_neigh <- d.airbnb_listings_feat %>%
   ggplot(aes(x = reorder(neighbourhood_group_cleansed, n), y = n)) +
   geom_bar(stat = "identity", fill = "coral3") +
   coord_flip() +
-  labs(title = "Top 10 Neighbourhood Groups", x = "Neighbourhood", y = "Count")
+  labs(title = "Top 10 Neighbourhood Groups (Count)", x = "Neighbourhood", y = "Count")
 
 (p_prop / p_neigh)
 ```
@@ -469,6 +454,7 @@ p_baths | p_beds
 
 
 ```
+Wie hier zu sehen, einzelne Locations mit sehr vielen Betten. Teils nicht unmöglich, aber qualitative Abklärung dauert lange, da jedes Airbnb via Website geprüft werden müsste.
 
 ```{r}
 # Minimum Nights (Log scale due to extreme outliers like 365+ nights)
@@ -543,122 +529,45 @@ vis_miss(d.airbnb_listings_feat)
 gg_miss_var(d.airbnb_listings_feat)
 gg_miss_upset(d.airbnb_listings_feat)
 ```
+### Aus Understanding the Data
+```{r}
+# Calculate percentage of missing values per column
+missing_data <- d.airbnb_listings_feat %>%
+  summarise(across(everything(), ~ mean(is.na(.)) * 100)) %>%
+  pivot_longer(everything(), names_to = "Variable", values_to = "Missing_Percentage") %>%
+  filter(Missing_Percentage > 0) %>%
+  arrange(desc(Missing_Percentage))
 
-# Exploratory Data Analysis
+# Plot missing values
+ggplot(missing_data, aes(x = reorder(Variable, Missing_Percentage), y = Missing_Percentage)) +
+  geom_bar(stat = "identity", fill = "steelblue") +
+  coord_flip() +
+  labs(title = "Percentage of Missing Values per Variable",
+       x = "Variables",
+       y = "% Missing")
+```
+### Missing Values (NA) Check
+
+This step is less for the client and essential for your ML models. Most
+modeling functions (like lm() or svm()) will throw errors or silently
+drop entire rows if NAs are present. You need to know exactly where your
+data is missing!
 
 ```{r}
-hist(d.airbnb_listings_feat$price)
-hist(d.airbnb_listings_feat$log_price)
-ggplot(data= d.airbnb_listings_feat, aes(x = room_type, y = price)) +
-  geom_boxplot() +
-  scale_y_log10() +
-  labs(
-    title = "Preisverteilung nach Room Type (log-Skala)",
-    x = "Room Type",
-    y = "Log_Preis"
-  ) +
-  theme_minimal()
+# Count the number of NAs for each key column in your dataset
+na_summary <- d.airbnb_listings_feat %>%
+  select(price, log_price, accommodates, number_of_reviews, host_is_superhost) %>%
+  summarise(across(everything(), ~ sum(is.na(.)))) %>%
+  t() %>% # Transpose for better readability
+  as.data.frame() %>%
+  rename(Missing_Values = V1)
 
-ggplot(data = d.airbnb_listings_feat, aes(x = accommodates, y = log_price)) +
-  geom_point(alpha = 0.4) +
-  geom_smooth(method = "loess", se = FALSE) +
-  labs(
-    title = "Preis vs. Kapazität (log-Skala)",
-    x = "Anzahl Gäste",
-    y = "Log_Preis"
-  ) +
-  theme_minimal()
-  
-ggplot(data = d.airbnb_listings_feat, aes(x = log_price, y = number_of_reviews)) +
-  geom_point(alpha = 0.4) +
-  geom_smooth(method = "loess", se = FALSE) +
-  labs(
-    title = "Anzahl Reviews vs. Preis",
-    x = "Log_Preis",
-    y = "Anzahl Reviews"
-  ) +
-  theme_minimal()
-
-ggplot(data = d.airbnb_listings_feat, aes(x = longitude, y = latitude)) +
-  geom_point(aes(color = log_price), alpha = 0.6) +
-  scale_color_viridis_c() +
-  labs(
-    title = "Airbnb Listings (Farbe = Log-Preis)",
-    x = "Longitude",
-    y = "Latitude",
-    color = "Log_Preis"
-  ) +
-  theme_minimal()
-
-ggplot(data = d.airbnb_listings_feat, aes(x = longitude, y = latitude)) +
-  geom_point(aes(color = log_price, size = number_of_reviews), alpha = 0.5) +
-  scale_color_viridis_c() +
-  labs(
-    title = "Listings: Preis und Nachfrage",
-    x = "Longitude",
-    y = "Latitude",
-    color = "Log_Preis",
-    size = "Reviews"
-  ) +
-  theme_minimal()
+kable(na_summary, caption = "Count of Missing Values per Variable")
 ```
-
-
 
 # EDA (DAVIDE)
 
 ```{r}
-# --- 1. Distribution of the Target Variable (Price) ---
-# Upgrading base R hist() to ggplot2 for a more professional look.
-# Showing both raw and log side-by-side helps visually justify the transformation to the client.
-p_raw <- ggplot(d.airbnb_listings_feat, aes(x = price)) +
-  geom_histogram(bins = 50, fill = "steelblue", color = "white") +
-  labs(title = "Raw Price Distribution", x = "Price", y = "Count") +
-  theme_minimal()
-
-p_log <- ggplot(d.airbnb_listings_feat, aes(x = log_price)) +
-  geom_histogram(bins = 50, fill = "darkgreen", color = "white") +
-  labs(title = "Log-transformed Price Distribution", x = "Log(Price)", y = "Count") +
-  theme_minimal()
-p_raw + p_log # Displays them side-by-side
-
-# --- 2. Categorical Predictor: Room Type vs. Price ---
-# Your original code was good, just cleaned up the aesthetics.
-ggplot(data = d.airbnb_listings_feat, aes(x = room_type, y = log_price, fill = room_type)) +
-  geom_boxplot(alpha = 0.7) +
-  labs(
-    title = "Price Distribution by Room Type",
-    x = "Room Type",
-    y = "Log(Price)"
-  ) +
-  theme_minimal() +
-  theme(legend.position = "none")
-
-# --- 3. Continuous Predictor: Capacity vs. Price ---
-ggplot(data = d.airbnb_listings_feat, aes(x = accommodates, y = log_price)) +
-  geom_point(alpha = 0.3, color = "darkgray") +
-  geom_smooth(method = "loess", color = "blue", se = FALSE) +
-  labs(
-    title = "Price vs. Capacity",
-    subtitle = "Smoother applied to identify potential non-linear trends",
-    x = "Number of Guests (Accommodates)",
-    y = "Log(Price)"
-  ) +
-  theme_minimal()
-
-# --- 4. Continuous Predictor: Reviews vs. Price ---
-# Correction: The response variable (log_price) should generally be on the y-axis 
-# when plotting against a predictor[cite: 255].
-ggplot(data = d.airbnb_listings_feat, aes(x = number_of_reviews, y = log_price)) +
-  geom_point(alpha = 0.3, color = "darkgray") +
-  geom_smooth(method = "loess", color = "red", se = FALSE) +
-  labs(
-    title = "Does the Number of Reviews impact Price?",
-    x = "Total Number of Reviews",
-    y = "Log(Price)"
-  ) +
-  theme_minimal()
-
 # --- 5. Binary Predictor: Superhost Status ---
 # Adding this because it's a key part of your business case and fulfills the binary variable requirement.
 ggplot(data = d.airbnb_listings_feat, aes(x = as.factor(host_is_superhost), y = log_price, fill = as.factor(host_is_superhost))) +
@@ -806,24 +715,7 @@ unit" are the most common, specialty properties like chalets, homes and
 villas command a significant premium, which our model will need to
 capture."
 
-### 3. Missing Values (NA) Check
 
-This step is less for the client and essential for your ML models. Most
-modeling functions (like lm() or svm()) will throw errors or silently
-drop entire rows if NAs are present. You need to know exactly where your
-data is missing!
-
-```{r}
-# Count the number of NAs for each key column in your dataset
-na_summary <- d.airbnb_listings_feat %>%
-  select(price, log_price, accommodates, number_of_reviews, host_is_superhost) %>%
-  summarise(across(everything(), ~ sum(is.na(.)))) %>%
-  t() %>% # Transpose for better readability
-  as.data.frame() %>%
-  rename(Missing_Values = V1)
-
-kable(na_summary, caption = "Count of Missing Values per Variable")
-```
 
 # LM (TIMON - Davide translated to english and commments)
 
@@ -1074,9 +966,9 @@ Generalized Additive Models (GAM) extend the classical linear model by
 replacing rigid linear coefficients with **smooth, non-parametric functions** 
 f(x). The model takes the form:
 
-  g(E[Y]) = β₀ + f₁(x₁) + f₂(x₂) + ... + fₚ(xₚ)
+  $$g(E[Y]) = β₀ + f₁(x₁) + f₂(x₂) + ... + fₚ(xₚ)$$
 
-where g(·) is a link function and each fⱼ(·) is a smoothing spline whose 
+where $g(·)$ is a link function and each $fⱼ(·)$ is a smoothing spline whose 
 shape is learned from the data rather than pre-specified.
 
 ### Justification for our Use Case
@@ -1104,7 +996,7 @@ GAM in a regional pricing tool.
 
 **3. Interpretability is preserved.**  
 Unlike black-box models (Random Forests, Neural Networks), each smooth 
-term fⱼ(xⱼ) can be plotted and interpreted individually. This matches 
+term $fⱼ(xⱼ)$ can be plotted and interpreted individually. This matches 
 our business case requirement that hosts must be able to **see why** a 
 certain price is recommended.
 
@@ -1124,7 +1016,7 @@ cannot answer.
   variance (prices are right-skewed and heteroscedastic) and ensures 
   consistency with the LM benchmark, which also models `log(price)`. 
   Coefficients can be interpreted multiplicatively: a coefficient β 
-  corresponds to a (exp(β) − 1) × 100% price change.
+  corresponds to a $(exp(β) − 1) × 100%$ price change.
 - **Smoothing method:** `method = "REML"` (Restricted Maximum Likelihood) 
   is preferred over the default GCV.Cp because it is less prone to 
   undersmoothing and provides more reliable confidence intervals.

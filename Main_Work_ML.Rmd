@@ -20,92 +20,38 @@ knitr::opts_chunk$set(echo = TRUE, cache = TRUE, comment = NA, warning = FALSE)
 
 ```
 
-Next Steps:
-
-Pascal: - a Generalised Linear Model with family set to Poisson --\>
-glm(Price \~ reviews) Achtung Price kann nicht mit Poisson gerechnet
-werden! Sind keine Zähldaten. Neu Auslastung genutzt, um Zähldaten zu
-haben. -\> DONE - NA Handling untersuchen -\> DONE - Neural Network --\>
-Ev. auch Kategorisierung analog SVM --\> DONE
-
-Timon: - a Linear Model --\> lm(price \~ rewview_rating + Superhost T/F)
---\> für unterscheidung und kontrolle. -\> INPROGRESS
-
-- NA Handling untersuchen \|-\> NA vorwiegend bei ratings und rates vor.
-  Verdacht: wenn nie eine Vermietung gemacht wurde erhalten wir einen NA
-  in den Ratings TODO: schauen ob wenn wir mit den Variablen rechnen,
-  NA's einen negativen Einfluss haben. Wie zählen NA in ein Modell
-  hinein? --\> beim lm keinen Einfluss, da diese Zeilen einfach
-  weggelassen werden. --\> bei anderen Modellen muss aufgepasst werden.
-
-– a Support Vector Machine --\> Overpriced & Underpriced & Right Price
-(Davide und Timon)
-
-Davide: - – a Generalised Linear Model with family set to Binomial --\>
-glm(Price \~ Superhost T/F) -\> DONE – a Generalised Additive Model --\>
-gam.main \<- gam(price \~ --\> allenfalls aufbauend auf dem lm()
-s(accommodates) + s(review_scores_rating) + s(number_of_reviews) +
-s(longitude, latitude) + room_type + host_is_superhost + bathrooms,
-family = gaussian(link = "log"), data = d.airbnb_listings_feat_gam)
-
-Tasks ab 15.4:
-
-Timon:
-
-zeitkritisch: fixieren des zweiten svm- Modells für DAVIDE - Kommentare
-bei lm erweitern uns verbessern. (allenfalls translate) - ausarbeiten
-des svm-Models. - schreiben des interpretationstextes lm - schreiben des
-interpretationstextes svm
-
-Pascal: - ausarbeiten des ANN und vereinfachung der Grafik? (Wenn
-möglich) - Pilot mit Auslastung analog zu poisson. wenn klar wird dsas
-auslastung besser ist als der PReis, können wir die Analyse noch
-shiften.
-
-Davide: - nach GO von TIMON anpassen der Traffic-Lights-Benchmarks so
-dass das svm besser funktioniert. - Blick über lm und poisson
-
-ALLE: Limitationen im Kapitel unten ergänzen. jeweils für die eigenen
-Modelle.
-
-Tasks an 22.4
-
-- alle Modelle in die selbe Kapitelstruktur bringen ( 1. Modelname --\>
-  Pascal 1.1 Introduction 1.2 Model rechnen 1.3 Optionale Nice-To-Have (Interactive Map oder Cross-Validation) 1.4 Interpretation + 1.5 Limitation)
-- generelle Report-Strukur ajour bringen --\> Pascal
-- Umsetzung der Vorschläge von Davide in SVM, LM, ANN & GLM poisson --\>
-  Pascal, Timon (soweit erledigt)
-- Kontrolle GAM --\> Timon (erledigt)
-- Kontrolle GLM Binomial --\> Timon (erledigt)
-- Kontrolle Erwartungen --\> va. Bezug Modelle --\> Davide
-
-✓
 
 Task ab 26.4
-- target LEakage untersuchen --> Davide & Timon --> DAVIDE DONE
+
+
+
+Tasks ab 29.04
+- NA bei profilepic entfernen
+- Frühlingsputz (PASCAL)
+- FE zu den Modellen verschieben (TIMON)
+- Target Leakage kontrollieren (TIMON)
+- ALLE: Limitationen und Business Case im Kapitel  ergänzen. jeweils für die eigenen
+Modelle.
 - crossvalidation im SVM einbauen (zb radial vs. linear; vers.                --> Timon + Davide Kontrolle
                                     SVM 1: Kernel = linear, C = 1
                                     SVM 2: Kernel = RBF, C = 1
                                     SVM 3: Kernel = RBF, C = 10)
-- Businesscase mehr einbauen in den einzelnen Paragraphen.                    -->  Alle in individuellen Modellen
-- understand the data. was sind die Daten genau. sauber auflisten und **kurz erklären**. --> Pascal
-- Data Quality kontrollieren & übersetzen.                                           --> Timon  
+- understand the data.  **kurz erklären**. --> Pascal
 - EDA --> alles drin was wir müssen? mehr auch Verteilungen zeigen der Daten.        --> Davide
+
 
 
 
 ToDos backlog:
 - beautyfying HTML-Doc                                              --> 
 - complete README-File                                              -->
-
-
+-mUTD verdichten und Platz sparen (Plots)
+- Data Quality kontrollieren & übersetzen.                                           --> Timon  
+- Coding Conventions kontrollieren.
 
 
 Infos zu bedenken: ABGABEDATUM: 12 Juni
 
-- Outlier Handling definieren. --\> falsche Datenpunkte sollten gelöscht
-  werden. Extremwerte im Zweifel drin lassen. Ansonsten kann das als
-  p-hacking verstanden werden.
 
 Coding Conventions. • data sets are named with the prefix “d.” (e.g.,
 d.cats). • linear model objects are named with the prefix “lm.” (e.g.,

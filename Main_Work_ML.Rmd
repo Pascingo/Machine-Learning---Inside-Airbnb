@@ -299,7 +299,18 @@ table(d.airbnb_listings_feat$price_high)
 str(d.airbnb_listings_feat)
 ```
 # Understanding the Data
- --> hier den Outlier im Preis rauswerfen. 
+
+*Important to mention* During our exploratory data analysis, we
+identified one 'Private room' listing with an unrealistically high price
+of 2'147'483'647 CHF. We excluded this single observation from our
+dataset as it is an extreme outlier that does not reflect the true
+market conditions and would negatively skew our predictive models.
+
+```{r}
+# This keeps everything EXCEPT the row that is a Private room AND costs more than 5000
+d.airbnb_listings_feat <- d.airbnb_listings_feat %>%
+  filter(!(room_type == "Private room" & price > 100000))
+```
  
  
  
@@ -455,6 +466,8 @@ p_beds <- ggplot(d.airbnb_listings_feat, aes(x = beds)) +
   labs(title = "Number of Beds", x = "Beds", y = "Count")
 
 p_baths | p_beds
+
+
 ```
 
 ```{r}
@@ -590,17 +603,7 @@ ggplot(data = d.airbnb_listings_feat, aes(x = longitude, y = latitude)) +
   theme_minimal()
 ```
 
-*Important to mention* During our exploratory data analysis, we
-identified one 'Private room' listing with an unrealistically high price
-of 2'147'483'647 CHF. We excluded this single observation from our
-dataset as it is an extreme outlier that does not reflect the true
-market conditions and would negatively skew our predictive models.
 
-```{r}
-# This keeps everything EXCEPT the row that is a Private room AND costs more than 5000
-d.airbnb_listings_feat <- d.airbnb_listings_feat %>%
-  filter(!(room_type == "Private room" & price > 100000))
-```
 
 # EDA (DAVIDE)
 

@@ -48,6 +48,8 @@ ToDos backlog:
 -mUTD verdichten und Platz sparen (Plots)
 - Data Quality kontrollieren & übersetzen.                                           --> Timon  
 - Coding Conventions kontrollieren.
+- AI Chapter
+- Lesson Learned Kapitel
 
 
 Infos zu bedenken: ABGABEDATUM: 12 Juni

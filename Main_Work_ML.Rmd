@@ -26,18 +26,15 @@ Task ab 26.4
 
 
 Tasks ab 29.04
-- NA bei profilepic entfernen
+- NA bei profilepic entfernen (TIMON)
 - Frühlingsputz (PASCAL)
 - FE zu den Modellen verschieben (TIMON)
-- Target Leakage kontrollieren (TIMON)
-- ALLE: Limitationen und Business Case im Kapitel  ergänzen. jeweils für die eigenen
-Modelle.
-- crossvalidation im SVM einbauen (zb radial vs. linear; vers.                --> Timon + Davide Kontrolle
-                                    SVM 1: Kernel = linear, C = 1
-                                    SVM 2: Kernel = RBF, C = 1
-                                    SVM 3: Kernel = RBF, C = 10)
-- understand the data.  **kurz erklären**. --> Pascal
-- EDA --> alles drin was wir müssen? mehr auch Verteilungen zeigen der Daten.        --> Davide
+- Target Leakage kontrollieren (TIMON) *erledigt*
+- Limitationen und Business Case im Kapitel  ergänzen. jeweils für die eigenen
+Modelle. (TIMON) (DAVIDE) (PASCAL)
+- crossvalidation im SVM einbauen (TIMON)
+- understand the data.  **kurz erklären**. (PASCAL)
+- EDA --> alles drin was wir müssen? mehr auch Verteilungen zeigen der Daten. (DAVIDE)
 
 
 
@@ -156,9 +153,15 @@ d.listings_clean <- d.airbnb_listings %>%
     price = as.numeric(price),
     host_is_superhost = ifelse(host_is_superhost %in% c("t", "TRUE", "1"), 1, 0),
     room_type = as.factor(room_type),
-    property_type = as.factor(property_type)
+    property_type = as.factor(property_type),
+    host_response_rate = as.numeric(sub("%", "", host_response_rate)),
+    host_acceptance_rate = as.numeric(sub("%", "", host_acceptance_rate)),
+    host_is_superhost = ifelse(host_is_superhost==1, TRUE, FALSE)
   ) %>%
   filter(!is.na(price), price > 0)
+
+
+
 
 d.listings_clean <- d.listings_clean %>%
   select(-id, -host_id, -host_listings_count, -host_total_listings_count, -listing_url, -scrape_id, -last_scraped,
@@ -198,18 +201,6 @@ d.airbnb_listings_feat <- d.listings_clean %>%
 ```
 
 ```{r FE for lm (TIMON)}
-
-#removing % from response rate and make it binomial
-d.airbnb_listings_feat$host_response_rate <- as.numeric(sub("%", "", d.airbnb_listings_feat$host_response_rate)) / 100 
-
-#removing % from response rate and make it binomial
-d.airbnb_listings_feat$host_acceptance_rate <- as.numeric(sub("%", "", d.airbnb_listings_feat$host_acceptance_rate)) / 100 
-
-#change the values of host_is_superhost to TRUE/False
-d.airbnb_listings_feat$host_is_superhost <- ifelse(d.airbnb_listings_feat$host_is_superhost==1,
-                                                   TRUE, FALSE
-                                                   )
-
 
 ```
 

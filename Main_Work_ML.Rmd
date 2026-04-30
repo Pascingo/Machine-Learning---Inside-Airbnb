@@ -1232,10 +1232,6 @@ Despite its strong performance, the GAM has several limitations that should be a
 # Setting a seed ensures reproducibility. 
 set.seed(42) 
 
-#calculate the 80% split
-svm.total_rows <- nrow(d.airbnb_listings_feat_gam)
-svm.train_indices <- sample(seq_len(svm.total_rows), size = floor(0.8 * svm.total_rows)) 
-
 # Define the relevant columns for the SVM model.
 # We include 'price' because the use case requires evaluating if a 
 # *given* price for a specific set of features is Overpriced, Fair, or Underpriced.
@@ -1243,8 +1239,8 @@ svm.coloums <- c("traffic_light", "price", "accommodates", "review_scores_rating
                  "number_of_reviews", "room_type", "host_is_superhost")
 
 # Creating the 80% Training and 20% Test datasets
-d.svm_train <- d.airbnb_listings_feat_gam[svm.train_indices, svm.coloums]
-d.svm_test  <- d.airbnb_listings_feat_gam[-svm.train_indices, svm.coloums]
+d.svm_train <- df_train[, svm.coloums]
+d.svm_test  <- df_test[, svm.coloums]
 
 # Verifying the split visually
 cat("Training set size:", nrow(d.svm_train), "\n")

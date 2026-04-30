@@ -190,43 +190,24 @@ This is our final, cleaned Dataset.
 str(d.listings_clean)
 ```
 
-# Feature Engineering
 
-First Feature Engineering for the airbnb_listings data
-
-```{r FE for EDA (Pascal), echo=FALSE}
+    bei price_high: Zielvariable binarisieren Aus Preis eine 0/1-Variable
+    machen Der Median ist der sauberste Cutpoint — er ist robust
+    gegenüber Ausreissern und teilt den Datensatz exakt in zwei Hälften
+```{r initial FE (Pascal), echo=FALSE}
 
 #Für Model XXXX 
 d.airbnb_listings_feat <- d.listings_clean %>%
   mutate(
     log_price = log(price),
     price_per_guest = price / pmax(accommodates, 1),
-    high_demand = ifelse(estimated_occupancy_l365d > 200, 1, 0)
+    high_demand = ifelse(estimated_occupancy_l365d > 200, 1, 0),
+    price_high = as.integer(price > median(price, na.rm =TRUE))
   )
 ```
 
 
-1.  Schritt: Zielvariable binarisieren Aus Preis eine 0/1-Variable
-    machen Der Median ist der sauberste Cutpoint — er ist robust
-    gegenüber Ausreissern und teilt den Datensatz exakt in zwei Hälften
 
-```{r FE for glm binomial (DAVIDE)}
-d.airbnb_listings_feat <- d.airbnb_listings_feat %>%
-  mutate(price_high = as.integer(price > median(price, na.rm = TRUE)))
-
-# Checken ob Split sauber ist
-table(d.airbnb_listings_feat$price_high)
-
-```
-
-```{r FE for glm poisson (PASCAL)}
-
-
-```
-
-```{r final call of FE-dataset}
-str(d.airbnb_listings_feat)
-```
 # Understanding the Data
 
 *Important to mention* During our exploratory data analysis, we
@@ -797,6 +778,11 @@ print(d.results_glm_quasipoisson)
 ## Theory
 
 ## Model
+Feature Engeneering
+
+
+
+
 
 ```{r}
 # --- GLM Binomial (DAVIDE) ---

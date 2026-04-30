@@ -203,11 +203,6 @@ d.airbnb_listings_feat <- d.listings_clean %>%
 ```{r FE for SVM (TIMON)}
 d.airbnb_listings_feat$estimated_revenue_365 <- d.airbnb_listings_feat$price * d.airbnb_listings_feat$estimated_occupancy_l365d
 
-summary(d.airbnb_listings_feat$estimated_revenue_365)
-hist(d.airbnb_listings_feat$estimated_revenue_365)
-print(quantile(d.airbnb_listings_feat$estimated_revenue_365))
-
-
 ```
 
 1.  Schritt: Zielvariable binarisieren Aus Preis eine 0/1-Variable

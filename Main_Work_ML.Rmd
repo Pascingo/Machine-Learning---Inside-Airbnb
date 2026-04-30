@@ -40,10 +40,10 @@ Modelle. (TIMON) (DAVIDE) (PASCAL)
 
 
 ToDos backlog:
-- beautyfying HTML-Doc                                              --> 
-- complete README-File                                              -->
--mUTD verdichten und Platz sparen (Plots)
-- Data Quality kontrollieren & übersetzen.                                           --> Timon  
+- beautifying HTML-Doc
+- complete README-File
+- UTD verdichten und Platz sparen (Plots)
+- Data Quality kontrollieren & übersetzen.  
 - Coding Conventions kontrollieren.
 - AI Chapter
 - Lesson Learned Kapitel
@@ -52,11 +52,16 @@ ToDos backlog:
 Infos zu bedenken: ABGABEDATUM: 12 Juni
 
 
-Coding Conventions. • data sets are named with the prefix “d.” (e.g.,
-d.cats). • linear model objects are named with the prefix “lm.” (e.g.,
-lm.cats) • within the text R-objects are written using code formatting
-(e.g., lm.cats) 14 • variable names are written using italic (e.g.,
-Body.weight) • these conventions are arbitrary, but hopefully useful to
+Coding Conventions. 
+• data sets are named with the prefix “d.” (e.g.,
+d.cats). 
+• linear model objects are named with the prefix “lm.” (e.g.,
+lm.cats) 
+• within the text R-objects are written using code formatting
+(e.g., lm.cats) 14 
+• variable names are written using italic (e.g.,
+Body.weight) 
+• these conventions are arbitrary, but hopefully useful to
 the reader
 
 # Introduction

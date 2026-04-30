@@ -205,10 +205,6 @@ d.airbnb_listings_feat <- d.listings_clean %>%
   )
 ```
 
-```{r FE for SVM (TIMON)}
-d.airbnb_listings_feat$estimated_revenue_365 <- d.airbnb_listings_feat$price * d.airbnb_listings_feat$estimated_occupancy_l365d
-
-```
 
 1.  Schritt: Zielvariable binarisieren Aus Preis eine 0/1-Variable
     machen Der Median ist der sauberste Cutpoint — er ist robust
@@ -410,17 +406,6 @@ p_nights | p_num_rev | p_occ
 ```
 
 ```{r}
-# Price per Guest (with zoom-in to exclude massive outliers)
-p_ppg <- ggplot(d.airbnb_listings_feat, aes(x = price_per_guest)) +
-  geom_histogram(bins = 40, fill = "goldenrod", color = "white") +
-  coord_cartesian(xlim = c(0, quantile(d.airbnb_listings_feat$price_per_guest, 0.95, na.rm=TRUE))) +
-  labs(title = "Price Per Guest (Bottom 95%)", x = "Price", y = "Count")
-
-# Estimated Revenue
-p_rev <- ggplot(d.airbnb_listings_feat, aes(x = estimated_revenue_365)) +
-  geom_histogram(bins = 40, fill = "goldenrod", color = "white") +
-  coord_cartesian(xlim = c(0, quantile(d.airbnb_listings_feat$estimated_revenue_365, 0.95, na.rm=TRUE))) +
-  labs(title = "Est. Revenue 365d (Bottom 95%)", x = "Revenue", y = "Count")
 
 # High Demand (Binary)
 p_demand <- ggplot(d.airbnb_listings_feat, aes(x = as.factor(high_demand))) +
@@ -432,7 +417,7 @@ p_price_high <- ggplot(d.airbnb_listings_feat, aes(x = as.factor(price_high))) +
   geom_bar(fill = "sienna") +
   labs(title = "High Price Classification", x = "0 = No, 1 = Yes", y = "Count")
 
-(p_ppg | p_rev) / (p_demand | p_price_high)
+(p_demand | p_price_high)
 ```
 
 ```{r}

@@ -28,11 +28,11 @@ Task ab 26.4
 Tasks ab 29.04
 - NA bei profilepic entfernen (TIMON)
 - Frühlingsputz (PASCAL)
-- FE zu den Modellen verschieben (TIMON)
+- FE zu den Modellen verschieben (TIMON) *erledigt*
 - Target Leakage kontrollieren (TIMON) *erledigt*
 - Limitationen und Business Case im Kapitel  ergänzen. jeweils für die eigenen
 Modelle. (TIMON) (DAVIDE) (PASCAL)
-- crossvalidation im SVM einbauen (TIMON)
+- crossvalidation im SVM (?) einbauen (TIMON)
 - understand the data.  **kurz erklären**. (PASCAL)
 - EDA --> alles drin was wir müssen? mehr auch Verteilungen zeigen der Daten. (DAVIDE)
 
@@ -221,7 +221,12 @@ market conditions and would negatively skew our predictive models.
 d.airbnb_listings_feat <- d.airbnb_listings_feat %>%
   filter(!(room_type == "Private room" & price > 100000))
 ```
- 
+
+in addition to the one outlier we wanted to remove one NA specifically
+```{r filter NA in ProfilePic}
+d.airbnb_listings_feat <- d.airbnb_listings_feat %>%
+  filter(!host_has_profile_pic == "")
+```
  
  
 

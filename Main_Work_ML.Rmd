@@ -245,6 +245,7 @@ p2 <- ggplot(d.airbnb_listings_feat, aes(x = log_price)) +
 p1 + p2
 ```
  
+ In the two plots above, we can clearly see that the price is highly right skewed. Therefore we conduct a logtransform, to be able to use our models. After the logtransform, the data looks more gaussian.
 ```{r}
 # Histogram for accommodates
 p_acc <- ggplot(d.airbnb_listings_feat, aes(x = accommodates)) +
@@ -259,6 +260,7 @@ p_rev <- ggplot(d.airbnb_listings_feat, aes(x = review_scores_rating)) +
 
 p_acc + p_rev
 ```
+As we can see in the capacity plot, most housings can accomodate 2 or 4 guests. There is a clear trend, that most Ratings are between 4 and 5. As Hosts and Bookers get Ratings, we think, that there is kind of a bias in there.
  
 ```{r}
 # Bar plot for room type
@@ -275,7 +277,7 @@ p_host <- ggplot(d.airbnb_listings_feat %>% filter(!is.na(host_is_superhost)), a
 
 p_room + p_host
 ```
-
+In those two plots we see that most of the room types on airbnb are entire homes/apts or private rooms. Hotels and shared rooms are a very small minority. Most hosts don't have the superhost status, and only about 30% do have this status.
 ```{r}
 # Boxplot: Log Price by Room Type
 ggplot(d.airbnb_listings_feat, aes(x = room_type, y = log_price, fill = room_type)) +
@@ -298,7 +300,7 @@ ggplot(d.airbnb_listings_feat %>% filter(neighbourhood_group_cleansed %in% top_n
        y = "Log Price")
 ```
 
-
+What should we tell here? Entire homes have a lot of expensive outliers (villas and chalets probably), private rooms too, but still they are quite cheaper. Hotel rooms have more competition, that's why the median is quite high and there are almost no outliers.
 
 ```{r host_features, fig.height=8, fig.width=12, message=FALSE, warning=FALSE}
 # Response Time
@@ -328,6 +330,7 @@ p_verified <- ggplot(d.airbnb_listings_feat %>% filter(!is.na(host_identity_veri
 (p_resp_time | p_resp_rate | p_acc_rate) / (p_pic | p_verified)
 
 ```
+Most hosts do reply really quick, there we can see that they want to sell their apartment. That's why the host response rate is very high and also the acceptance rate is mostly at 100%. This is also the reason why they have profile pic & Identity verified, so they seem trustworthy.
 
 ```{r}
 

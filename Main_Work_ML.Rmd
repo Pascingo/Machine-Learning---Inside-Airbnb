@@ -703,11 +703,13 @@ This is relevant for Airbnb, as these results show that reviews on the host side
 # GLM Poisson (PASCAL - Davide translated to english and commments)
 
 ## Theory
+With the GLM model with Poisson-family / quasi-poisson family is used to analyse count data. Count data is strictly positive and counted (not continuous). Using this model we want to see which variables lead to the highest occupancy, meaning most of the time the airbnb is rented out.
 
+## Model
 ```{r}
 # --- GLM set to Poisson (Pascal) ---
 # Fitting a Poisson model to predict 'estimated_occupancy_l365d' (which represents count data).
-# Note: Price cannot be used as a response in a Poisson model as it is continuous, not discrete counts.
+# Note: Price cannot be used as a response in a Poisson model as it is continous, not discrete counts.
 
 glm_poisson <- glm(estimated_occupancy_l365d ~ price + host_is_superhost + 
                      review_scores_rating + accommodates + room_type, 
@@ -735,31 +737,11 @@ summary(glm_quasipoisson)
 
 ## Interpretation GLM-Poisson:
 
-Das GLM mit Poissonverteilung hat wie erwartet eine Überdispersion
-produziert, da die Streuung der Airbnb-Daten zu erwarten war. Das Modell
-hat die Standardfehler zu klein berechnet, wweshalb im ersten Output
-alle Variablen hochsignifikant waren. Danach wurde die Dispersion
-berechnet und sie war grösser als 1, nämlich 56.53. Als Lösung wurde ein
-Quasipoissonmodell genutzt, welches die Standardfehler nach oben
-anpasst.
+As expected, the GLM with a Poisson distribution produced overdispersion, since the variability in the Airbnb data was to be expected. The model calculated the standard errors too small, which is why all variables were highly significant in the first output. The dispersion was then calculated and found to be greater than 1, specifically 56.53. A quasi-Poisson model was used as a solution, which adjusts the standard errors upward.
 
 ## Interpretation GLM-Quasipoisson
 
-Das GLM mit Quasipoissonverteilung hat die Überdispersion korrigiert.
-Die Standardfehler wurden nach oben angepasst (deutlich) und gibt nun
-ein realistisches Bild, welche Faktoren wirklich einen Einfluss auf die
-Auslastung haben. Interpretationen: - Price -\> hochsignifikant negativ.
-Wie erwartet: Je höher der Preis, desto geringer die Auslastung -
-Superhost: hochsignifikant positiv: Achtung, logarithmierte Raten, darum
-Effekt mit Exponentialfunktion berechnen exp(0.9577) = 2.6. Ein
-Superhost zu sein steigert die Auslastung um das 2,6-fache im Vergleich
-zum normalen Host. - Bewertungen: Positiv und signifikant. Bessere
-Bewertungen führen zu mehr Buchungen. - Kapazität: Positiv und
-signifikant. Je mehr Leute reinpassen, desto mehr Buchungen. -
-Zimmertypen: Im Intercept ist "Entire home/apt". Private Room ist
-signifikant schlechter gebucht als ganze Unterkunft. Shared Room hat
-hohen P-Wert. Statistisch kann man nicht sagen, ob sich die Auslastung
-eines geteilten Zimmers von der ganzen Wochnung unterscheidet.
+The GLM with quasi-Poisson distribution has corrected the overdispersion. The standard errors were adjusted upwards (significantly) and now provide a realistic picture of which factors truly have an influence on occupancy. Interpretations: - Price -> highly significant negative. As expected: The higher the price, the lower the occupancy - Superhost: highly significant positive: Attention, logged rates, therefore calculate the effect with the exponential function exp(0.9577) = 2.6. Being a Superhost increases occupancy by 2.6 times compared to a normal host. - Reviews: Positive and significant. Better reviews lead to more bookings. - Capacity: Positive and significant. The more people that fit, the more bookings. - Room types: In the intercept is "Entire home/apt". Private Room is booked significantly worse than the entire accommodation. Shared Room has a high p-value. Statistically, it cannot be said whether the occupancy of a shared room differs from the entire apartment.
 
 ## GLM Quasi-Poisson Ergebnisse für Businesscase
 

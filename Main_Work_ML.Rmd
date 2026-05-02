@@ -35,6 +35,7 @@ Modelle. (TIMON) (DAVIDE) (PASCAL)
 
 
 ToDos backlog:
+- AI-Texte: Praktisch alle Modelle haben ganz klar AI-generierten Code. Auch Kommentare und Interpretationen sind noch sehr offensichtlich. Unbedingt überarbeiten!
 - beautifying HTML-Doc
 - complete README-File
 - UTD verdichten und Platz sparen (Plots)
@@ -729,13 +730,11 @@ This is relevant for Airbnb, as these results show that reviews on the host side
 # GLM Poisson (PASCAL - Davide translated to english and commments)
 
 ## Theory
-With the GLM model with Poisson-family / quasi-poisson family is used to analyse count data. Count data is strictly positive and counted (not continuous). Using this model we want to see which variables lead to the highest occupancy, meaning most of the time the airbnb is rented out.
+With the GLM model with Poisson-family / quasi-poisson family is used to analyse count data. Count data is strictly positive and counted (not continuous). Using this model we want to see which variables lead to the highest occupancy, meaning most of the time the airbnb is rented out. As the data is probably overdispersed - meaning the data has not the same variance and much more cheap listings than expensive ones - we need to use a quasi-poisson model that can handle this kind of data much better. First we fit a normal poisson-family, then check for overdispersion, and if necessary we use a quasi-poisson-family.
 
 ## Model
 ```{r}
 # --- GLM set to Poisson (Pascal) ---
-# Fitting a Poisson model to predict 'estimated_occupancy_l365d' (which represents count data).
-# Note: Price cannot be used as a response in a Poisson model as it is continous, not discrete counts.
 
 glm_poisson <- glm(estimated_occupancy_l365d ~ price + host_is_superhost + 
                      review_scores_rating + accommodates + room_type, 
@@ -745,14 +744,9 @@ glm_poisson <- glm(estimated_occupancy_l365d ~ price + host_is_superhost +
 summary(glm_poisson)
 
 # Checking for Overdispersion.
-# A strict assumption of the Poisson distribution is that the mean exactly equals the variance.
-# Since Airbnb bookings fluctuate heavily (many cheap listings, few very expensive ones), overdispersion is expected.
 dispersion_ratio <- glm_poisson$deviance / glm_poisson$df.residual
 print(paste("Dispersion Ratio:", dispersion_ratio))
 
-# The dispersion ratio is significantly larger than 1, confirming overdispersion.
-# To correct this, we switch to a Quasi-Poisson model. This properly scales up the standard errors
-# to prevent the model from identifying false-positive (overly significant) variables.
 glm_quasipoisson <- glm(estimated_occupancy_l365d ~ price + host_is_superhost + 
                           review_scores_rating + accommodates + room_type, 
                         data = d.airbnb_listings_feat, 
@@ -767,27 +761,14 @@ As expected, the GLM with a Poisson distribution produced overdispersion, since 
 
 ## Interpretation GLM-Quasipoisson
 
-The GLM with quasi-Poisson distribution has corrected the overdispersion. The standard errors were adjusted upwards (significantly) and now provide a realistic picture of which factors truly have an influence on occupancy. Interpretations: - Price -> highly significant negative. As expected: The higher the price, the lower the occupancy - Superhost: highly significant positive: Attention, logged rates, therefore calculate the effect with the exponential function exp(0.9577) = 2.6. Being a Superhost increases occupancy by 2.6 times compared to a normal host. - Reviews: Positive and significant. Better reviews lead to more bookings. - Capacity: Positive and significant. The more people that fit, the more bookings. - Room types: In the intercept is "Entire home/apt". Private Room is booked significantly worse than the entire accommodation. Shared Room has a high p-value. Statistically, it cannot be said whether the occupancy of a shared room differs from the entire apartment.
+The GLM with quasi-Poisson distribution has corrected the overdispersion. The standard errors were adjusted upwards (significantly) and now provide a realistic picture of which factors truly have an influence on occupancy. Interpretations: 
+- Price -> highly significant negative. As expected: The higher the price, the lower the occupancy
+- Superhost: highly significant positive: Attention, logged rates, therefore calculate the effect with the exponential function exp(0.9577) = 2.6. Being a Superhost increases occupancy by 2.6 times compared to a normal host.
+- Reviews: Positive and significant. Better reviews lead to more bookings.
+- Capacity: Positive and significant. The more people that fit, the more bookings. 
+- Room types: In the intercept is "Entire home/apt". Private Room is booked significantly worse than the entire accommodation. Shared Room has a high p-value. Statistically, it cannot be said whether the occupancy of a shared room differs from the entire apartment.
 
-## GLM Quasi-Poisson Ergebnisse für Businesscase
 
-```{r}
-# --- GLM Quasi-Poisson Results Extraction (Pascal) ---
-# Extract model results into a clean dataframe using broom::tidy()
-d.results_glm_quasipoisson <- tidy(glm_quasipoisson) %>%
-  # Calculate the percentage change for easier business interpretation.
-  # Since Poisson models use a log-link function, we must exponentiate the coefficients (estimates) 
-  # to interpret them as multiplicative effects on the expected count (occupancy).
-  mutate(
-    pct_change = (exp(estimate) - 1) * 100,
-    # Round the percentage change to 2 decimal places for readability
-    pct_change = round(pct_change, 2)
-  ) %>%
-  # Select only the columns most relevant for communicating insights to the client
-  select(term, estimate, pct_change, p.value)
-
-print(d.results_glm_quasipoisson)
-```
 
 # GLM Binomial (DAVIDE)
 
@@ -1775,3 +1756,23 @@ Superhost-Status zu erarbeiten, ist für Hosts aus
 betriebswirtschaftlicher Sicht zwar ratsam, um die Sichtbarkeit und
 Buchungswahrscheinlichkeit (Occupancy) zu erhöhen, rechtfertigt aber per
 se keinen spürbaren Preisaufschlag im Markt.
+
+## GLM Quasi-Poisson Results for Businesscase
+
+```{r}
+# --- GLM Quasi-Poisson Results Extraction (Pascal) ---
+# Extract model results into a clean dataframe using broom::tidy()
+d.results_glm_quasipoisson <- tidy(glm_quasipoisson) %>%
+  # Calculate the percentage change for easier business interpretation.
+  # Since Poisson models use a log-link function, we must exponentiate the coefficients (estimates) 
+  # to interpret them as multiplicative effects on the expected count (occupancy).
+  mutate(
+    pct_change = (exp(estimate) - 1) * 100,
+    # Round the percentage change to 2 decimal places for readability
+    pct_change = round(pct_change, 2)
+  ) %>%
+  # Select only the columns most relevant for communicating insights to the client
+  select(term, estimate, pct_change, p.value)
+
+print(d.results_glm_quasipoisson)
+```

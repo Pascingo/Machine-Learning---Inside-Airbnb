@@ -448,13 +448,15 @@ To complete the profile of host credibility, we examined the specific combinatio
 
 # Data Quality
 
-Wir prüfen ob und wieviele NA's vorhanden sind. Hierzu nutzen wir naniar
-und visdat, um die NA's auch visualisieren zu können. Die meisten
-NA-Werte sind bei den Rates, daher wird von Pascal angenommen, dass die
-Nullen nicht importiert wurden und deshalb es zu dieser grossen Anzahl
-NAs kam. Ich würde hier die NA durch 0 ersetzen. Entscheid: Da Ratings
-fehlen werden sie in Modellen omitted. Daten fehlen aus einem Grund und
-nicht random.
+To ensure the integrity of our analysis, we performed a systematic check for missing values (NAs) within the dataset. We utilized the `naniar` and `visdat` packages, which allow for both a numerical summary and a spatial visualization of missingness patterns.
+
+Visualization and Identification: Using `vis_dat()` and `gg_miss_var()`, we identified that the missing data is not uniformly distributed but concentrated in specific features.
+
+Response and Acceptance Rates: A high volume of NAs was observed in the "Rate" columns (e.g., host response and acceptance rates). An initial hypothesis suggested that these missing values might represent zero values that were not correctly captured during the data import process. While imputing these as 0% was considered, we proceeded with caution to avoid distorting host performance metrics.
+
+Review Ratings and Methodological Decision: For the review score variables, we determined that the data is likely Missing Not At Random (MNAR). A listing without reviews often indicates it is new or has not yet been booked, meaning a "rating" simply does not exist for that observation.
+
+Final Handling: We decided to omit observations with missing ratings from our models rather than imputing them. Imputing a zero would incorrectly categorize these listings as "poorly rated," while imputing a mean would artificially reduce the variance of our predictors. By omitting these cases, we ensure that our model training is based on verified, existing performance data.
 
 ```{r}
 vis_miss(d.airbnb_listings_feat)
@@ -482,8 +484,7 @@ ggplot(missing_data, aes(x = reorder(Variable, Missing_Percentage), y = Missing_
 
 This step is less for the client and essential for your ML models. Most
 modeling functions (like lm() or svm()) will throw errors or silently
-drop entire rows if NAs are present. You need to know exactly where your
-data is missing!
+drop entire rows if NAs are present.
 
 ```{r}
 # Count the number of NAs for each key column in your dataset

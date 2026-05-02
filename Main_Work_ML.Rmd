@@ -1358,7 +1358,7 @@ be important to enable better categorization.
 
 
 
-# ANN Try (DAVIDE) Identisch mit Pascal
+# ANN (DAVIDE) Identisch mit Pascal
 
 ## Theory
 
@@ -1445,7 +1445,7 @@ d_model_ready <- d.airbnb_listings_feat %>%
   # put rare property types into an "Other" category to keep the variable tidy
   mutate(property_type = fct_lump_n(property_type, n = 4, other_level = "Other"))
 
-# One-Hot Encoding: Neural networks require numeric matrices. We convert categorical variables into binary dummy variables.
+# One-Hot Encoding: We convert categorical variables into binary dummy variables.
 d_dummies <- as.data.frame(model.matrix(~ . - 1, data = d_model_ready))
 
 # Sanitize column names to prevent crashes

@@ -27,7 +27,7 @@ Tasks ab 29.04
 - Target Leakage kontrollieren (TIMON) *erledigt*
 - Limitationen und Business Case im Kapitel  ergänzen. jeweils für die eigenen
 Modelle. (TIMON) (DAVIDE) (PASCAL)
-- crossvalidation im SVM (?) einbauen (TIMON)
+- crossvalidation im SVM (?) einbauen (TIMON) *erledigt*
 - understand the data.  **kurz erklären**. (PASCAL)
 - EDA --> alles drin was wir müssen? mehr auch Verteilungen zeigen der Daten. (DAVIDE)
 
@@ -35,6 +35,7 @@ Modelle. (TIMON) (DAVIDE) (PASCAL)
 
 
 ToDos backlog:
+- interpretation Crossvalidation schreiben
 - AI-Texte: Praktisch alle Modelle haben ganz klar AI-generierten Code. Auch Kommentare und Interpretationen sind noch sehr offensichtlich. Unbedingt überarbeiten!
 - beautifying HTML-Doc
 - complete README-File
@@ -43,6 +44,7 @@ ToDos backlog:
 - Coding Conventions kontrollieren.
 - AI Chapter
 - Lesson Learned Kapitel
+
 
 
 Infos zu bedenken: ABGABEDATUM: 12 Juni

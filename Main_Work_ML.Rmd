@@ -194,8 +194,6 @@ rm(d.airbnb_listings, d.raw_data_listings)
 Subsequently, we calculated several additional features to include them as permanent columns in the dataset, ensuring they do not have to be recomputed for each analysis. These include: the log-transformed price—as price data is typically heavily right-skewed—the price per guest (total price divided by the number of guests accommodated), a boolean indicator for high demand, and a binary variable identifying whether the price exceeds the median.
 
 ```{r initial FE (Pascal), echo=FALSE}
-
- 
 d.airbnb_listings_feat <- d.listings_clean %>%
   mutate(
     log_price = log(price),
@@ -219,7 +217,7 @@ dataset as it is an extreme outlier that does not reflect the true
 market conditions and would negatively skew our predictive models.
 
 ```{r}
-# This keeps everything EXCEPT the row that is a Private room AND costs more than 5000
+# This keeps everything except the row that is a Private room and costs more than 5000
 d.airbnb_listings_feat <- d.airbnb_listings_feat %>%
   filter(!(room_type == "Private room" & price > 100000))
 ```
@@ -339,7 +337,7 @@ p_verified <- ggplot(d.airbnb_listings_feat %>% filter(!is.na(host_identity_veri
   geom_bar(fill = "khaki4") +
   labs(title = "Identity Verified", x = "t = True, f = False", y = "Count")
 
-(p_resp_time | p_resp_rate | p_acc_rate) / (p_pic | p_verified)
+p_resp_time | p_resp_rate | p_acc_rate | p_pic | p_verified
 
 ```
 The visualizations regarding host behavior and profile attributes reveal a high degree of professionalism and a strong intent to maximize booking opportunities:
@@ -370,7 +368,7 @@ p_neigh <- d.airbnb_listings_feat %>%
   coord_flip() +
   labs(title = "Top 10 Neighbourhood Groups (Count)", x = "Neighbourhood", y = "Count")
 
-(p_prop / p_neigh)
+p_prop | p_neigh
 ```
 "To further understand the market composition, we examined the most frequent property types and their geographic distribution.
 
@@ -1617,7 +1615,7 @@ perspective to increase listing visibility and overall booking volume
 nightly market rate.
 
 # Results
-
+Wir können sagen, dass für Hosts keine Motivation gibt, 
 # Conclusion
 
 # Limitations

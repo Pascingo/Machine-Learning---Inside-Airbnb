@@ -760,14 +760,19 @@ AIC(glm_quasipoisson)
 
 ## Crossvalidation
 
-```{r}
-glm.cv_folds <- cut(1:nrow(d.airbnb_listings_feat), breaks = 2, labels = FALSE)
+```{r Crossvalidation Datasets 10-fold (TIMON)}
+set.seed(1)
+
+glm.cv_ind_permuted <- sample(1:nrow(d.airbnb_listings_feat), replace = FALSE)
+d.airbnb_listings_feat_permuted <- d.airbnb_listings_feat[glm.cv_ind_permuted,]
+
+glm.cv_folds <- cut(1:nrow(d.airbnb_listings_feat_permuted), breaks = 10, labels = FALSE)
 table(glm.cv_folds)
 glm.cv_ind_test <- which(glm.cv_folds == 1)
-d.glm_cv_test <- d.airbnb_listings_feat[glm.cv_ind_test, ]
-d.glm_cv_train <- d.airbnb_listings_feat[-glm.cv_ind_test, ]
-
-
+d.glm_cv_test <- d.airbnb_listings_feat_permuted[glm.cv_ind_test, ]
+d.glm_cv_train <- d.airbnb_listings_feat_permuted[-glm.cv_ind_test, ]
+head(d.glm_cv_train)
+head(d.glm_cv_test)
 ```
 
 ## Interpretation GLM-Poisson:

@@ -1252,17 +1252,6 @@ leaflet() %>%
 
 FEEDBACK TIMON
 - allenfalls muss man hier darauf hinweisen, dass die 15% subjektiv gewählt sind. allenfalls finden wir dazu noch etwas. 
-- ALLGEMEINE FRAGE: haben wir hier ein target-leakage für die SVM? müssen wir die Trainingsdaten und die TEstdaten bereits vor dem definieren der Kategorien definieren damit wir nicht einen Bias drin haben? allenfalls müssen wir das noch besprechen. ChatGPT:
-                                        Saubere Lösung
-                                        Idealerweise:
-                                        Train/Test Split
-                                        GAM nur auf Train fitten
-                                        Labels erzeugen
-                                        SVM trainieren
-                                        Test separat evaluieren
-
-
-
 
 ## Interpretation
 

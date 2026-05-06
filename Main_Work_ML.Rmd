@@ -29,7 +29,7 @@ Tasks ab 29.04
 Modelle. (TIMON) (DAVIDE) (PASCAL)
 - crossvalidation im SVM (?) einbauen (TIMON)
 - understand the data.  **kurz erklären**. (PASCAL)
-- EDA --> alles drin was wir müssen? mehr auch Verteilungen zeigen der Daten. (DAVIDE)
+- EDA --> alles drin was wir müssen? mehr auch Verteilungen zeigen der Daten. (DAVIDE) **EDA vervollständigt mit zusätzlichen Graphen und Visuals. Reihenfolge unsicher -> TBD**
 
 
 
@@ -502,34 +502,6 @@ kable(na_summary, caption = "Count of Missing Values per Variable")
 
 # Exploratory Data Analysis (DAVIDE)
 
-```{r}
-# --- Binary Predictor: Superhost Status ---
-# Adding this because it's a key part of the business case and fulfills the binary variable requirement.
-ggplot(data = d.airbnb_listings_feat, aes(x = as.factor(host_is_superhost), y = log_price, fill = as.factor(host_is_superhost))) +
-  geom_boxplot(alpha = 0.7) +
-  scale_x_discrete(labels = c("0" = "Regular Host", "1" = "Superhost")) +
-  labs(
-    title = "Price Difference: Superhosts vs. Regular Hosts",
-    x = "Host Status",
-    y = "Log(Price)"
-  ) +
-  theme_minimal() +
-  theme(legend.position = "none")
-
-# --- Spatial Data: Mapping the Listings ---
-# Cleaned up the map to focus purely on location and price.
-ggplot(data = d.airbnb_listings_feat, aes(x = longitude, y = latitude)) +
-  geom_point(aes(color = log_price), alpha = 0.6, size = 1.5) +
-  scale_color_viridis_c(option = "plasma") +
-  labs(
-    title = "Airbnb Listings in Vaud by Price",
-    x = "Longitude",
-    y = "Latitude",
-    color = "Log(Price)"
-  ) +
-  theme_minimal()
-```
-
 ### Overall Market Overview (Prices & Capacity)
 
 This is the absolute minimum, maximum, median, and mean for the most
@@ -548,6 +520,7 @@ Client Interpretation: "The average Airbnb in Vaud costs X CHF per
 night, but the median is Y CHF, indicating that a few extremely
 expensive luxury listings might be skewing the average upward. Prices
 range from a minimum of A CHF to a maximum of B CHF."
+
 
 ### Analysis by Room Type
 
@@ -576,6 +549,34 @@ Client Interpretation: "Entire homes/apartments dominate the Vaud
 market, making up 75% of all listings. As expected, the Hotel room
 command the highest median price (264.5 CHF), compared to shared rooms
 (47 CHF)."
+
+### Detailed property_type Analysis
+
+We already analyzed room_type, but Airbnb often has dozens of
+property_types (e.g., "Entire chalet", "Private room in castle", etc.).
+Summarizing the Top 10 property types in the Canton of Vaud provides
+maybe a great market insight.
+
+```{r}
+# Top 10 Property Types by frequency and their median price
+top_properties <- d.airbnb_listings_feat %>%
+  group_by(property_type) %>%
+  summarise(
+    Total_Listings = n(),
+    Median_Price = median(price, na.rm = TRUE)
+  ) %>%
+  arrange(desc(Total_Listings)) %>%
+  slice_head(n = 10) # Keep only the top 10
+
+kable(top_properties, caption = "Top 10 Property Types in the Canton of Vaud")
+```
+
+
+Client Interpretation: "While standard apartments like "entire rental
+unit" are the most common, specialty properties like chalets, homes and
+villas command a significant premium, which our model will need to
+capture."
+
 
 ### Correlation Matrix (Crucial before Machine Learning)
 
@@ -661,6 +662,23 @@ d.airbnb_listings_feat %>%
 Interpretation:
 The medians across rating groups are surprisingly close. Higher-rated listings do not automatically charge more — which is consistent with the pattern we later see in the Superhost analysis: well-rated hosts often compete on price rather than charge a premium.
 
+
+### Mapping the Listings by Log(Price)
+```{r}
+# --- Spatial Data: Mapping the Listings ---
+# Cleaned up the map to focus purely on location and price.
+ggplot(data = d.airbnb_listings_feat, aes(x = longitude, y = latitude)) +
+  geom_point(aes(color = log_price), alpha = 0.6, size = 1.5) +
+  scale_color_viridis_c(option = "plasma") +
+  labs(
+    title = "Airbnb Listings in Vaud by Log(Price)",
+    x = "Longitude",
+    y = "Latitude",
+    color = "Log(Price)"
+  ) +
+  theme_minimal()
+```
+
 ### Price per Guest Distribution
 We calculated price per guest as a feature and visualize it here. 
 
@@ -707,31 +725,21 @@ print(superhost_analysis)
 ```
 
 
-### Detailed property_type Analysis
-
-We already analyzed room_type, but Airbnb often has dozens of
-property_types (e.g., "Entire chalet", "Private room in castle", etc.).
-Summarizing the Top 10 property types in the Canton of Vaud provides
-maybe a great market insight.
-
 ```{r}
-# Top 10 Property Types by frequency and their median price
-top_properties <- d.airbnb_listings_feat %>%
-  group_by(property_type) %>%
-  summarise(
-    Total_Listings = n(),
-    Median_Price = median(price, na.rm = TRUE)
-  ) %>%
-  arrange(desc(Total_Listings)) %>%
-  slice_head(n = 10) # Keep only the top 10
-
-kable(top_properties, caption = "Top 10 Property Types in the Canton of Vaud")
+# --- Binary Predictor: Superhost Status ---
+# Adding this because it's a key part of the business case and fulfills the binary variable requirement.
+ggplot(data = d.airbnb_listings_feat, aes(x = as.factor(host_is_superhost), y = log_price, fill = as.factor(host_is_superhost))) +
+  geom_boxplot(alpha = 0.7) +
+  scale_x_discrete(labels = c("0" = "Regular Host", "1" = "Superhost")) +
+  labs(
+    title = "Price Difference: Superhosts vs. Regular Hosts",
+    x = "Host Status",
+    y = "Log(Price)"
+  ) +
+  theme_minimal() +
+  theme(legend.position = "none")
 ```
 
-Client Interpretation: "While standard apartments like "entire rental
-unit" are the most common, specialty properties like chalets, homes and
-villas command a significant premium, which our model will need to
-capture."
 
 
 

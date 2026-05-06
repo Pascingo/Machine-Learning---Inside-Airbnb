@@ -24,22 +24,26 @@ Tasks ab 29.04
 - Frühlingsputz (PASCAL)
 - Limitationen und Business Case im Kapitel  ergänzen. jeweils für die eigenen
 Modelle. (TIMON) (DAVIDE) (PASCAL)
+- GLM (Binominal) gemäss Feedback Timon noch anpassen und mit Text ausschmücken sowie Visualisieren (DAVIDE)
+- GAM text kürzen (DAVIDE)
+- EDA verdichten und Platz sparen (Plots)
+- Colors vereinheitlichen (TIMON)
+- README File (PASCAL)
+- interpretation Crossvalidation schreiben (TIMON)
+- Coding Conventions kontrollieren (ALLE)
+- 
 
 
 
 
 
 ToDos backlog:
-- interpretation Crossvalidation schreiben
 - AI-Texte: Praktisch alle Modelle haben ganz klar AI-generierten Code. Auch Kommentare und Interpretationen sind noch sehr offensichtlich. Unbedingt überarbeiten!
 - beautifying HTML-Doc
-- complete README-File
-- UTD verdichten und Platz sparen (Plots)
 - Data Quality kontrollieren & übersetzen.  
-- Coding Conventions kontrollieren.
 - AI Chapter
 - Lesson Learned Kapitel
-- Colors vereinheitlich
+
 
 
 
@@ -79,14 +83,14 @@ to the Canton of Vaud to capture regional economic effects.
 
 ## Research Questions
 
-Several questions can be derived from the business case. These questions are intended to help us examine pricing dynamics and facilitate the development of a pricing strategy for Airbnb. First, we need to determine which factors influence guests’ willingness to pay. Furthermore, the nature of this influence is, of course, central to our analysis. 
-Once these factors are identified, a second question immediately arises: to what extent can these factors be used to predict whether the prices of a rental property are justified? 
+Several questions can be derived from the business case. These questions are intended to help us examine pricing dynamics and facilitate the development of a pricing strategy for Airbnb. 
+RQ1 - First, **we need to determine which factors influence guests’ willingness to pay**. Furthermore, the nature of this influence is, of course, central to our analysis. 
+RQ2 - Once these factors are identified, a second question immediately arises: **to what extent can these factors be used to predict whether the prices of a rental property are justified?**
 
 Willingness to pay is actually the central variable here. However, it is not easy to measure, which is why a different approach must be taken. The approach we have chosen stems from the idea that the market generally functions well and that landlords intuitively already align with willingness to pay. As a result, the existing price for a rental property can also be assumed to be the price that tenants are willing to pay. Any deviations are offset in our subsequent calculations by the large number of observations. Thus, on average, the actual price will correspond to the price that tenants are willing to pay. 
 
 
 ### Hypothesis
-
 
 H1: When host-centered indicators improve, tenants' willingness to pay increases. 
 H2: When location-centered indicators improve, tenants’ willingness to pay increases. 
@@ -939,7 +943,6 @@ Interpretation: die beiden Modelle unterscheiden sich nicht. wir erhalten keine 
 
 ### Why GLM for Airbnb Pricing?
 
-
 ### Justification for our Use Case
 
 ### Link to Hypotheses
@@ -1028,21 +1031,7 @@ rather than a higher nightly single-booking price.
 
 # GAM Model (DAVIDE)
 
-## Theory
-
-### Why GAM for Airbnb Pricing?
-
-Generalized Additive Models (GAM) extend the classical linear model by 
-replacing rigid linear coefficients with **smooth, non-parametric functions** 
-f(x). The model takes the form:
-
-  $$g(E[Y]) = β₀ + f₁(x₁) + f₂(x₂) + ... + fₚ(xₚ)$$
-
-where $g(·)$ is a link function and each $fⱼ(·)$ is a smoothing spline whose 
-shape is learned from the data rather than pre-specified.
-
-### Justification for our Use Case
-
+## Introduction
 For Airbnb pricing in the Canton of Vaud, GAM offers three decisive 
 advantages over a standard linear model:
 
@@ -1079,20 +1068,6 @@ The GAM directly tests **H2 (location-centered indicators)** through the
 primary tool for examining whether location effects on willingness-to-pay 
 are non-linear and spatially clustered — a question a linear model 
 cannot answer.
-
-### Methodological Choices
-
-- **Family / Link:** We use `gaussian()` on `log(price)`. This stabilises 
-  variance (prices are right-skewed and heteroscedastic) and ensures 
-  consistency with the LM benchmark, which also models `log(price)`. 
-  Coefficients can be interpreted multiplicatively: a coefficient β 
-  corresponds to a $(exp(β) − 1) × 100%$ price change.
-- **Smoothing method:** `method = "REML"` (Restricted Maximum Likelihood) 
-  is preferred over the default GCV.Cp because it is less prone to 
-  undersmoothing and provides more reliable confidence intervals.
-- **Basis dimension (k):** Default values are used; the spatial spline 
-  is allowed higher flexibility (EDF ≈ 28) given the geographic 
-  heterogeneity of the canton.
   
 ## Model
 
@@ -1120,7 +1095,7 @@ cat("Train:", nrow(df_train), " | Test:", nrow(df_test), "\n")
 
 
 ```{r}
-# --- 3. Fit the GAM on log(price), training data only ---
+# Fit the GAM on log(price), training data only
 gam.main <- gam(log(price) ~
                   s(accommodates) +
                   s(review_scores_rating) +
@@ -1141,7 +1116,6 @@ summary(gam.main)
 ```{r}
 # Partial effect plots—this is the main advantage of GAM over LM
 
-# --- 4. Diagnostic plots ---
 plot(gam.main,
      pages      = 1,
      shade      = TRUE,
@@ -1157,7 +1131,7 @@ cat("Deviance explained:", round(summary(gam.main)$dev.expl, 3), "\n")
 ```
 
 ```{r}
-# --- 5. Fair LM benchmark (same target, same training data) ---
+# Fair LM benchmark (same target, same training data)
 lm.gam_comparison <- lm(log(price) ~ accommodates + review_scores_rating +
                           log1p(number_of_reviews) + longitude + latitude +
                           room_type + host_is_superhost + bathrooms,

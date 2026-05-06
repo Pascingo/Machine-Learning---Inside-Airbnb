@@ -233,7 +233,7 @@ d.airbnb_listings_feat <- d.airbnb_listings_feat %>%
  
 ## Prices
  
-```{r}
+```{r, fig.show='hold', out.width="49%", echo=FALSE}
 p1 <- ggplot(d.airbnb_listings_feat, aes(x = price)) +
   geom_histogram(bins = 50, fill = "darkred", color = "white", alpha = 0.7) +
   labs(title = "Distribution of Raw Price", x = "Price", y = "Count")
@@ -249,7 +249,7 @@ The histograms above clearly illustrate that the price distribution is heavily r
 
 ## Capacity & Rating
 
-```{r}
+```{r, fig.show='hold', out.width='49%'}
 p_acc <- ggplot(d.airbnb_listings_feat, aes(x = accommodates)) +
   geom_histogram(binwidth = 1, fill = "dodgerblue", color = "white") +
   scale_x_continuous(breaks = seq(1, max(d.airbnb_listings_feat$accommodates, na.rm = TRUE), by = 1)) +
@@ -265,7 +265,7 @@ The listing capacity plot shows that most accommodations are designed for 2 or 4
 
 ## Room Types & Superhost Status
  
-```{r}
+```{r, fig.show='hold', out.width='49%'}
 p_room <- ggplot(d.airbnb_listings_feat, aes(x = room_type, fill = room_type)) +
   geom_bar(show.legend = FALSE) +
   labs(title = "Proportion of Room Types", x = "Room Type", y = "Count") +
@@ -281,7 +281,7 @@ p_room + p_host
 The plots illustrate the distribution of room types and host statuses within the dataset. It is evident that the inventory is predominantly composed of `Entire homes/apartments` and `Private rooms`, while `Hotel rooms` and `Shared rooms` constitute a negligible minority. Furthermore, the data reveals that Superhost status is relatively uncommon; a significant majority of hosts do not hold this designation, with only approximately 30% of the sample categorized as Superhosts.
 
 ## Log Prices and rooms / neighbourhoods
-```{r}
+```{r, fig.show='hold', out.width='33%'}
 ggplot(d.airbnb_listings_feat, aes(x = room_type, y = log_price, fill = room_type)) +
   geom_boxplot(alpha = 0.7, show.legend = FALSE) +
   labs(title = "Log Price by Room Type", x = "Room Type", y = "Log Price") +
@@ -317,7 +317,7 @@ Almost all top neighbourhoods show high-end outliers, confirming that luxury lis
 
 ## Host Variables
 
-```{r host_features, fig.height=8, fig.width=12, message=FALSE, warning=FALSE}
+```{r host_features, fig.show='hold', out.width='16%'}
 p_resp_time <- ggplot(d.airbnb_listings_feat %>% filter(host_response_time != "N/A" & !is.na(host_response_time)), aes(x = host_response_time)) +
   geom_bar(fill = "cadetblue") +
   labs(title = "Host Response Time", x = "Response Time", y = "Count") +
@@ -352,7 +352,7 @@ Trust and Verification: To establish credibility in a peer-to-peer marketplace, 
 
 ## Properties & Neighborhoods
 
-```{r}
+```{r, fig.show='hold', out.width='49%'}
 
 p_prop <- d.airbnb_listings_feat %>%
   count(property_type) %>%
@@ -380,7 +380,7 @@ p_neigh <- d.airbnb_listings_feat %>%
 
 ## Furnishing
 
-```{r}
+```{r, fig.show='hold', out.width='49%'}
 p_baths <- ggplot(d.airbnb_listings_feat, aes(x = bathrooms)) +
   geom_histogram(binwidth = 0.5, fill = "plum4", color = "white") +
   scale_x_continuous(breaks = seq(0, max(d.airbnb_listings_feat$bathrooms, na.rm = TRUE), by = 1)) +
@@ -399,7 +399,7 @@ The distribution plots for the number of bathrooms and beds reveal a strong conc
 
 ## Utilisation
 
-```{r}
+```{r, fig.show='hold', out.width='33%'}
 # Minimum Nights (Log scale due to extreme outliers like 365+ nights)
 p_nights <- ggplot(d.airbnb_listings_feat, aes(x = minimum_nights)) +
   geom_histogram(bins = 30, fill = "olivedrab", color = "white") +
@@ -427,7 +427,7 @@ Estimated Occupancy: Similar to the review counts, the estimated occupancy shows
 
 ## Feature Engineered Data
 
-```{r}
+```{r, fig.show='hold', out.width='49%'}
 
 # High Demand (Binary)
 p_demand <- ggplot(d.airbnb_listings_feat, aes(x = as.factor(high_demand))) +
@@ -452,7 +452,7 @@ In contrast, the distribution for high price is nearly perfectly balanced. This 
 
 ## Verifications
 
-```{r}
+```{r, fig.show='hold'}
 d.airbnb_listings_feat %>%
   count(host_verifications) %>%
   top_n(5, n) %>%

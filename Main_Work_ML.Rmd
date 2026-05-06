@@ -500,11 +500,11 @@ na_summary <- d.airbnb_listings_feat %>%
 kable(na_summary, caption = "Count of Missing Values per Variable")
 ```
 
-# EDA (DAVIDE)
+# Exploratory Data Analysis (DAVIDE)
 
 ```{r}
-# --- 5. Binary Predictor: Superhost Status ---
-# Adding this because it's a key part of your business case and fulfills the binary variable requirement.
+# --- Binary Predictor: Superhost Status ---
+# Adding this because it's a key part of the business case and fulfills the binary variable requirement.
 ggplot(data = d.airbnb_listings_feat, aes(x = as.factor(host_is_superhost), y = log_price, fill = as.factor(host_is_superhost))) +
   geom_boxplot(alpha = 0.7) +
   scale_x_discrete(labels = c("0" = "Regular Host", "1" = "Superhost")) +
@@ -516,7 +516,7 @@ ggplot(data = d.airbnb_listings_feat, aes(x = as.factor(host_is_superhost), y = 
   theme_minimal() +
   theme(legend.position = "none")
 
-# --- 6. Spatial Data: Mapping the Listings ---
+# --- Spatial Data: Mapping the Listings ---
 # Cleaned up the map to focus purely on location and price.
 ggplot(data = d.airbnb_listings_feat, aes(x = longitude, y = latitude)) +
   geom_point(aes(color = log_price), alpha = 0.6, size = 1.5) +
@@ -530,9 +530,7 @@ ggplot(data = d.airbnb_listings_feat, aes(x = longitude, y = latitude)) +
   theme_minimal()
 ```
 
-## Davide's overall Data Analysis
-
-### 1. Overall Market Overview (Prices & Capacity)
+### Overall Market Overview (Prices & Capacity)
 
 This is the absolute minimum, maximum, median, and mean for the most
 important numeric variables.
@@ -551,7 +549,7 @@ night, but the median is Y CHF, indicating that a few extremely
 expensive luxury listings might be skewing the average upward. Prices
 range from a minimum of A CHF to a maximum of B CHF."
 
-### 2. Analysis by Room Type
+### Analysis by Room Type
 
 Since we want to know how many different types of rooms there are, we
 group the data and calculate the counts, percentages, and price ranges
@@ -579,28 +577,7 @@ market, making up 75% of all listings. As expected, the Hotel room
 command the highest median price (264.5 CHF), compared to shared rooms
 (47 CHF)."
 
-### 3. Superhost vs. Regular Host Breakdown
-
-This business case specifically mentions superhost status. So we took a
-look to see how many there are and if they actually charge more or even
-less.
-
-```{r}
-# Superhost statistics
-superhost_analysis <- d.airbnb_listings_feat %>%
-  group_by(host_is_superhost) %>%
-  summarise(
-    Total_Hosts = n(),
-    Percentage = round((n() / nrow(d.airbnb_listings_feat)) * 100, 1),
-    Median_Price = median(price, na.rm = TRUE),
-    Avg_Reviews = round(mean(number_of_reviews, na.rm = TRUE), 1)
-  ) %>%
-  mutate(host_is_superhost = ifelse(host_is_superhost == 1, "Yes", "No"))
-
-print(superhost_analysis)
-```
-
-### 1. Correlation Matrix (Crucial before Machine Learning)
+### Correlation Matrix (Crucial before Machine Learning)
 
 Before we train our LM, GAM, or SVM, we need to know how our numerical
 variables relate to each other. This helps us identify multicollinearity
@@ -624,7 +601,113 @@ Client Interpretation: "As expected, accommodates shows the strongest
 positive correlation with price. It is also interesting to note the
 relationship between availability and number_of_reviews..."
 
-### 2. Detailed property_type Analysis
+```{r correlation_heatmap, fig.height=8, fig.width=10}
+# Select all numerical variables, drop binaries we already analysed separately
+num_vars <- d.airbnb_listings_feat %>%
+  select(where(is.numeric)) %>%
+  select(-price_high, -high_demand)
+
+# Correlation matrix with pairwise complete observations to handle NAs
+cor_matrix_full <- cor(num_vars, use = "pairwise.complete.obs")
+
+# Reshape for ggplot
+cor_long <- as.data.frame(cor_matrix_full) %>%
+  rownames_to_column("Var1") %>%
+  pivot_longer(-Var1, names_to = "Var2", values_to = "Correlation")
+
+ggplot(cor_long, aes(x = Var1, y = Var2, fill = Correlation)) +
+  geom_tile(color = "white") +
+  geom_text(aes(label = round(Correlation, 2)), size = 2.8) +
+  scale_fill_gradient2(low = "darkred", mid = "white", high = "steelblue",
+                       midpoint = 0, limits = c(-1, 1)) +
+  labs(title = "Correlation Heatmap of Numerical Variables",
+       x = NULL, y = NULL) +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+```
+
+Interpretation:
+The heatmap confirms what we already suspected: *accommodates, beds and bathrooms* **correlate strongly** with each other. This is a clear sign of multicollinearity, which we need to keep in mind for the LM. The variable *price* and *log_price* show the expected relationships with *capacity* variables, while review-related variables form their own cluster. *number_of_reviews* and *estimated_occupancy_l365d* are highly correlated — listings that get booked more often naturally collect more reviews.
+
+### Log Price vs. Accommodates (Scatter)
+The most important Relationship in the dataset from what we see in the correlation matrix above. 
+
+```{r price_vs_accommodates}
+ggplot(d.airbnb_listings_feat, aes(x = accommodates, y = log_price)) +
+  geom_jitter(alpha = 0.3, width = 0.2, color = "steelblue") +
+  geom_smooth(method = "lm", color = "darkred", se = TRUE) +
+  scale_x_continuous(breaks = seq(1, max(d.airbnb_listings_feat$accommodates, na.rm = TRUE), 2)) +
+  labs(title = "Log Price vs. Accommodates",
+       x = "Number of Guests",
+       y = "Log Price")
+```
+
+### Log Price by Review Score Group (H1)
+We display review_scores_rating as a histogram, but never in relation to the price.
+
+```{r price_by_rating}
+d.airbnb_listings_feat %>%
+  filter(!is.na(review_scores_rating)) %>%
+  mutate(rating_group = cut(review_scores_rating,
+                            breaks = c(0, 3, 4, 4.5, 4.8, 5),
+                            labels = c("≤3", "3–4", "4–4.5", "4.5–4.8", "4.8–5"),
+                            include.lowest = TRUE)) %>%
+  ggplot(aes(x = rating_group, y = log_price, fill = rating_group)) +
+  geom_boxplot(alpha = 0.7, show.legend = FALSE) +
+  labs(title = "Log Price by Review Score Group",
+       x = "Review Score Rating",
+       y = "Log Price")
+```
+
+Interpretation:
+The medians across rating groups are surprisingly close. Higher-rated listings do not automatically charge more — which is consistent with the pattern we later see in the Superhost analysis: well-rated hosts often compete on price rather than charge a premium.
+
+### Price per Guest Distribution
+We calculated price per guest as a feature and visualize it here. 
+
+```{r price_per_guest}
+p_ppg <- ggplot(d.airbnb_listings_feat, aes(x = price_per_guest)) +
+  geom_histogram(bins = 50, fill = "darkorange", color = "white", alpha = 0.7) +
+  scale_x_log10() +
+  labs(title = "Price per Guest (Log Scale)",
+       x = "Price per Guest (CHF)", y = "Count")
+
+p_ppg_room <- ggplot(d.airbnb_listings_feat, aes(x = room_type, y = price_per_guest, fill = room_type)) +
+  geom_boxplot(alpha = 0.7, show.legend = FALSE) +
+  scale_y_log10() +
+  labs(title = "Price per Guest by Room Type",
+       x = "Room Type", y = "Price per Guest (Log)") +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+
+p_ppg + p_ppg_room
+```
+
+Interpretation:
+Most listings settle between 30 and 100 CHF per guest. Hotel rooms charge the highest per-guest price, while shared rooms are clearly the cheapest option per head. Entire homes look more expensive overall but actually offer the best value when you split the cost across guests.
+
+
+### Superhost vs. Regular Host Breakdown
+
+This business case specifically mentions superhost status. So we took a
+look to see how many there are and if they actually charge more or even
+less.
+
+```{r}
+# Superhost statistics
+superhost_analysis <- d.airbnb_listings_feat %>%
+  group_by(host_is_superhost) %>%
+  summarise(
+    Total_Hosts = n(),
+    Percentage = round((n() / nrow(d.airbnb_listings_feat)) * 100, 1),
+    Median_Price = median(price, na.rm = TRUE),
+    Avg_Reviews = round(mean(number_of_reviews, na.rm = TRUE), 1)
+  ) %>%
+  mutate(host_is_superhost = ifelse(host_is_superhost == 1, "Yes", "No"))
+
+print(superhost_analysis)
+```
+
+
+### Detailed property_type Analysis
 
 We already analyzed room_type, but Airbnb often has dozens of
 property_types (e.g., "Entire chalet", "Private room in castle", etc.).
@@ -649,6 +732,7 @@ Client Interpretation: "While standard apartments like "entire rental
 unit" are the most common, specialty properties like chalets, homes and
 villas command a significant premium, which our model will need to
 capture."
+
 
 
 
@@ -775,11 +859,15 @@ The GLM with quasi-Poisson distribution has corrected the overdispersion. The st
 
 ## Theory
 
+### Why GLM for Airbnb Pricing?
+
+
+### Justification for our Use Case
+
+### Link to Hypotheses
+
 ## Model
 Feature Engeneering
-
-
-
 
 
 ```{r}
@@ -797,9 +885,6 @@ FEEDBACK TIMON:
 - eher simpel, kann man hier allenfalls mindestens noch auf accommodates kontrollieren? ich bin nicht ganz sicher ob man das inerhalb eines solchen glms darf, aber eigentlich ist eine einzige UV schon zu wenig.     
 
 
-
-## Interpretation GLM Binomial: Calculating Odds Ratios (DAVIDE)
-
 Similar to the Poisson model, the coefficients in a binomial model with
 a logit link are log-odds.
 
@@ -816,9 +901,14 @@ d.results_glm_binomial <- tidy(glm_binomial) %>%
 
 print(d.results_glm_binomial)
 ```
+
+
+## Interpretation GLM Binomial: Calculating Odds Ratios (DAVIDE)
+
 FEEDBACK TIMON
 Soweit keine beanstandungen.sieht gut aus. Chatgpt hat noch vorgeschlagen allenfalls ein Konfidenzintervall zu rechnen für diese Werte, aber ich weiss nicht ob das in diesem Rahmen nötig sein würde. 
--> eine ARt der Visualisierung wäre für dieses Model sicher auchnoch wichtig. 
+-> eine Art der Visualisierung wäre für dieses Model sicher auch noch wichtig. 
+
 
 What the Output Tells Us: The coefficient for host_is_superhost is
 negative (-0.2217) and highly significant (p = 0.002). The calculated

@@ -280,7 +280,7 @@ The plots illustrate the distribution of room types and host statuses within the
 
 ## Log Prices and rooms / neighbourhoods
 ```{r, fig.show='hold', out.width='33%'}
-ggplot(d.airbnb_listings_feat, aes(x = room_type, y = log_price, fill = room_type)) +
+p_logprice_room <- ggplot(d.airbnb_listings_feat, aes(x = room_type, y = log_price, fill = room_type)) +
   geom_boxplot(alpha = 0.7, show.legend = FALSE) +
   labs(title = "Log Price by Room Type", x = "Room Type", y = "Log Price") +
   theme(axis.text.x = element_text(angle = 45, hjust = 1))
@@ -290,13 +290,15 @@ top_neighborhoods <- d.airbnb_listings_feat %>%
   top_n(10, n) %>% 
   pull(neighbourhood_group_cleansed)
 
-ggplot(d.airbnb_listings_feat %>% filter(neighbourhood_group_cleansed %in% top_neighborhoods), 
+p_logprice_neighbourhood <- ggplot(d.airbnb_listings_feat %>% filter(neighbourhood_group_cleansed %in% top_neighborhoods), 
        aes(x = reorder(neighbourhood_group_cleansed, log_price, FUN = median), y = log_price)) +
   geom_boxplot(fill = "lightblue", alpha = 0.7) +
   coord_flip() +
   labs(title = "Log Price by Top 10 Neighbourhood Groups", 
        x = "Neighbourhood Group", 
        y = "Log Price")
+
+p_logprice_room | p_logprice_neighbourhood
 ```
 
 The boxplot *"Log Price by Room Type"* reveals significant differences in pricing structures across categories:
@@ -437,7 +439,7 @@ p_price_high <- ggplot(d.airbnb_listings_feat, aes(x = as.factor(price_high))) +
   geom_bar(fill = "sienna") +
   labs(title = "High Price Classification", x = "0 = No, 1 = Yes", y = "Count")
 
-(p_demand | p_price_high)
+p_demand | p_price_high
 ```
 
 The bar charts illustrate the count of observations for our classification targets:
@@ -451,13 +453,15 @@ In contrast, the distribution for high price is nearly perfectly balanced. This 
 ## Verifications
 
 ```{r, fig.show='hold'}
-d.airbnb_listings_feat %>%
+p_verifications <- d.airbnb_listings_feat %>%
   count(host_verifications) %>%
   top_n(5, n) %>%
   ggplot(aes(x = reorder(host_verifications, n), y = n)) +
   geom_bar(stat = "identity", fill = "grey50") +
   coord_flip() +
   labs(title = "Top 5 Host Verification Combinations", x = "Verification Methods", y = "Count")
+
+p_verifications
 ```
 
 To complete the profile of host credibility, we examined the specific combinations of verification methods used. The chart "Top 5 Host Verification Combinations" reveals a highly standardized approach to trust within the platform:

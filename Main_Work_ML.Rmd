@@ -744,6 +744,7 @@ glm_poisson <- glm(estimated_occupancy_l365d ~ price + host_is_superhost +
 
 summary(glm_poisson)
 
+
 # Checking for Overdispersion.
 dispersion_ratio <- glm_poisson$deviance / glm_poisson$df.residual
 print(paste("Dispersion Ratio:", dispersion_ratio))
@@ -754,6 +755,19 @@ glm_quasipoisson <- glm(estimated_occupancy_l365d ~ price + host_is_superhost +
                         family = "quasipoisson")
 
 summary(glm_quasipoisson)
+AIC(glm_quasipoisson)
+```
+
+## Crossvalidation
+
+```{r}
+glm.cv_folds <- cut(1:nrow(d.airbnb_listings_feat), breaks = 2, labels = FALSE)
+table(glm.cv_folds)
+glm.cv_ind_test <- which(glm.cv_folds == 1)
+d.glm_cv_test <- d.airbnb_listings_feat[glm.cv_ind_test, ]
+d.glm_cv_train <- d.airbnb_listings_feat[-glm.cv_ind_test, ]
+
+
 ```
 
 ## Interpretation GLM-Poisson:

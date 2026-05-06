@@ -1136,16 +1136,6 @@ gam.main <- gam(log(price) ~
 summary(gam.main)
 ```
 
-FEEDBACK TIMON, zur Kenntnis DAVIDE
-
-- s(log1p(number_of_reviews)). allenfalls kann man das noch probieren, es könnte sein, dass diese Variable einen selbstverstärkenden Effekt hat und dann könnte man sie noch logarithmieren. --> erledigt Davide
-- ChatGPT: gam(..., method = "REML") noch ergänzen. --> erledigt Davide
-
-```{r Tests von TIMON}
-summary(d.airbnb_listings_feat_gam$price)
-summary(d.airbnb_listings_feat_gam$bathrooms)
-```
-
 ## GAM Visualisation (DAVIDE)
 
 ```{r}
@@ -1177,37 +1167,7 @@ cat("LM  R²:", round(summary(lm.gam_comparison)$r.squared, 3), "\n")
 cat("GAM R²:", round(summary(gam.main)$r.sq, 3), "\n")
 AIC(lm.gam_comparison, gam.main)
 ```
-FEEDBACK TIMON
-- lm.main und gam.main haben nicht die gleiche zielvariable. ChatGPT: 
-          Euer GAM verwendet:
-          price
-          family = gaussian(link = "log")
-          Das LM verwendet:
-          lm(log(price) ~ ...)
-          Diese Modelle sind ähnlich — aber nicht identisch.
-          Warum das wichtig ist
-          GAM:
-          E(price|x) = exp(...)
-          mit Gaussian-Fehlern auf der Response-Skala.
-          LM:
-          log(price) = ...
-          mit Gaussian-Fehlern auf der Log-Skala.
-          Das sind unterschiedliche Likelihoods.
-          
-das sei methodisch heikel, aber nicht verboten. bei der interpretation muss man dabei vorsichtig sein. 
-Lösung von ChatGPT: für das Gam den preis auch logarithmieren: gam(log(price) ~ ...)
 
-          Entscheidet euch klar zwischen:
-          Variante 1
-          gam(price, link="log")
-          oder
-          Variante 2
-          gam(log(price))
-          Und vergleicht danach konsistent mit LM.
-
-ANPASSUNGEN TIMON:
-- ich habe beim ursprünglichen Model noch pages = 1 ergänzt um alles auf eine Seite zu bringen. sei robuster als das gelöschte: "par(mfrow = c(2,3))"
-- EDF > 2 habe ich in den kommentaren umgeschrieben von "# edf > 2 → clearly nonlinear" zu "# Higher EDF values indicate stronger nonlinearity"
 
 
 ```{r}

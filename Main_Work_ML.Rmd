@@ -760,20 +760,51 @@ AIC(glm_quasipoisson)
 
 ## Crossvalidation
 
+
 ```{r Crossvalidation Datasets 10-fold (TIMON)}
 set.seed(1)
 
-glm.cv_ind_permuted <- sample(1:nrow(d.airbnb_listings_feat), replace = FALSE)
-d.airbnb_listings_feat_permuted <- d.airbnb_listings_feat[glm.cv_ind_permuted,]
+cv.mse.poisson <- c()
+cv.mse.quasipoisson <- c()
 
-glm.cv_folds <- cut(1:nrow(d.airbnb_listings_feat_permuted), breaks = 10, labels = FALSE)
-table(glm.cv_folds)
-glm.cv_ind_test <- which(glm.cv_folds == 1)
-d.glm_cv_test <- d.airbnb_listings_feat_permuted[glm.cv_ind_test, ]
-d.glm_cv_train <- d.airbnb_listings_feat_permuted[-glm.cv_ind_test, ]
-head(d.glm_cv_train)
-head(d.glm_cv_test)
+for(i in 1:200){
+  #dataprep
+  n <- nrow(d.airbnb_listings_feat)
+  cv.ind_permuted <- sample(1:n, replace = FALSE)
+  d.airbnb_listings_feat_permuted <- d.airbnb_listings_feat[cv.ind_permuted,]
+  
+  #create folds
+  cv.folds <- cut(1:n, breaks = 3, labels = FALSE)
+  cv.ind_test <- which(cv.folds == 1)
+  
+  d.cv_test <- d.airbnb_listings_feat_permuted[cv.ind_test, ]
+  d.cv_train <- d.airbnb_listings_feat_permuted[-cv.ind_test, ]
+  
+  #train model poisson
+  cv.glm_poisson_train <- glm(formula = formula(glm_poisson), 
+                          data = d.cv_train)
+  cv.glm_poisson_predict <- predict(cv.glm_poisson_train, newdata = d.cv_test)
+  
+  cv.mse.poisson[i] <- mean((d.cv_test$estimated_occupancy_l365d - cv.glm_poisson_predict)^2, 
+                           na.rm = TRUE)
+  
+  
+  #train model quasipoisson
+  cv.glm_quasipoisson_train <- glm(formula = formula(glm_quasipoisson), 
+                          data = d.cv_train)
+  cv.glm_quasipoisson_predict <- predict(cv.glm_quasipoisson_train, newdata = d.cv_test)
+  
+  cv.mse.quasipoisson[i] <- mean((d.cv_test$estimated_occupancy_l365d - cv.glm_quasipoisson_predict)^2, 
+                           na.rm = TRUE)
+  
+}
+
+boxplot(cv.mse.poisson, cv.mse.quasipoisson, names = c("Poisson-Model","Quasipoisson-Model"))
+
 ```
+
+Interpretation: die beiden Modelle unterscheiden sich nicht. wir erhalten keine outlier in den vorhersagen sprich das Model ist sehr stabil. 
+
 
 ## Interpretation GLM-Poisson:
 

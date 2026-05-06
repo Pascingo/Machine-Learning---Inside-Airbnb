@@ -27,14 +27,21 @@ Tasks ab 29.04
 - Target Leakage kontrollieren (TIMON) *erledigt*
 - Limitationen und Business Case im Kapitel  ergänzen. jeweils für die eigenen
 Modelle. (TIMON) (DAVIDE) (PASCAL)
+<<<<<<< HEAD
 - crossvalidation im SVM (?) einbauen (TIMON)
 - understand the data.  **kurz erklären**. (PASCAL)
 - EDA --> alles drin was wir müssen? mehr auch Verteilungen zeigen der Daten. (DAVIDE) **EDA vervollständigt mit zusätzlichen Graphen und Visuals. Reihenfolge unsicher -> TBD**
+=======
+- crossvalidation im SVM (?) einbauen (TIMON) *erledigt*
+- understand the data.  **kurz erklären**. (PASCAL) erledigt
+- EDA --> alles drin was wir müssen? mehr auch Verteilungen zeigen der Daten. (DAVIDE)
+>>>>>>> fbb04fb7c7ccd2ec2760ca9b1bcfe4072584488a
 
 
 
 
 ToDos backlog:
+- interpretation Crossvalidation schreiben
 - AI-Texte: Praktisch alle Modelle haben ganz klar AI-generierten Code. Auch Kommentare und Interpretationen sind noch sehr offensichtlich. Unbedingt überarbeiten!
 - beautifying HTML-Doc
 - complete README-File
@@ -43,6 +50,7 @@ ToDos backlog:
 - Coding Conventions kontrollieren.
 - AI Chapter
 - Lesson Learned Kapitel
+
 
 
 Infos zu bedenken: ABGABEDATUM: 12 Juni
@@ -192,8 +200,6 @@ rm(d.airbnb_listings, d.raw_data_listings)
 Subsequently, we calculated several additional features to include them as permanent columns in the dataset, ensuring they do not have to be recomputed for each analysis. These include: the log-transformed price—as price data is typically heavily right-skewed—the price per guest (total price divided by the number of guests accommodated), a boolean indicator for high demand, and a binary variable identifying whether the price exceeds the median.
 
 ```{r initial FE (Pascal), echo=FALSE}
-
- 
 d.airbnb_listings_feat <- d.listings_clean %>%
   mutate(
     log_price = log(price),
@@ -208,6 +214,8 @@ d.airbnb_listings_feat <- d.listings_clean %>%
 
 # Understanding the Data
 
+Für unseren Business Case wollen wir nochmals aufzeigen, wie Daten strukturiert sind, Verteilungen und Variabelarten, damit wir wissen, welche Modelle wir wie anwenden können. Unser Auftraggeber AirBnB kennt diese Daten natürlich bereits sehr gut, deshalb werden hier im Projektdokument nur die wichtigsten Plots zeigen, alle Visualisierungen finden sich im Anhang. 
+
 *Important to mention* During our exploratory data analysis, we
 identified one 'Private room' listing with an unrealistically high price
 of 2'147'483'647 CHF. We excluded this single observation from our
@@ -215,7 +223,7 @@ dataset as it is an extreme outlier that does not reflect the true
 market conditions and would negatively skew our predictive models.
 
 ```{r}
-# This keeps everything EXCEPT the row that is a Private room AND costs more than 5000
+# This keeps everything except the row that is a Private room and costs more than 5000
 d.airbnb_listings_feat <- d.airbnb_listings_feat %>%
   filter(!(room_type == "Private room" & price > 100000))
 ```
@@ -227,9 +235,9 @@ d.airbnb_listings_feat <- d.airbnb_listings_feat %>%
 ```
  
  
-
+## Prices
  
-```{r}
+```{r, fig.show='hold', out.width="49%", echo=FALSE}
 p1 <- ggplot(d.airbnb_listings_feat, aes(x = price)) +
   geom_histogram(bins = 50, fill = "darkred", color = "white", alpha = 0.7) +
   labs(title = "Distribution of Raw Price", x = "Price", y = "Count")
@@ -243,7 +251,9 @@ p1 + p2
  
 The histograms above clearly illustrate that the price distribution is heavily right-skewed. To satisfy the assumptions of our models and improve performance, we applied a log transformation. Post-transformation, the data exhibits a distribution that more closely resembles a Gaussian (normal) distribution.
 
-```{r}
+## Capacity & Rating
+
+```{r, fig.show='hold', out.width='49%'}
 p_acc <- ggplot(d.airbnb_listings_feat, aes(x = accommodates)) +
   geom_histogram(binwidth = 1, fill = "dodgerblue", color = "white") +
   scale_x_continuous(breaks = seq(1, max(d.airbnb_listings_feat$accommodates, na.rm = TRUE), by = 1)) +
@@ -256,8 +266,10 @@ p_rev <- ggplot(d.airbnb_listings_feat, aes(x = review_scores_rating)) +
 p_acc + p_rev
 ```
 The listing capacity plot shows that most accommodations are designed for 2 or 4 guests. Regarding the review scores, a distinct trend is visible, with the vast majority of ratings falling between 4 and 5. Since both hosts and guests rate each other, we suspect this distribution may be influenced by a reciprocal rating bias (or leniency bias)
+
+## Room Types & Superhost Status
  
-```{r}
+```{r, fig.show='hold', out.width='49%'}
 p_room <- ggplot(d.airbnb_listings_feat, aes(x = room_type, fill = room_type)) +
   geom_bar(show.legend = FALSE) +
   labs(title = "Proportion of Room Types", x = "Room Type", y = "Count") +
@@ -271,8 +283,10 @@ p_host <- ggplot(d.airbnb_listings_feat %>% filter(!is.na(host_is_superhost)), a
 p_room + p_host
 ```
 The plots illustrate the distribution of room types and host statuses within the dataset. It is evident that the inventory is predominantly composed of `Entire homes/apartments` and `Private rooms`, while `Hotel rooms` and `Shared rooms` constitute a negligible minority. Furthermore, the data reveals that Superhost status is relatively uncommon; a significant majority of hosts do not hold this designation, with only approximately 30% of the sample categorized as Superhosts.
-```{r}
-ggplot(d.airbnb_listings_feat, aes(x = room_type, y = log_price, fill = room_type)) +
+
+## Log Prices and rooms / neighbourhoods
+```{r, fig.show='hold', out.width='33%'}
+p_logprice_room <- ggplot(d.airbnb_listings_feat, aes(x = room_type, y = log_price, fill = room_type)) +
   geom_boxplot(alpha = 0.7, show.legend = FALSE) +
   labs(title = "Log Price by Room Type", x = "Room Type", y = "Log Price") +
   theme(axis.text.x = element_text(angle = 45, hjust = 1))
@@ -282,13 +296,15 @@ top_neighborhoods <- d.airbnb_listings_feat %>%
   top_n(10, n) %>% 
   pull(neighbourhood_group_cleansed)
 
-ggplot(d.airbnb_listings_feat %>% filter(neighbourhood_group_cleansed %in% top_neighborhoods), 
+p_logprice_neighbourhood <- ggplot(d.airbnb_listings_feat %>% filter(neighbourhood_group_cleansed %in% top_neighborhoods), 
        aes(x = reorder(neighbourhood_group_cleansed, log_price, FUN = median), y = log_price)) +
   geom_boxplot(fill = "lightblue", alpha = 0.7) +
   coord_flip() +
   labs(title = "Log Price by Top 10 Neighbourhood Groups", 
        x = "Neighbourhood Group", 
        y = "Log Price")
+
+p_logprice_room | p_logprice_neighbourhood
 ```
 
 The boxplot *"Log Price by Room Type"* reveals significant differences in pricing structures across categories:
@@ -305,7 +321,9 @@ There is a clear geographic disparity: regions like Riviera-Pays-d'Enhaut and Ai
 
 Almost all top neighbourhoods show high-end outliers, confirming that luxury listings are spread across the canton, though the baseline price (the "floor") varies significantly by location.
 
-```{r host_features, fig.height=8, fig.width=12, message=FALSE, warning=FALSE}
+## Host Variables
+
+```{r host_features, fig.show='hold', out.width='16%'}
 p_resp_time <- ggplot(d.airbnb_listings_feat %>% filter(host_response_time != "N/A" & !is.na(host_response_time)), aes(x = host_response_time)) +
   geom_bar(fill = "cadetblue") +
   labs(title = "Host Response Time", x = "Response Time", y = "Count") +
@@ -327,7 +345,7 @@ p_verified <- ggplot(d.airbnb_listings_feat %>% filter(!is.na(host_identity_veri
   geom_bar(fill = "khaki4") +
   labs(title = "Identity Verified", x = "t = True, f = False", y = "Count")
 
-(p_resp_time | p_resp_rate | p_acc_rate) / (p_pic | p_verified)
+p_resp_time | p_resp_rate | p_acc_rate | p_pic | p_verified
 
 ```
 The visualizations regarding host behavior and profile attributes reveal a high degree of professionalism and a strong intent to maximize booking opportunities:
@@ -338,7 +356,9 @@ Reliability: Similarly, the Host Acceptance Rate is predominantly concentrated a
 
 Trust and Verification: To establish credibility in a peer-to-peer marketplace, nearly all hosts utilize profile pictures and have completed identity verification. These "trust signals" are essential for reducing perceived risk for bookers and presenting the host as a reliable partner.
 
-```{r}
+## Properties & Neighborhoods
+
+```{r, fig.show='hold', out.width='49%'}
 
 p_prop <- d.airbnb_listings_feat %>%
   count(property_type) %>%
@@ -356,15 +376,17 @@ p_neigh <- d.airbnb_listings_feat %>%
   coord_flip() +
   labs(title = "Top 10 Neighbourhood Groups (Count)", x = "Neighbourhood", y = "Count")
 
-(p_prop / p_neigh)
+p_prop | p_neigh
 ```
 "To further understand the market composition, we examined the most frequent property types and their geographic distribution.
 
 - Property Types: The plot 'Top 10 Property Types (Count)' shows a massive dominance of 'Entire rental units', which account for nearly 2,000 listings. This is followed by 'Private rooms in rental units' and 'Entire homes'. Specialized accommodations like chalets or villas are present but represent a much smaller share of the market.
 
-- Geographic Distribution: The chart 'Top 10 Neighbourhood Groups (Count)' highlights a strong regional concentration. Aigle and Lausanne are the most prominent hubs, with Aigle leading the count at over 1,000 listings. In contrast, regions like Gros-de-Vaud show significantly less activity in the top 10 ranking."
+- Geographic Distribution: The chart 'Top 10 Neighbourhood Groups (Count)' highlights a strong regional concentration. Aigle and Lausanne are the most prominent hubs, with Aigle leading the count at over 1,000 listings. In contrast, regions like Gros-de-Vaud show significantly less activity in the top 10 ranking.
 
-```{r}
+## Furnishing
+
+```{r, fig.show='hold', out.width='49%'}
 p_baths <- ggplot(d.airbnb_listings_feat, aes(x = bathrooms)) +
   geom_histogram(binwidth = 0.5, fill = "plum4", color = "white") +
   scale_x_continuous(breaks = seq(0, max(d.airbnb_listings_feat$bathrooms, na.rm = TRUE), by = 1)) +
@@ -381,7 +403,9 @@ p_baths | p_beds
 ```
 The distribution plots for the number of bathrooms and beds reveal a strong concentration at lower values, as expected. However, the 'Number of Beds' plot in particular shows several extreme outliers, with a few listings claiming exceptionally high bed counts (up to over 40). While these values are not entirely implausible—they could represent large hostels or group dormitories—a qualitative verification was deemed impractical. Manually cross-referencing each of these extreme cases directly on the Airbnb website would be excessively time-consuming, hence they remain in the dataset as potential noise.
 
-```{r}
+## Utilisation
+
+```{r, fig.show='hold', out.width='33%'}
 # Minimum Nights (Log scale due to extreme outliers like 365+ nights)
 p_nights <- ggplot(d.airbnb_listings_feat, aes(x = minimum_nights)) +
   geom_histogram(bins = 30, fill = "olivedrab", color = "white") +
@@ -407,7 +431,9 @@ Total Number of Reviews: The review count distribution is heavily right-skewed, 
 
 Estimated Occupancy: Similar to the review counts, the estimated occupancy shows a strong rightward skew. Most listings are occupied for only a small fraction of the year. However, a notable anomaly is the slight spike at the far right tail of the distribution. This peak likely represents highly commercialized listings or permanent rental units that operate at near full capacity throughout the year."
 
-```{r}
+## Feature Engineered Data
+
+```{r, fig.show='hold', out.width='49%'}
 
 # High Demand (Binary)
 p_demand <- ggplot(d.airbnb_listings_feat, aes(x = as.factor(high_demand))) +
@@ -419,7 +445,7 @@ p_price_high <- ggplot(d.airbnb_listings_feat, aes(x = as.factor(price_high))) +
   geom_bar(fill = "sienna") +
   labs(title = "High Price Classification", x = "0 = No, 1 = Yes", y = "Count")
 
-(p_demand | p_price_high)
+p_demand | p_price_high
 ```
 
 The bar charts illustrate the count of observations for our classification targets:
@@ -430,14 +456,18 @@ This variable exhibits a severe class imbalance. While the majority of listings 
 *High Price Classification*:
 In contrast, the distribution for high price is nearly perfectly balanced. This is the intended result of our decision to split the data using the median price. Since exactly half of the listings fall above and half below this value, the classes are equally represented. This provides an ideal baseline for classification algorithms, as the models will not be inherently biased toward a majority class.
 
-```{r}
-d.airbnb_listings_feat %>%
+## Verifications
+
+```{r, fig.show='hold'}
+p_verifications <- d.airbnb_listings_feat %>%
   count(host_verifications) %>%
   top_n(5, n) %>%
   ggplot(aes(x = reorder(host_verifications, n), y = n)) +
   geom_bar(stat = "identity", fill = "grey50") +
   coord_flip() +
   labs(title = "Top 5 Host Verification Combinations", x = "Verification Methods", y = "Count")
+
+p_verifications
 ```
 
 To complete the profile of host credibility, we examined the specific combinations of verification methods used. The chart "Top 5 Host Verification Combinations" reveals a highly standardized approach to trust within the platform:
@@ -827,7 +857,6 @@ With the GLM model with Poisson-family / quasi-poisson family is used to analyse
 
 ## Model
 ```{r}
-# --- GLM set to Poisson (Pascal) ---
 
 glm_poisson <- glm(estimated_occupancy_l365d ~ price + host_is_superhost + 
                      review_scores_rating + accommodates + room_type, 
@@ -835,6 +864,7 @@ glm_poisson <- glm(estimated_occupancy_l365d ~ price + host_is_superhost +
                    family = "poisson")
 
 summary(glm_poisson)
+
 
 # Checking for Overdispersion.
 dispersion_ratio <- glm_poisson$deviance / glm_poisson$df.residual
@@ -846,7 +876,56 @@ glm_quasipoisson <- glm(estimated_occupancy_l365d ~ price + host_is_superhost +
                         family = "quasipoisson")
 
 summary(glm_quasipoisson)
+AIC(glm_quasipoisson)
 ```
+
+## Crossvalidation
+
+
+```{r Crossvalidation Datasets 10-fold (TIMON)}
+set.seed(1)
+
+cv.mse.poisson <- c()
+cv.mse.quasipoisson <- c()
+
+for(i in 1:200){
+  #dataprep
+  n <- nrow(d.airbnb_listings_feat)
+  cv.ind_permuted <- sample(1:n, replace = FALSE)
+  d.airbnb_listings_feat_permuted <- d.airbnb_listings_feat[cv.ind_permuted,]
+  
+  #create folds
+  cv.folds <- cut(1:n, breaks = 3, labels = FALSE)
+  cv.ind_test <- which(cv.folds == 1)
+  
+  d.cv_test <- d.airbnb_listings_feat_permuted[cv.ind_test, ]
+  d.cv_train <- d.airbnb_listings_feat_permuted[-cv.ind_test, ]
+  
+  #train model poisson
+  cv.glm_poisson_train <- glm(formula = formula(glm_poisson), 
+                          data = d.cv_train)
+  cv.glm_poisson_predict <- predict(cv.glm_poisson_train, newdata = d.cv_test)
+  
+  cv.mse.poisson[i] <- mean((d.cv_test$estimated_occupancy_l365d - cv.glm_poisson_predict)^2, 
+                           na.rm = TRUE)
+  
+  
+  #train model quasipoisson
+  cv.glm_quasipoisson_train <- glm(formula = formula(glm_quasipoisson), 
+                          data = d.cv_train)
+  cv.glm_quasipoisson_predict <- predict(cv.glm_quasipoisson_train, newdata = d.cv_test)
+  
+  cv.mse.quasipoisson[i] <- mean((d.cv_test$estimated_occupancy_l365d - cv.glm_quasipoisson_predict)^2, 
+                           na.rm = TRUE)
+  
+}
+
+boxplot(cv.mse.poisson, cv.mse.quasipoisson, names = c("Poisson-Model","Quasipoisson-Model"))
+
+```
+
+Interpretation: die beiden Modelle unterscheiden sich nicht. wir erhalten keine outlier in den vorhersagen sprich das Model ist sehr stabil. 
+
 
 ## Interpretation GLM-Poisson:
 
@@ -1029,7 +1108,6 @@ cannot answer.
 ```{r}
 # GAM Modell — bereinigt (Davide & Timon)
 
-# --- 1. Data preparation ---
 d.airbnb_listings_feat_gam <- d.airbnb_listings_feat %>%
   select(price, accommodates, review_scores_rating,
          number_of_reviews, longitude, latitude,
@@ -1645,7 +1723,7 @@ perspective to increase listing visibility and overall booking volume
 nightly market rate.
 
 # Results
-
+Wir können sagen, dass für Hosts keine Motivation gibt, 
 # Conclusion
 
 # Limitations
@@ -1655,6 +1733,7 @@ nightly market rate.
 # Use of GenAI
 
 
+# Annex
 
 
 

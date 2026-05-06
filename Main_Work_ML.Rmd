@@ -24,18 +24,7 @@ Tasks ab 29.04
 - Frühlingsputz (PASCAL)
 - Limitationen und Business Case im Kapitel  ergänzen. jeweils für die eigenen
 Modelle. (TIMON) (DAVIDE) (PASCAL)
-<<<<<<< HEAD
-<<<<<<< HEAD
-- crossvalidation im SVM (?) einbauen (TIMON)
-- understand the data.  **kurz erklären**. (PASCAL)
-- EDA --> alles drin was wir müssen? mehr auch Verteilungen zeigen der Daten. (DAVIDE) **EDA vervollständigt mit zusätzlichen Graphen und Visuals. Reihenfolge unsicher -> TBD**
-=======
-- crossvalidation im SVM (?) einbauen (TIMON) *erledigt*
-- understand the data.  **kurz erklären**. (PASCAL) erledigt
-=======
->>>>>>> 0aec358bb14bbcbd770d3dc8ed6a08c6653c1946
-- EDA --> alles drin was wir müssen? mehr auch Verteilungen zeigen der Daten. (DAVIDE)
->>>>>>> fbb04fb7c7ccd2ec2760ca9b1bcfe4072584488a
+
 
 
 

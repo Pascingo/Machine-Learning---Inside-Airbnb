@@ -210,6 +210,8 @@ d.airbnb_listings_feat <- d.listings_clean %>%
 
 # Understanding the Data
 
+Für unseren Business Case wollen wir nochmals aufzeigen, wie Daten strukturiert sind, Verteilungen und Variabelarten, damit wir wissen, welche Modelle wir wie anwenden können. Unser Auftraggeber AirBnB kennt diese Daten natürlich bereits sehr gut, deshalb werden hier im Projektdokument nur die wichtigsten Plots zeigen, alle Visualisierungen finden sich im Anhang. 
+
 *Important to mention* During our exploratory data analysis, we
 identified one 'Private room' listing with an unrealistically high price
 of 2'147'483'647 CHF. We excluded this single observation from our
@@ -229,7 +231,7 @@ d.airbnb_listings_feat <- d.airbnb_listings_feat %>%
 ```
  
  
-
+## Prices
  
 ```{r}
 p1 <- ggplot(d.airbnb_listings_feat, aes(x = price)) +
@@ -245,6 +247,8 @@ p1 + p2
  
 The histograms above clearly illustrate that the price distribution is heavily right-skewed. To satisfy the assumptions of our models and improve performance, we applied a log transformation. Post-transformation, the data exhibits a distribution that more closely resembles a Gaussian (normal) distribution.
 
+## Capacity & Rating
+
 ```{r}
 p_acc <- ggplot(d.airbnb_listings_feat, aes(x = accommodates)) +
   geom_histogram(binwidth = 1, fill = "dodgerblue", color = "white") +
@@ -258,6 +262,8 @@ p_rev <- ggplot(d.airbnb_listings_feat, aes(x = review_scores_rating)) +
 p_acc + p_rev
 ```
 The listing capacity plot shows that most accommodations are designed for 2 or 4 guests. Regarding the review scores, a distinct trend is visible, with the vast majority of ratings falling between 4 and 5. Since both hosts and guests rate each other, we suspect this distribution may be influenced by a reciprocal rating bias (or leniency bias)
+
+## Room Types & Superhost Status
  
 ```{r}
 p_room <- ggplot(d.airbnb_listings_feat, aes(x = room_type, fill = room_type)) +
@@ -273,6 +279,8 @@ p_host <- ggplot(d.airbnb_listings_feat %>% filter(!is.na(host_is_superhost)), a
 p_room + p_host
 ```
 The plots illustrate the distribution of room types and host statuses within the dataset. It is evident that the inventory is predominantly composed of `Entire homes/apartments` and `Private rooms`, while `Hotel rooms` and `Shared rooms` constitute a negligible minority. Furthermore, the data reveals that Superhost status is relatively uncommon; a significant majority of hosts do not hold this designation, with only approximately 30% of the sample categorized as Superhosts.
+
+## Log Prices and rooms / neighbourhoods
 ```{r}
 ggplot(d.airbnb_listings_feat, aes(x = room_type, y = log_price, fill = room_type)) +
   geom_boxplot(alpha = 0.7, show.legend = FALSE) +
@@ -307,6 +315,8 @@ There is a clear geographic disparity: regions like Riviera-Pays-d'Enhaut and Ai
 
 Almost all top neighbourhoods show high-end outliers, confirming that luxury listings are spread across the canton, though the baseline price (the "floor") varies significantly by location.
 
+## Host Variables
+
 ```{r host_features, fig.height=8, fig.width=12, message=FALSE, warning=FALSE}
 p_resp_time <- ggplot(d.airbnb_listings_feat %>% filter(host_response_time != "N/A" & !is.na(host_response_time)), aes(x = host_response_time)) +
   geom_bar(fill = "cadetblue") +
@@ -340,6 +350,8 @@ Reliability: Similarly, the Host Acceptance Rate is predominantly concentrated a
 
 Trust and Verification: To establish credibility in a peer-to-peer marketplace, nearly all hosts utilize profile pictures and have completed identity verification. These "trust signals" are essential for reducing perceived risk for bookers and presenting the host as a reliable partner.
 
+## Properties & Neighborhoods
+
 ```{r}
 
 p_prop <- d.airbnb_listings_feat %>%
@@ -364,7 +376,9 @@ p_neigh <- d.airbnb_listings_feat %>%
 
 - Property Types: The plot 'Top 10 Property Types (Count)' shows a massive dominance of 'Entire rental units', which account for nearly 2,000 listings. This is followed by 'Private rooms in rental units' and 'Entire homes'. Specialized accommodations like chalets or villas are present but represent a much smaller share of the market.
 
-- Geographic Distribution: The chart 'Top 10 Neighbourhood Groups (Count)' highlights a strong regional concentration. Aigle and Lausanne are the most prominent hubs, with Aigle leading the count at over 1,000 listings. In contrast, regions like Gros-de-Vaud show significantly less activity in the top 10 ranking."
+- Geographic Distribution: The chart 'Top 10 Neighbourhood Groups (Count)' highlights a strong regional concentration. Aigle and Lausanne are the most prominent hubs, with Aigle leading the count at over 1,000 listings. In contrast, regions like Gros-de-Vaud show significantly less activity in the top 10 ranking.
+
+## Furnishing
 
 ```{r}
 p_baths <- ggplot(d.airbnb_listings_feat, aes(x = bathrooms)) +
@@ -382,6 +396,8 @@ p_baths | p_beds
 
 ```
 The distribution plots for the number of bathrooms and beds reveal a strong concentration at lower values, as expected. However, the 'Number of Beds' plot in particular shows several extreme outliers, with a few listings claiming exceptionally high bed counts (up to over 40). While these values are not entirely implausible—they could represent large hostels or group dormitories—a qualitative verification was deemed impractical. Manually cross-referencing each of these extreme cases directly on the Airbnb website would be excessively time-consuming, hence they remain in the dataset as potential noise.
+
+## Utilisation
 
 ```{r}
 # Minimum Nights (Log scale due to extreme outliers like 365+ nights)
@@ -409,6 +425,8 @@ Total Number of Reviews: The review count distribution is heavily right-skewed, 
 
 Estimated Occupancy: Similar to the review counts, the estimated occupancy shows a strong rightward skew. Most listings are occupied for only a small fraction of the year. However, a notable anomaly is the slight spike at the far right tail of the distribution. This peak likely represents highly commercialized listings or permanent rental units that operate at near full capacity throughout the year."
 
+## Feature Engineered Data
+
 ```{r}
 
 # High Demand (Binary)
@@ -431,6 +449,8 @@ This variable exhibits a severe class imbalance. While the majority of listings 
 
 *High Price Classification*:
 In contrast, the distribution for high price is nearly perfectly balanced. This is the intended result of our decision to split the data using the median price. Since exactly half of the listings fall above and half below this value, the classes are equally represented. This provides an ideal baseline for classification algorithms, as the models will not be inherently biased toward a majority class.
+
+## Verifications
 
 ```{r}
 d.airbnb_listings_feat %>%
@@ -1607,6 +1627,7 @@ nightly market rate.
 # Use of GenAI
 
 
+# Annex
 
 
 

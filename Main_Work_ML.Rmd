@@ -1190,7 +1190,7 @@ leaflet() %>%
   ) %>%
   addLegend(
     position = "bottomright",
-    colors   = color:map,
+    colors   = color_map,
     labels   = c("Underpriced (Increase)", "Fair Price (±15%)", "Overpriced (Decrease)"),
     title    = "Pricing Strategy vs. Market (GAM)",
     opacity  = 0.85

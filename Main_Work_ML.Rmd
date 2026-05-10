@@ -26,11 +26,11 @@ Tasks ab 29.04
 Modelle. (TIMON) (DAVIDE)
 - GLM (Binominal) gemäss Feedback Timon noch anpassen und mit Text ausschmücken sowie Visualisieren (DAVIDE) - DONE
 - GAM text kürzen (DAVIDE) - DONE
-- EDA verdichten und Platz sparen (Plots)
+- EDA verdichten und Platz sparen (Plots) - TBD welche wir drin lassen.
 - Colors vereinheitlichen (TIMON)
 - README File (PASCAL)
 - interpretation Crossvalidation schreiben (TIMON)
-- Coding Conventions kontrollieren (ALLE)
+- Coding Conventions kontrollieren (ALLE) - Davide GAM / GLM done, 
 - 
 
 
@@ -679,9 +679,8 @@ Interpretation:
 The medians across rating groups are surprisingly close. Higher-rated listings do not automatically charge more — which is consistent with the pattern we later see in the Superhost analysis: well-rated hosts often compete on price rather than charge a premium.
 
 
-### Mapping the Listings by Log(Price)
+### Spatial Data: Mapping the Listings by Log(Price)
 ```{r}
-# --- Spatial Data: Mapping the Listings ---
 # Cleaned up the map to focus purely on location and price.
 ggplot(data = d.airbnb_listings_feat, aes(x = longitude, y = latitude)) +
   geom_point(aes(color = log_price), alpha = 0.6, size = 1.5) +
@@ -958,14 +957,14 @@ Feature Engeneering
 ```{r glm_binomial_extended}
 # Predict the probability that a listing is priced above the market median
 # We control for the most obvious price drivers so the host coefficients can be read cleanly
-glm_binomial <- glm(price_high ~ host_is_superhost + 
+glm.binomial <- glm(price_high ~ host_is_superhost + 
                                  accommodates + 
                                  room_type + 
                                  review_scores_rating,
                     data   = d.airbnb_listings_feat,
                     family = binomial(link = "logit"))
 
-summary(glm_binomial)
+summary(glm.binomial)
 ```
 
 ```{r glm_binomial_results}
@@ -988,7 +987,7 @@ A coefficient table is hard to read for hosts. The plot below shows the predicte
 
 ```{r glm_binomial_plot}
 # Build a prediction grid: vary accommodates and superhost, hold the rest constant
-new_data <- expand.grid(
+d.glm_predict <- expand.grid(
   accommodates         = seq(1, 10, by = 1),
   host_is_superhost    = c(TRUE, FALSE),
   room_type            = "Entire home/apt",
@@ -996,13 +995,13 @@ new_data <- expand.grid(
 )
 
 # Predict on the link scale to also get standard errors, then transform back
-pred <- predict(glm_binomial, newdata = new_data, type = "link", se.fit = TRUE)
-new_data$prob       <- plogis(pred$fit)
-new_data$prob_lower <- plogis(pred$fit - 1.96 * pred$se.fit)
-new_data$prob_upper <- plogis(pred$fit + 1.96 * pred$se.fit)
+glm.pred <- predict(glm.binomial, newdata = d.glm_predict, type = "link", se.fit = TRUE)
+d.glm_predict$prob       <- plogis(glm.pred$fit)
+d.glm_predict$prob_lower <- plogis(glm.pred$fit - 1.96 * glm.pred$se.fit)
+d.glm_predict$prob_upper <- plogis(glm.pred$fit + 1.96 * glm.pred$se.fit)
 
-ggplot(new_data, aes(x = accommodates, y = prob, 
-                     color = host_is_superhost, fill = host_is_superhost)) +
+p.glm_binomial <- ggplot(d.glm_predict, aes(x = accommodates, y = prob, 
+                                            color = host_is_superhost, fill = host_is_superhost)) +
   geom_ribbon(aes(ymin = prob_lower, ymax = prob_upper), alpha = 0.2, color = NA) +
   geom_line(size = 1.2) +
   scale_x_continuous(breaks = 1:10) +
@@ -1010,12 +1009,14 @@ ggplot(new_data, aes(x = accommodates, y = prob,
                      labels = c("Regular Host", "Superhost")) +
   scale_fill_manual(values = c("tomato", "seagreen"),
                     labels = c("Regular Host", "Superhost")) +
-  labs(title = "Probability of Charging an Above-Median Price",
+  labs(title    = "Probability of Charging an Above-Median Price",
        subtitle = "By guest capacity and Superhost status (entire home, average rating)",
-       x = "Accommodates (Guests)",
-       y = "Predicted Probability",
-       color = NULL, fill = NULL) +
+       x        = "Accommodates (Guests)",
+       y        = "Predicted Probability",
+       color    = NULL, fill = NULL) +
   theme(legend.position = "top")
+
+p.glm_binomial
 ```
 
 
@@ -1070,12 +1071,12 @@ d.airbnb_listings_feat_gam <- d.airbnb_listings_feat %>%
 # This matters for the SVM later, which uses GAM labels — splitting first prevents leakage.
 set.seed(42)
 n <- nrow(d.airbnb_listings_feat_gam)
-train_idx <- sample(seq_len(n), size = floor(0.8 * n))
+train.idx <- sample(seq_len(n), size = floor(0.8 * n))
 
-df_train <- d.airbnb_listings_feat_gam[ train_idx, ]
-df_test  <- d.airbnb_listings_feat_gam[-train_idx, ]
+df.train <- d.airbnb_listings_feat_gam[ train.idx, ]
+df.test  <- d.airbnb_listings_feat_gam[-train.idx, ]
 
-cat("Train:", nrow(df_train), " | Test:", nrow(df_test), "\n")
+cat("Train:", nrow(df.train), " | Test:", nrow(df.test), "\n")
 ```
 
 We model *log(price)* rather than the raw price. The price distribution is heavily right-skewed (see EDA-Part), and the log transform stabilises variance and brings the residuals close to normal. Coefficients on the log scale can be read multiplicatively: a coefficient of β corresponds to roughly a (exp(β) − 1) × 100% price change.
@@ -1104,8 +1105,8 @@ The partial effect plots are the main reason to choose a GAM in the first place.
 plot(gam.main, pages = 1, shade = TRUE,
      col = "steelblue", shade.col = "lightblue", seWithMean = TRUE)
 
-edf_table <- as.data.frame(summary(gam.main)$s.table) %>% round(3)
-kable(edf_table, caption = "Smooth Terms: Estimated Degrees of Freedom (EDF)")
+edf.table <- as.data.frame(summary(gam.main)$s.table) %>% round(3)
+kable(edf.table, caption = "Smooth Terms: Estimated Degrees of Freedom (EDF)")
 
 cat("R-squared:         ", round(summary(gam.main)$r.sq,  3), "\n")
 cat("Deviance explained:", round(summary(gam.main)$dev.expl, 3), "\n")
@@ -1132,17 +1133,17 @@ We set the threshold at ±15%, anchored in the residual standard deviation of th
 
 ```{r traffic_light_labels}
 # Predictions on log scale
-df_train$fitted_logprice <- as.numeric(predict(gam.main, newdata = df_train))
-df_test$fitted_logprice  <- as.numeric(predict(gam.main, newdata = df_test))
+df.train$fitted_logprice <- as.numeric(predict(gam.main, newdata = df.train))
+df.test$fitted_logprice  <- as.numeric(predict(gam.main, newdata = df.test))
 
 # Smearing correction (Duan 1983) for back-transforming log predictions
 sigma2   <- summary(gam.main)$scale
 smearing <- exp(sigma2 / 2)
-df_train$fitted_price <- exp(df_train$fitted_logprice) * smearing
-df_test$fitted_price  <- exp(df_test$fitted_logprice)  * smearing
+df.train$fitted_price <- exp(df.train$fitted_logprice) * smearing
+df.test$fitted_price  <- exp(df.test$fitted_logprice)  * smearing
 
 # Apply traffic-light rule consistently to train and test
-make_traffic_light <- function(price, fitted, threshold = 15) {
+make.traffic_light <- function(price, fitted, threshold = 15) {
   pct <- (as.numeric(price) - as.numeric(fitted)) / as.numeric(fitted) * 100
   case_when(
     pct <= -threshold ~ "Underpriced",
@@ -1151,14 +1152,14 @@ make_traffic_light <- function(price, fitted, threshold = 15) {
   ) %>% as.factor()
 }
 
-df_train$pct_diff      <- (df_train$price - df_train$fitted_price) / df_train$fitted_price * 100
-df_test$pct_diff       <- (df_test$price  - df_test$fitted_price)  / df_test$fitted_price  * 100
-df_train$traffic_light <- make_traffic_light(df_train$price, df_train$fitted_price)
-df_test$traffic_light  <- make_traffic_light(df_test$price,  df_test$fitted_price)
+df.train$pct_diff      <- (df.train$price - df.train$fitted_price) / df.train$fitted_price * 100
+df.test$pct_diff       <- (df.test$price  - df.test$fitted_price)  / df.test$fitted_price  * 100
+df.train$traffic_light <- make.traffic_light(df.train$price, df.train$fitted_price)
+df.test$traffic_light  <- make.traffic_light(df.test$price,  df.test$fitted_price)
 
 # Sanity check: distribution should look similar across train and test
-cat("\nTrain:\n"); print(prop.table(table(df_train$traffic_light)))
-cat("\nTest:\n");  print(prop.table(table(df_test$traffic_light)))
+cat("\nTrain:\n"); print(prop.table(table(df.train$traffic_light)))
+cat("\nTest:\n");  print(prop.table(table(df.test$traffic_light)))
 ```
 
 
@@ -1166,11 +1167,11 @@ cat("\nTest:\n");  print(prop.table(table(df_test$traffic_light)))
 The map below plots every listing in the dataset, coloured by its traffic-light verdict. Each point shows the actual price, the GAM-recommended price, and the percentage deviation when clicked.
 
 ```{r gam_leaflet_map}
-df_full <- bind_rows(df_train, df_test)
+df.map <- bind_rows(df.train, df.test)
 color_map <- c("Underpriced" = "#EF9F27",
                "Fair Price"  = "#1D9E75",
                "Overpriced"  = "#D85A30")
-df_full$marker_color <- color_map[as.character(df_full$traffic_light)]
+df.map$marker_color <- color_map[as.character(df.map$traffic_light)]
 
 leaflet() %>%
   addProviderTiles(providers$CartoDB.Positron) %>%
@@ -1189,7 +1190,7 @@ leaflet() %>%
   ) %>%
   addLegend(
     position = "bottomright",
-    colors   = color_map,
+    colors   = color:map,
     labels   = c("Underpriced (Increase)", "Fair Price (±15%)", "Overpriced (Decrease)"),
     title    = "Pricing Strategy vs. Market (GAM)",
     opacity  = 0.85
@@ -1255,8 +1256,8 @@ svm.coloums <- c("traffic_light", "price", "accommodates", "review_scores_rating
                  "number_of_reviews", "room_type", "host_is_superhost")
 
 # Creating the 80% Training and 20% Test datasets
-d.svm_train <- df_train[, svm.coloums]
-d.svm_test  <- df_test[, svm.coloums]
+d.svm_train <- df.train[, svm.coloums]
+d.svm_test  <- df.test[, svm.coloums]
 
 # Verifying the split visually
 cat("Training set size:", nrow(d.svm_train), "\n")

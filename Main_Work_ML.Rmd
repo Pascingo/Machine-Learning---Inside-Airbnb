@@ -936,6 +936,16 @@ The GLM with quasi-Poisson distribution has corrected the overdispersion. The st
 ## Interpretation Cross Validation
 Interpretation: die beiden Modelle unterscheiden sich nicht. wir erhalten keine outlier in den vorhersagen sprich das Model ist sehr stabil. 
 
+## Business Case
+
+The *glm.quasipoisson model* directly supports our revenue management objectives by identifying the core demand-side drivers of estimated_occupancy_l365d. It strongly supports H1 by demonstrating that host-centered indicators drastically increase demand; for example, achieving host_is_superhost status boosts expected occupancy by approximately 2.6 times. The model also confirms H2, showing that physical attributes like larger accommodates capacities and renting an entire home over a Private room significantly improve booking rates. These findings provide hosts with actionable, non-pricing levers to optimize their overall yield. Ultimately, improving review_scores_rating or attaining Superhost status offers hosts a powerful "occupancy buffer," allowing them to command higher prices while maintaining strong booking volumes.
+
+
+
+## Limitations
+
+A primary limitation of this model is the potential for reverse causality, as higher occupancy naturally generates more reviews, making it easier to maintain high ratings and Superhost status. Additionally, the deletion of 714 observations due to missingness could introduce survivorship bias if these removed data points represent poorly managed or unsuccessful listings. Furthermore, our feature set omits critical demand drivers like precise neighborhood desirability, seasonality, and listing photo quality, meaning unobserved factors likely account for significant residual variance. Because the Quasi-Poisson approach uses a quasi-likelihood function, it does not produce an AIC value (shown as AIC: NA), which complicates direct statistical comparisons with non-quasi models. A potential next step could be exploring a Negative Binomial model as an alternative method to handle overdispersion while retaining standard likelihood metrics for easier comparison.
+
 
 # GLM Binomial (DAVIDE)
 

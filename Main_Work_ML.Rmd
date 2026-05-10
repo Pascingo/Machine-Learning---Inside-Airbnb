@@ -23,7 +23,7 @@ knitr::opts_chunk$set(echo = TRUE, cache = TRUE, comment = NA, warning = FALSE)
 Tasks ab 29.04
 - Frühlingsputz (PASCAL)
 - Limitationen und Business Case im Kapitel  ergänzen. jeweils für die eigenen
-Modelle. (TIMON) (DAVIDE) (PASCAL)
+Modelle. (TIMON) (DAVIDE)
 - GLM (Binominal) gemäss Feedback Timon noch anpassen und mit Text ausschmücken sowie Visualisieren (DAVIDE)
 - GAM text kürzen (DAVIDE)
 - EDA verdichten und Platz sparen (Plots)

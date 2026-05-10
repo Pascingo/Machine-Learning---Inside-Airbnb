@@ -540,11 +540,6 @@ summary_stats <- d.airbnb_listings_feat %>%
 print(summary_stats)
 ```
 
-Client Interpretation: "The average Airbnb in Vaud costs X CHF per
-night, but the median is Y CHF, indicating that a few extremely
-expensive luxury listings might be skewing the average upward. Prices
-range from a minimum of A CHF to a maximum of B CHF."
-
 
 ### Analysis by Room Type
 
@@ -622,9 +617,6 @@ cor_matrix <- cor(cor_data)
 kable(round(cor_matrix, 2), caption = "Correlation Matrix of Key Numerical Drivers")
 ```
 
-Client Interpretation: "As expected, accommodates shows the strongest
-positive correlation with price. It is also interesting to note the
-relationship between availability and number_of_reviews..."
 
 ```{r correlation_heatmap, fig.height=8, fig.width=10}
 # Select all numerical variables, drop binaries we already analysed separately
@@ -749,8 +741,7 @@ print(superhost_analysis)
 ```
 
 
-```{r}
-# --- Binary Predictor: Superhost Status ---
+```{r Binary Predictor: Superhost Status}
 # Adding this because it's a key part of the business case and fulfills the binary variable requirement.
 ggplot(data = d.airbnb_listings_feat, aes(x = as.factor(host_is_superhost), y = log_price, fill = as.factor(host_is_superhost))) +
   geom_boxplot(alpha = 0.7) +

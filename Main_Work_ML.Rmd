@@ -24,7 +24,7 @@ Tasks ab 29.04
 - Frühlingsputz (PASCAL)
 - Limitationen und Business Case im Kapitel  ergänzen. jeweils für die eigenen
 Modelle. (TIMON) (DAVIDE)
-- GLM (Binominal) gemäss Feedback Timon noch anpassen und mit Text ausschmücken sowie Visualisieren (DAVIDE)
+- GLM (Binominal) gemäss Feedback Timon noch anpassen und mit Text ausschmücken sowie Visualisieren (DAVIDE) - DONE
 - GAM text kürzen (DAVIDE)
 - EDA verdichten und Platz sparen (Plots)
 - Colors vereinheitlichen (TIMON)
@@ -952,92 +952,100 @@ A primary limitation of this model is the potential for reverse causality, as hi
 ## Theory
 
 ### Why GLM for Airbnb Pricing?
+When the outcome we want to model is binary — yes/no, above/below — a standard linear regression no longer fits. A Binomial GLM with a logit link is the natural choice: it bounds predictions between 0 and 1 and returns coefficients we can read as log-odds. Exponentiating them gives odds ratios, which are easier to communicate to a non-technical audience.
 
 ### Justification for our Use Case
+We want to know which listings end up in the upper half of the market. To do that, we created the binary variable *price_high*, which equals 1 if a listing's price is above the median and 0 otherwise. The split at the median gives us two equally sized classes, so the model is not biased toward a majority outcome.
+
 
 ### Link to Hypotheses
+This model speaks mainly to H1: do host-centered indicators (Superhost status, ratings) push up the price? The control variables (*accommodates*, *room_type*) are not the focus but make sure we don't confuse host effects with listing characteristics.
 
 ## Model
 Feature Engeneering
 
-
-```{r}
-# --- GLM Binomial (DAVIDE) ---
-# Fitting a Logistic Regression (Binomial GLM) to predict if a listing is priced above the market median.
-# The target variable 'price_high' is binary (1 = above median price, 0 = below median price).
-glm_binomial <- glm(price_high ~ host_is_superhost,
+```{r glm_binomial_extended}
+# Predict the probability that a listing is priced above the market median
+# We control for the most obvious price drivers so the host coefficients can be read cleanly
+glm_binomial <- glm(price_high ~ host_is_superhost + 
+                                 accommodates + 
+                                 room_type + 
+                                 review_scores_rating,
                     data   = d.airbnb_listings_feat,
                     family = binomial(link = "logit"))
 
 summary(glm_binomial)
 ```
-FEEDBACK TIMON: 
 
-- eher simpel, kann man hier allenfalls mindestens noch auf accommodates kontrollieren? ich bin nicht ganz sicher ob man das inerhalb eines solchen glms darf, aber eigentlich ist eine einzige UV schon zu wenig.     
-
-
-Similar to the Poisson model, the coefficients in a binomial model with
-a logit link are log-odds.
-
-```{r}
-# --- Interpretation GLM Binomial: Calculating Odds Ratios ---
-# Similar to the Poisson model, the coefficients in a binomial model with a logit link are log-odds.
-# We exponentiate the estimates (exp) to convert them into easily interpretable Odds Ratios.
-d.results_glm_binomial <- tidy(glm_binomial) %>%
+```{r glm_binomial_results}
+# Convert log-odds into odds ratios with 95% confidence intervals for easier reading
+d.results_glm_binomial <- tidy(glm_binomial, conf.int = TRUE) %>%
   mutate(
     odds_ratio = round(exp(estimate), 3),
+    or_lower   = round(exp(conf.low), 3),
+    or_upper   = round(exp(conf.high), 3),
     p.value    = round(p.value, 4)
   ) %>%
-  select(term, estimate, odds_ratio, p.value)
+  select(term, estimate, odds_ratio, or_lower, or_upper, p.value)
 
-print(d.results_glm_binomial)
+kable(d.results_glm_binomial, 
+      caption = "GLM Binomial: Odds Ratios with 95% Confidence Intervals")
+```
+
+## Visualisation
+A coefficient table is hard to read for hosts. The plot below shows the predicted probability of charging an above-median price across listing sizes, split by Superhost status. Everything else is held at its average so the two lines differ only in the variable we care about.
+
+```{r glm_binomial_plot}
+# Build a prediction grid: vary accommodates and superhost, hold the rest constant
+new_data <- expand.grid(
+  accommodates         = seq(1, 10, by = 1),
+  host_is_superhost    = c(TRUE, FALSE),
+  room_type            = "Entire home/apt",
+  review_scores_rating = mean(d.airbnb_listings_feat$review_scores_rating, na.rm = TRUE)
+)
+
+# Predict on the link scale to also get standard errors, then transform back
+pred <- predict(glm_binomial, newdata = new_data, type = "link", se.fit = TRUE)
+new_data$prob       <- plogis(pred$fit)
+new_data$prob_lower <- plogis(pred$fit - 1.96 * pred$se.fit)
+new_data$prob_upper <- plogis(pred$fit + 1.96 * pred$se.fit)
+
+ggplot(new_data, aes(x = accommodates, y = prob, 
+                     color = host_is_superhost, fill = host_is_superhost)) +
+  geom_ribbon(aes(ymin = prob_lower, ymax = prob_upper), alpha = 0.2, color = NA) +
+  geom_line(size = 1.2) +
+  scale_x_continuous(breaks = 1:10) +
+  scale_color_manual(values = c("tomato", "seagreen"),
+                     labels = c("Regular Host", "Superhost")) +
+  scale_fill_manual(values = c("tomato", "seagreen"),
+                    labels = c("Regular Host", "Superhost")) +
+  labs(title = "Probability of Charging an Above-Median Price",
+       subtitle = "By guest capacity and Superhost status (entire home, average rating)",
+       x = "Accommodates (Guests)",
+       y = "Predicted Probability",
+       color = NULL, fill = NULL) +
+  theme(legend.position = "top")
 ```
 
 
 ## Interpretation GLM Binomial: Calculating Odds Ratios (DAVIDE)
 
-FEEDBACK TIMON
-Soweit keine beanstandungen.sieht gut aus. Chatgpt hat noch vorgeschlagen allenfalls ein Konfidenzintervall zu rechnen für diese Werte, aber ich weiss nicht ob das in diesem Rahmen nötig sein würde. 
--> eine Art der Visualisierung wäre für dieses Model sicher auch noch wichtig. 
+After controlling for size, room type and rating, Superhosts have **31% lower odds** of charging an above-median price (OR = 0.69, CI [0.57, 0.84], p = 0.0002). 
+
+The control variables behave as expected: each additional guest nearly doubles the odds of being in the upper price half (OR = 1.83), private and shared rooms are far less likely to land above the median, and an one-point increase in rating raises the odds by about 62%. The hotel-room coefficient is significant but its wide confidence interval (1.26 to 40.6) reflects how few hotel listings are in the dataset.
+
+This is the opposite of what H1 would predict. Superhost status does not raise willingness to pay, it correlates with charging less. Combined with Pascal's Quasi-Poisson result (Superhosts get 2.6× more bookings), the picture is consistent: Superhosts compete on price and earn through volume, not through a price premium. The practical takeaway for hosts aiming for the badge is to price competitively and let occupancy do the work.
 
 
-What the Output Tells Us: The coefficient for host_is_superhost is
-negative (-0.2217) and highly significant (p = 0.002). The calculated
-Odds Ratio of 0.801 means that Superhosts have roughly 20% lower odds of
-pricing their listings above the median market price compared to regular
-hosts. Consequently, Superhosts tend to be cheaper, not more expensive.
+## Limitations
+A few things to keep in mind:
 
-At first glance, this seems to contradict our Hypothesis 3 (H3: "If a
-host is a superhost, the WTP of a guest increases / they charge more").
-However, the real business insight emerges when we combine this finding
-with Pascal's Quasi-Poisson model.
+- Median split is rough. A listing one franc above the median counts the same as one 500 francs above. The LM and GAM handle this much better.
+- No location. We left location out to keep the focus on host variables, but in Vaud, location is a major price driver. Some of what we attribute to room type or capacity is probably picking up location indirectly.
+- Snapshot only. No seasonality, no weekday effects, no events.
+- Correlation, not causation. Superhosts charge less on average but we can't say the badge causes it. It's just as likely that hosts who already price competitively end up qualifying for the badge.
+- The cutoff moves with the market. The median is just our sample's median. If the market shifts, so does it.
 
-The Superhost Strategy: Volume over Margin Pascal's model demonstrated
-that having Superhost status increases occupancy by a factor of 2.6. The
-Binomial GLM shows that Superhosts are more likely to price below the
-median. Together, this creates a coherent picture of the Superhost
-business strategy:
-
-- Superhost = Lower Price + Significantly Higher Occupancy
-
-- Regular Host = Higher Price + Significantly Lower Bookings
-
-Superhosts actively optimize for volume rather than margin. This makes
-perfect business sense: to achieve and maintain Superhost status on
-Airbnb, hosts need a high volume of bookings and a consistent stream of
-positive reviews. This is much easier to achieve with highly competitive
-pricing.
-
-Therefore, while H3 is not confirmed in the sense that "Superhosts
-charge a premium," the models reveal the opposite, which is a much
-stronger strategic finding: Superhosts price strategically lower but
-achieve massively more bookings as a result.
-
-Recommendation for Hosts: A host aspiring to reach Superhost status
-should not increase their prices. Instead, they should use competitive
-pricing to gather bookings and reviews. The financial reward of the
-Superhost status pays off indirectly through high occupancy rates,
-rather than a higher nightly single-booking price.
 
 # GAM Model (DAVIDE)
 

@@ -1556,59 +1556,9 @@ print(real_prices_expanded)
 
 ## Interpretation ANN
 
-Context and Hypotheses The objective of this analysis was to develop a
-data-driven pricing strategy for Airbnb hosts in the Canton of Vaud. The
-focus was on identifying the factors that influence a guest's
-Willingness to Pay (WTP) and how hosts can adjust their pricing
-accordingly. A central hypothesis (H3) posited that a host's "Superhost"
-status justifies a significant price premium, as it signals higher trust
-and superior service quality. The actual listed prices were used as a
-proxy for WTP.
+Our initial Neural Network predicted price using only review metrics, listing capacity, and Superhost status. Surprisingly, it priced Superhosts lower (132 CHF) than regular hosts (160 CHF). This was a clear case of omitted variable bias: Superhosts often use competitive pricing to maintain the high occupancy required for the badge, while expensive luxury rentals are usually managed by agencies that don't hold Superhost status.
 
-Model 1: The Naive Neural Network (Omitted Variable Bias) In an initial,
-simplified approach, an Artificial Neural Network (Multilayer
-Perceptron) was trained using only four features: review score, number
-of reviews, superhost status, and listing capacity (accommodates),
-predicting the target variable (price).
-
-Model 1 Result: Contrary to expectations, the naive network predicted a
-lower price for a Superhost (approx. 132 CHF) compared to a regular host
-(approx. 160 CHF).
-
-Interpretation: This result is a textbook example of "Omitted Variable
-Bias." In practice, hosts often achieve Superhost status through high
-occupancy rates, which are frequently driven by highly competitive,
-lower-than-average pricing. Furthermore, this naive model lacked
-critical contextual information, such as property and room types.
-Extremely expensive luxury listings, for instance, are often managed by
-professional agencies that may not hold an individual Superhost badge,
-heavily skewing the data.
-
-Model 2: The Expanded Model (One-Hot Encoding) To correct this bias, the
-model was expanded in a second iteration to include structural
-categorical variables: room_type (e.g., Private room vs. Entire home)
-and property_type (e.g., Apartment vs. Chalet). Because Neural Networks
-require purely numerical inputs, these categories were transformed into
-binary dummy variables using One-Hot Encoding.
-
-Model 2 Result: When testing a fictional, perfectly "average" listing
-(holding room type, capacity, and all other variables constant), the
-predicted price difference was marginal: 483.29 CHF (Regular Host)
-compared to 482.64 CHF (Superhost).
-
-Interpretation: Once we utilize dummy variables to ensure an
-"apples-to-apples" comparison, the supposed price penalty for Superhosts
-almost entirely disappears. Simultaneously, this refutes our initial
-Hypothesis (H3): the Superhost status alone does not command a
-significantly higher willingness to pay from guests.
-
-Business Case Conclusion For our Pricing Decision-Support System, this
-implies that price recommendations must be anchored primarily in
-structural features (capacity, location, property type). While striving
-for Superhost status remains highly advisable from a business
-perspective to increase listing visibility and overall booking volume
-(Occupancy), it does not inherently justify a noticeable markup on the
-nightly market rate.
+We corrected this in a second model by adding room and property types, using One-Hot Encoding to convert these categories into numerical inputs. Once we controlled for these structural factors to compare similar listings, the price gap practically vanished (482.64 CHF for Superhosts vs. 483.29 CHF for regular hosts). This refutes our initial hypothesis: when comparing apples to apples, Superhost status alone does not significantly increase a guest's willingness to pay.
 
 ## Business Case
 The nn_expanded model serves as the analytical core of our pricing decision-support system by accurately predicting a listing's market value based on combined structural and host-centric features. By comparing this to the nn_naive model, we successfully refute our central hypothesis, demonstrating that achieving host_is_superhost status does not command a higher nightly price from guests. Instead, the data reveals that Superhosts often achieve their high status through competitive pricing strategies designed to maximize occupancy rather than nightly margins. Ultimately, a guest's willingness to pay is dictated almost entirely by physical listing attributes like accommodates, room_type, and property_type. Therefore, we advise hosts to anchor their pricing strictly to their property's structural features, leveraging their Superhost badge purely as a marketing tool to capture market share and drive booking volume.

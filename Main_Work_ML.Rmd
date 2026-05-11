@@ -843,19 +843,19 @@ With the GLM model with Poisson-family / quasi-poisson family is used to analyse
 ## Model
 ```{r}
 
-glm_poisson <- glm(estimated_occupancy_l365d ~ price + host_is_superhost + 
+glm.poisson <- glm(estimated_occupancy_l365d ~ price + host_is_superhost + 
                      review_scores_rating + accommodates + room_type, 
                    data = d.airbnb_listings_feat, 
                    family = "poisson")
 
-summary(glm_poisson)
+summary(glm.poisson)
 
 
 # Checking for Overdispersion.
-dispersion_ratio <- glm_poisson$deviance / glm_poisson$df.residual
+dispersion_ratio <- glm.poisson$deviance / glm.poisson$df.residual
 print(paste("Dispersion Ratio:", dispersion_ratio))
 
-glm_quasipoisson <- glm(estimated_occupancy_l365d ~ price + host_is_superhost + 
+glm.quasipoisson <- glm(estimated_occupancy_l365d ~ price + host_is_superhost + 
                           review_scores_rating + accommodates + room_type, 
                         data = d.airbnb_listings_feat, 
                         family = "quasipoisson")
@@ -1455,7 +1455,7 @@ d.ann_naive_scaled <- as.data.frame(lapply(d.ann_naive, normalize))
 # Train the basic Neural Network
 # We use 1 hidden layer with 3 neurons. linear.output = TRUE is used for regression (predicting a continuous price).
 set.seed(42) 
-nn_naive <- neuralnet(
+nn.naive <- neuralnet(
   price ~ review_scores_rating + number_of_reviews + host_is_superhost + accommodates,
   data = d.ann_naive_scaled,
   hidden = 3,
@@ -1464,7 +1464,7 @@ nn_naive <- neuralnet(
 )
 
 # Visualize the network architecture
-plot(nn_naive)
+plot(nn.naive)
 
 # --- Testing Hypothesis 3 (H3) with the Naive Model ---
 # Calculate the mean for our features to represent a "statistically average" Airbnb
@@ -1481,7 +1481,7 @@ test_data_h3_naive <- data.frame(
 )
 
 # Predict the scaled prices
-predictions_h3_naive <- compute(nn_naive, test_data_h3_naive)
+predictions_h3_naive <- compute(nn.naive, test_data_h3_naive)
 
 # Reverse the min-max scaling to interpret the results in real CHF
 min_price <- min(d.ann_naive$price)
@@ -1519,7 +1519,7 @@ colnames(d_dummies) <- make.names(colnames(d_dummies))
 d_scaled <- as.data.frame(lapply(d_dummies, normalize))
 
 set.seed(42) 
-nn_expanded <- neuralnet(
+nn.expanded <- neuralnet(
   price ~ ., 
   data = d_scaled,
   hidden = 3,
@@ -1527,7 +1527,7 @@ nn_expanded <- neuralnet(
   stepmax = 1e6         
 )
 
-plot(nn_expanded)
+plot(nn.expanded)
 
 # --- 5. Prediction & Test for H3 ---
 # To conduct a fair "what-if" analysis (Partial Dependence), we take the mean of ALL 
@@ -1542,7 +1542,7 @@ test_data_h3_exp$host_is_superhostFALSE <- c(1, 0)
 test_data_h3_exp$host_is_superhostTRUE <- c(0, 1)
 
 # Predict prices (excluding the 'price' column from the input)
-predictions_h3_exp <- compute(nn_expanded, test_data_h3_exp %>% select(-price))
+predictions_h3_exp <- compute(nn.expanded, test_data_h3_exp %>% select(-price))
 
 # Reverse scaling using the min/max from the unscaled dataset
 min_price_exp <- min(d_model_ready$price)

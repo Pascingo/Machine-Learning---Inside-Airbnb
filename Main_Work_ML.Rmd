@@ -1431,7 +1431,6 @@ be important to enable better categorization.
 ## Model
 
 ```{r}
-# --- ANN: Model 1 (Naive Approach) ---
 # Selecting basic variables. We omit missing values for this simplified approach.
 d.ann_naive <- d.airbnb_listings_feat %>%
   select(
@@ -1443,8 +1442,8 @@ d.ann_naive <- d.airbnb_listings_feat %>%
   ) %>%
   na.omit() 
 
-# Neural Networks perform best (and converge faster) when all input features 
-# are scaled to a similar range, typically [0, 1].
+# Neural Networks perform best (and converge faster) when all input features are scaled to a similar range, typically [0, 1].
+
 normalize <- function(x) {
   return ((x - min(x)) / (max(x) - min(x)))
 }
@@ -1463,10 +1462,8 @@ nn.naive <- neuralnet(
   stepmax = 1e6         
 )
 
-# Visualize the network architecture
 plot(nn.naive)
 
-# --- Testing Hypothesis 3 (H3) with the Naive Model ---
 # Calculate the mean for our features to represent a "statistically average" Airbnb
 mean_rating <- mean(d.ann_naive_scaled$review_scores_rating)
 mean_reviews <- mean(d.ann_naive_scaled$number_of_reviews)
@@ -1493,7 +1490,6 @@ print(real_prices_naive)
 ```
 
 ```{r}
-# --- ANN: Model 2 (Expanded Model handling Omitted Variable Bias) ---
 
 # Data Preparation & Dimensionality Reduction
 d_model_ready <- d.airbnb_listings_feat %>%
@@ -1529,9 +1525,7 @@ nn.expanded <- neuralnet(
 
 plot(nn.expanded)
 
-# --- 5. Prediction & Test for H3 ---
-# To conduct a fair "what-if" analysis (Partial Dependence), we take the mean of ALL 
-# variables to represent an absolutely "average" listing.
+# To conduct a fair "what-if" analysis (Partial Dependence), we take the mean of ALL variables to represent an absolutely "average" listing.
 test_data_h3_exp <- as.data.frame(lapply(d_scaled, mean))
 
 # Duplicate the row to create two identical hypothetical listings

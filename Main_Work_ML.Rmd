@@ -23,7 +23,7 @@ knitr::opts_chunk$set(echo = TRUE, cache = TRUE, comment = NA, warning = FALSE)
 Tasks ab 29.04
 - Frühlingsputz (PASCAL)
 - Limitationen und Business Case im Kapitel  ergänzen. jeweils für die eigenen
-Modelle. (TIMON) (DAVIDE) (Pascal --> done)
+Modelle. (TIMON) (DAVIDE) (Pascal --> done) (Timon --> LM done)
 - GLM (Binominal) gemäss Feedback Timon noch anpassen und mit Text ausschmücken sowie Visualisieren (DAVIDE) - DONE
 - GAM text kürzen (DAVIDE) - DONE
 - EDA verdichten und Platz sparen (Plots) - TBD welche wir drin lassen.
@@ -787,14 +787,11 @@ With this initial model, we aim to examine the first hypothesis and investigate 
 For this, we use the *review_scores_rating*. We
 also include the factor *host_is_superhost* to distinguish between the
 two groups. We measure willingness to pay here using the effective price
-of the rental property. Additionally, we introduce two control variables. First, the size of the rental property, as this obviously influences and skews the rental price, and second, the type of room. This also significantly influences the price.
-
-Since there is a high risk of multicollinearity in our data, this is
-also examined.
+of the rental property. Additionally, we introduce two control variables. First, the size of the rental property, as this obviously influences the rental price, and second, the type of room. This also significantly influences the price.
 
 
-**Hier muss noch ein Teil rein bezüglich den Vorgaben des Models und inwiefern diese erfüllt sind.**
-
+A linear model allows us to analyze multiple variables and their effect on a dependent variable. It is important that the dependent variable be normally distributed. Since this is not the case here, as is often the case with price variables, this variable is logarithmized.
+Since there is a high risk of multicollinearity in our data, this is also examined.
 
 ## calculating Models
 
@@ -812,6 +809,7 @@ lm.main <- lm(log(price) ~
 summary(lm.main)
 
 
+
 # Checking for multicollinearity using Variance Inflation Factor (VIF).
 # Values range from 1 to infinity. A value of exactly 1 indicates no collinearity.
 # Values > 5-10 suggest problematic multicollinearity among the predictor variables.
@@ -821,18 +819,19 @@ multicollinearity(lm.main)
 ### LM Controlled Plots (TIMON - Davide translated to english and commments)
 
 ```{r}
-# --- LM controlled plots ---
-# Visualizing the raw relationship between review scores, log(price), and superhost status.
-p.lm_uncontrolled <- ggplot(data = d.airbnb_listings_feat, mapping = aes(review_scores_rating, log(price), color = host_is_superhost)) +
+
+# plot log-price and scores + superhost
+p.lm_uncontrolled <- ggplot(data = d.airbnb_listings_feat, mapping = aes(review_scores_rating, log(price), color = host_is_superhost), ylim = 8) +
   geom_point(alpha = 0.4, color = "deepskyblue") +
   geom_smooth(method = "lm") +
   scale_color_manual(values = c("FALSE" = "gold2", "TRUE" = "firebrick1")) +
-    labs(title = "LM uncontrolled: Log(Price) vs. Review Rating",
+    labs(title = "Uncontrolled LM",
        x = "Review Scores Rating",
-       y = "Log(Price)")
+       y = "Log(Price)")+
+  theme(legend.position = "none" )+
+  ylim(3,8)
 
-# Creating a grid of hypothetical data to predict and plot the fitted LM lines cleanly.
-# We hold 'room_type' and 'accommodates' constant to isolate the specific effects of reviews and superhost status.
+# creating grid for hypothetical data holding 'room_type' and 'accommodates' constant 
 d.lm_predict <- expand.grid(
   review_scores_rating = seq(3, 5, length.out = 100),
   host_is_superhost = c("TRUE", "FALSE"),
@@ -841,20 +840,21 @@ d.lm_predict <- expand.grid(
   accommodates = mean(d.airbnb_listings_feat$accommodates, na.rm = TRUE) # Fixed at mean value
 )
 
-# Generating predictions based on the trained LM model
+# Generating predictions
 d.lm_predict$pred <- predict(lm.main, newdata = d.lm_predict)
 
 # Plotting the actual data points alongside our model's predicted regression lines
 p.lm_controlled <-ggplot(d.airbnb_listings_feat, 
-       aes(review_scores_rating, log(price), color = host_is_superhost)) +
+       aes(review_scores_rating, log(price), color = host_is_superhost, )) +
   geom_point(alpha = 0.3, color = "deepskyblue") +
-  geom_line(data = d.lm_predict, aes(y = pred), size = 1.2) +
-  scale_color_manual(values = c("FALSE" = "gold2", "TRUE" = "firebrick1"))
-  labs(title = "LM Predictions: Log(Price) vs. Review Rating",
+  geom_line(data = d.lm_predict, aes(y = pred)) +
+  scale_color_manual(values = c("FALSE" = "gold2", "TRUE" = "firebrick1")) +
+  labs(title = "Controlled LM",
        x = "Review Scores Rating",
-       y = "Log(Price)")
+       y = "Log(Price)") +
+    ylim(3,8)
   
-p.lm_uncontrolled + p.lm_controlled
+p.lm_uncontrolled | p.lm_controlled
 ```
 
 ## Interpretation

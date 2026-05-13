@@ -23,14 +23,14 @@ knitr::opts_chunk$set(echo = TRUE, cache = TRUE, comment = NA, warning = FALSE)
 Tasks ab 29.04
 - Frühlingsputz (PASCAL)
 - Limitationen und Business Case im Kapitel  ergänzen. jeweils für die eigenen
-Modelle. (TIMON) (DAVIDE) (Pascal --> done) (Timon --> LM done)
-- GLM (Binominal) gemäss Feedback Timon noch anpassen und mit Text ausschmücken sowie Visualisieren (DAVIDE) - DONE
-- GAM text kürzen (DAVIDE) - DONE
+Modelle. (TIMON) (DAVIDE) **(Pascal --> done)** **(Timon --> LM done)**
+- GLM (Binominal) gemäss Feedback Timon noch anpassen und mit Text ausschmücken sowie Visualisieren (DAVIDE) - **DONE**
+- GAM text kürzen (DAVIDE) - **DONE**
 - EDA verdichten und Platz sparen (Plots) - TBD welche wir drin lassen.
 - Colors vereinheitlichen (TIMON) **grösstenteils erledigt**
-- README File (PASCAL) --> done
+- README File (PASCAL) --> **done**
 - interpretation Crossvalidation schreiben (TIMON) **erledigt**
-- Coding Conventions kontrollieren (ALLE) - Davide GAM / GLM done, 
+- Coding Conventions kontrollieren (ALLE) - **Davide GAM / GLM done**
 - 
 
 
@@ -76,7 +76,7 @@ d.cats).
 lm.cats) 
 • plots are named with the prefix "p."
 • within the text R-objects are written using code formatting
-(e.g., lm.cats) 14 
+(e.g., lm.cats)
 • variable names are written using italic (e.g.,
 Body.weight) 
 • these conventions are arbitrary, but hopefully useful to

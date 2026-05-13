@@ -233,11 +233,11 @@ d.airbnb_listings_feat <- d.airbnb_listings_feat %>%
  
 ```{r, fig.show='hold', out.width="49%", echo=FALSE}
 p.price <- ggplot(d.airbnb_listings_feat, aes(x = price)) +
-  geom_histogram(bins = 50, fill = "darkred", color = "white", alpha = 0.7) +
+  geom_histogram(bins = 50, fill = "deepskyblue", color = "white", alpha = 0.7) +
   labs(title = "Distribution of Raw Price", x = "Price", y = "Count")
 
 p.logprice <- ggplot(d.airbnb_listings_feat, aes(x = log_price)) +
-  geom_histogram(bins = 50, fill = "darkgreen", color = "white", alpha = 0.7) +
+  geom_histogram(bins = 50, fill = "deepskyblue", color = "white", alpha = 0.7) +
   labs(title = "Distribution of Log Price", x = "Log Price", y = "Count")
 
 p.price + p.logprice
@@ -249,12 +249,12 @@ The histograms above clearly illustrate that the price distribution is heavily r
 
 ```{r, fig.show='hold', out.width='49%'}
 p.acc <- ggplot(d.airbnb_listings_feat, aes(x = accommodates)) +
-  geom_histogram(binwidth = 1, fill = "dodgerblue", color = "white") +
+  geom_histogram(binwidth = 1, fill = "deepskyblue", color = "white") +
   scale_x_continuous(breaks = seq(1, max(d.airbnb_listings_feat$accommodates, na.rm = TRUE), by = 1)) +
   labs(title = "Listing Capacity", x = "Accommodates (Guests)", y = "Count")
 
 p.rev <- ggplot(d.airbnb_listings_feat, aes(x = review_scores_rating)) +
-  geom_histogram(bins = 30, fill = "purple", color = "white", alpha = 0.7) +
+  geom_histogram(bins = 30, fill = "deepskyblue", color = "white", alpha = 0.7) +
   labs(title = "Review Scores Rating Distribution", x = "Rating", y = "Count")
 
 p.acc + p.rev
@@ -271,7 +271,7 @@ p.room <- ggplot(d.airbnb_listings_feat, aes(x = room_type, fill = room_type)) +
 
 p.host <- ggplot(d.airbnb_listings_feat %>% filter(!is.na(host_is_superhost)), aes(x = as.factor(host_is_superhost), fill = as.factor(host_is_superhost))) +
   geom_bar(show.legend = FALSE) +
-  scale_fill_manual(values = c("tomato", "seagreen")) +
+  scale_fill_manual(values = c("deepskyblue", "deepskyblue")) +
   labs(title = "Superhost Status", x = "Is Superhost?", y = "Count")
 
 p.room + p.host
@@ -292,7 +292,7 @@ d.top_neighborhoods <- d.airbnb_listings_feat %>%
 
 p.logprice_neighbourhood <- ggplot(d.airbnb_listings_feat %>% filter(neighbourhood_group_cleansed %in% d.top_neighborhoods), 
        aes(x = reorder(neighbourhood_group_cleansed, log_price, FUN = median), y = log_price)) +
-  geom_boxplot(fill = "lightblue", alpha = 0.7) +
+  geom_boxplot(fill = "deepskyblue", alpha = 0.7) +
   coord_flip() +
   labs(title = "Log Price by Top 10 Neighbourhood Groups", 
        x = "Neighbourhood Group", 
@@ -319,24 +319,24 @@ Almost all top neighbourhoods show high-end outliers, confirming that luxury lis
 
 ```{r host_features, fig.show='hold', out.width='16%'}
 p.resp_time <- ggplot(d.airbnb_listings_feat %>% filter(host_response_time != "N/A" & !is.na(host_response_time)), aes(x = host_response_time)) +
-  geom_bar(fill = "cadetblue") +
+  geom_bar(fill = "deepskyblue") +
   labs(title = "Host Response Time", x = "Response Time", y = "Count") +
   theme(axis.text.x = element_text(angle = 45, hjust = 1))
 
 p.resp_rate <- ggplot(d.airbnb_listings_feat, aes(x = host_response_rate)) +
-  geom_histogram(bins = 20, fill = "cadetblue", color = "white") +
+  geom_histogram(bins = 20, fill = "deepskyblue", color = "white") +
   labs(title = "Host Response Rate", x = "Rate (0 to 1)", y = "Count")
 
 p.acc_rate <- ggplot(d.airbnb_listings_feat, aes(x = host_acceptance_rate)) +
-  geom_histogram(bins = 20, fill = "cadetblue", color = "white") +
+  geom_histogram(bins = 20, fill = "deepskyblue", color = "white") +
   labs(title = "Host Acceptance Rate", x = "Rate (0 to 1)", y = "Count")
 
 p.pic <- ggplot(d.airbnb_listings_feat %>% filter(!is.na(host_has_profile_pic)), aes(x = host_has_profile_pic)) +
-  geom_bar(fill = "khaki4") +
+  geom_bar(fill = "deepskyblue") +
   labs(title = "Has Profile Pic", x = "t = True, f = False", y = "Count")
 
 p.verified <- ggplot(d.airbnb_listings_feat %>% filter(!is.na(host_identity_verified)), aes(x = host_identity_verified)) +
-  geom_bar(fill = "khaki4") +
+  geom_bar(fill = "deepskyblue") +
   labs(title = "Identity Verified", x = "t = True, f = False", y = "Count")
 
 p.resp_time | p.resp_rate | p.acc_rate | p.pic | p.verified
@@ -358,7 +358,7 @@ p.prop <- d.airbnb_listings_feat %>%
   count(property_type) %>%
   top_n(10, n) %>%
   ggplot(aes(x = reorder(property_type, n), y = n)) +
-  geom_bar(stat = "identity", fill = "coral") +
+  geom_bar(stat = "identity", fill = "deepskyblue") +
   coord_flip() +
   labs(title = "Top 10 Property Types (Count)", x = "Property Type", y = "Count")
 
@@ -366,7 +366,7 @@ p.neigh <- d.airbnb_listings_feat %>%
   count(neighbourhood_group_cleansed) %>%
   top_n(10, n) %>%
   ggplot(aes(x = reorder(neighbourhood_group_cleansed, n), y = n)) +
-  geom_bar(stat = "identity", fill = "coral3") +
+  geom_bar(stat = "identity", fill = "deepskyblue") +
   coord_flip() +
   labs(title = "Top 10 Neighbourhood Groups (Count)", x = "Neighbourhood", y = "Count")
 
@@ -382,12 +382,12 @@ p.prop | p.neigh
 
 ```{r, fig.show='hold', out.width='49%'}
 p.baths <- ggplot(d.airbnb_listings_feat, aes(x = bathrooms)) +
-  geom_histogram(binwidth = 0.5, fill = "plum4", color = "white") +
+  geom_histogram(binwidth = 0.5, fill = "deepskyblue", color = "white") +
   scale_x_continuous(breaks = seq(0, max(d.airbnb_listings_feat$bathrooms, na.rm = TRUE), by = 1)) +
   labs(title = "Number of Bathrooms", x = "Bathrooms", y = "Count")
 
 p.beds <- ggplot(d.airbnb_listings_feat, aes(x = beds)) +
-  geom_histogram(binwidth = 1, fill = "plum4", color = "white") +
+  geom_histogram(binwidth = 1, fill = "deepskyblue", color = "white") +
   scale_x_continuous(breaks = seq(0, max(d.airbnb_listings_feat$beds, na.rm = TRUE), by = 2)) +
   labs(title = "Number of Beds", x = "Beds", y = "Count")
 
@@ -402,16 +402,16 @@ The distribution plots for the number of bathrooms and beds reveal a strong conc
 ```{r, fig.show='hold', out.width='33%'}
 # Minimum Nights (Log scale due to extreme outliers like 365+ nights)
 p.nights <- ggplot(d.airbnb_listings_feat, aes(x = minimum_nights)) +
-  geom_histogram(bins = 30, fill = "olivedrab", color = "white") +
+  geom_histogram(bins = 30, fill = "deepskyblue", color = "white") +
   scale_x_log10() +
   labs(title = "Minimum Nights $(Log_10$ Scale)", x = "Minimum Nights", y = "Count")
 
 p.num_rev <- ggplot(d.airbnb_listings_feat, aes(x = number_of_reviews)) +
-  geom_histogram(bins = 30, fill = "olivedrab", color = "white") +
+  geom_histogram(bins = 30, fill = "deepskyblue", color = "white") +
   labs(title = "Total Number of Reviews", x = "Reviews", y = "Count")
 
 p.occ <- ggplot(d.airbnb_listings_feat, aes(x = estimated_occupancy_l365d)) +
-  geom_histogram(bins = 30, fill = "olivedrab", color = "white") +
+  geom_histogram(bins = 30, fill = "deepskyblue", color = "white") +
   labs(title = "Estimated Occupancy", x = "Occupied Days", y = "Count")
 
 p.nights | p.num_rev | p.occ
@@ -431,12 +431,12 @@ Estimated Occupancy: Similar to the review counts, the estimated occupancy shows
 
 # High Demand (Binary)
 p.demand <- ggplot(d.airbnb_listings_feat, aes(x = as.factor(high_demand))) +
-  geom_bar(fill = "sienna") +
+  geom_bar(fill = "deepskyblue") +
   labs(title = "High Demand Classification", x = "0 = No, 1 = Yes", y = "Count")
 
 # Price High (Binary)
 p.price_high <- ggplot(d.airbnb_listings_feat, aes(x = as.factor(price_high))) +
-  geom_bar(fill = "sienna") +
+  geom_bar(fill = "deepskyblue") +
   labs(title = "High Price Classification", x = "0 = No, 1 = Yes", y = "Count")
 
 p.demand | p.price_high
@@ -457,7 +457,7 @@ p.verifications <- d.airbnb_listings_feat %>%
   count(host_verifications) %>%
   top_n(5, n) %>%
   ggplot(aes(x = reorder(host_verifications, n), y = n)) +
-  geom_bar(stat = "identity", fill = "grey50") +
+  geom_bar(stat = "identity", fill = "deepskyblue") +
   coord_flip() +
   labs(title = "Top 5 Host Verification Combinations", x = "Verification Methods", y = "Count")
 
@@ -860,8 +860,8 @@ glm.quasipoisson <- glm(estimated_occupancy_l365d ~ price + host_is_superhost +
                         data = d.airbnb_listings_feat, 
                         family = "quasipoisson")
 
-summary(glm_quasipoisson)
-AIC(glm_quasipoisson)
+summary(glm.quasipoisson)
+AIC(glm.quasipoisson)
 ```
 
 ## Crossvalidation
@@ -887,7 +887,7 @@ for(i in 1:200){
   d.cv_train <- d.airbnb_listings_feat_permuted[-cv.ind_test, ]
   
   #train model poisson
-  cv.glm_poisson_train <- glm(formula = formula(glm_poisson), 
+  cv.glm_poisson_train <- glm(formula = formula(glm.poisson), 
                           data = d.cv_train)
   cv.glm_poisson_predict <- predict(cv.glm_poisson_train, newdata = d.cv_test)
   
@@ -896,7 +896,7 @@ for(i in 1:200){
   
   
   #train model quasipoisson
-  cv.glm_quasipoisson_train <- glm(formula = formula(glm_quasipoisson), 
+  cv.glm_quasipoisson_train <- glm(formula = formula(glm.quasipoisson), 
                           data = d.cv_train)
   cv.glm_quasipoisson_predict <- predict(cv.glm_quasipoisson_train, newdata = d.cv_test)
   
@@ -970,7 +970,7 @@ summary(glm.binomial)
 
 ```{r glm_binomial_results}
 # Convert log-odds into odds ratios with 95% confidence intervals for easier reading
-d.results_glm_binomial <- tidy(glm_binomial, conf.int = TRUE) %>%
+d.results_glm_binomial <- tidy(glm.binomial, conf.int = TRUE) %>%
   mutate(
     odds_ratio = round(exp(estimate), 3),
     or_lower   = round(exp(conf.low), 3),
@@ -1094,7 +1094,7 @@ gam.main <- gam(log(price) ~
                   bathrooms,
                 family = gaussian(),
                 method = "REML",
-                data   = df_train)
+                data   = df.train)
 
 summary(gam.main)
 ```
@@ -1120,7 +1120,7 @@ To make the comparison fair, we fit a linear model on the exact same data, targe
 lm.gam_comparison <- lm(log(price) ~ accommodates + review_scores_rating +
                           log1p(number_of_reviews) + longitude + latitude +
                           room_type + host_is_superhost + bathrooms,
-                        data = df_train)
+                        data = df.train)
 
 cat("LM  R²:", round(summary(lm.gam_comparison)$r.squared, 3), "\n")
 cat("GAM R²:", round(summary(gam.main)$r.sq, 3), "\n")

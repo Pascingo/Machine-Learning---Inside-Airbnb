@@ -27,9 +27,9 @@ Modelle. (TIMON) (DAVIDE) (Pascal --> done)
 - GLM (Binominal) gemäss Feedback Timon noch anpassen und mit Text ausschmücken sowie Visualisieren (DAVIDE) - DONE
 - GAM text kürzen (DAVIDE) - DONE
 - EDA verdichten und Platz sparen (Plots) - TBD welche wir drin lassen.
-- Colors vereinheitlichen (TIMON)
+- Colors vereinheitlichen (TIMON) **grösstenteils erledigt**
 - README File (PASCAL) --> done
-- interpretation Crossvalidation schreiben (TIMON)
+- interpretation Crossvalidation schreiben (TIMON) **erledigt**
 - Coding Conventions kontrollieren (ALLE) - Davide GAM / GLM done, 
 - 
 
@@ -48,6 +48,9 @@ ToDos backlog:
 
 
 Infos zu bedenken: ABGABEDATUM: 12 Juni
+
+
+
 
 
 Farbschema
@@ -890,7 +893,7 @@ AIC(glm.quasipoisson)
 ## Crossvalidation
 
 
-```{r Crossvalidation Datasets 10-fold (TIMON)}
+```{r cross-validation Datasets 10-fold (TIMON)}
 set.seed(1)
 
 cv.mse.poisson <- c()
@@ -947,8 +950,8 @@ The GLM with quasi-Poisson distribution has corrected the overdispersion. The st
 - Capacity: Positive and significant. The more people that fit, the more bookings. 
 - Room types: In the intercept is "Entire home/apt". Private Room is booked significantly worse than the entire accommodation. Shared Room has a high p-value. Statistically, it cannot be said whether the occupancy of a shared room differs from the entire apartment.
 
-## Interpretation Cross Validation
-Interpretation: die beiden Modelle unterscheiden sich nicht. wir erhalten keine outlier in den vorhersagen sprich das Model ist sehr stabil. 
+## Interpretation Cross-validation
+To ensure that the higher number of variables does not cause overfitting, we use cross-validation. In this process, we repeatedly split the data into new subsets, which we use to retrain and re-evaluate the model. We then check to see if there are any significant fluctuations. If the model were overfitting, we would repeatedly observe random fluctuations. In our case, however, we only get a single outlier, which suggests that we have a stable model without overfitting.
 
 ## Business Case
 

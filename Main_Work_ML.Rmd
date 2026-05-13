@@ -22,27 +22,28 @@ knitr::opts_chunk$set(echo = TRUE, cache = TRUE, comment = NA, warning = FALSE)
 
 Tasks ab 29.04
 - Frühlingsputz (PASCAL)
-- Limitationen und Business Case im Kapitel  ergänzen. jeweils für die eigenen
-Modelle. (TIMON) (DAVIDE) **(Pascal --> done)** **(Timon --> LM done)**
-- GLM (Binominal) gemäss Feedback Timon noch anpassen und mit Text ausschmücken sowie Visualisieren (DAVIDE) - **DONE**
-- GAM text kürzen (DAVIDE) - **DONE**
-- EDA verdichten und Platz sparen (Plots) - TBD welche wir drin lassen.
-- Colors vereinheitlichen (TIMON) **grösstenteils erledigt**
-- README File (PASCAL) --> **done**
-- interpretation Crossvalidation schreiben (TIMON) **erledigt**
-- Coding Conventions kontrollieren (ALLE) - **Davide GAM / GLM done**
-- 
-
+- Colors finalisieren (TIMON)
+- Coding Conventions kontrollieren (TIMON)
+- df.full --> bugfix (DAVIDE)
+- df. zu d.ändern (DAVIDE)
+- SVM Theorieteil finalisieren. (TIMON)
+- LM Limitationen (TIMON)
+- AI Chapter (PASCAL)
+- AI-kontrolle & übersetzungskontrolle (DAVIDE)
 
 
 
 
 ToDos backlog:
-- AI-Texte: Praktisch alle Modelle haben ganz klar AI-generierten Code. Auch Kommentare und Interpretationen sind noch sehr offensichtlich. Unbedingt überarbeiten!
-- beautifying HTML-Doc
+- R-chunks sauber personen zuweisen
+
 - Data Quality kontrollieren & übersetzen.  
-- AI Chapter
 - Lesson Learned Kapitel
+- EDA/DQ/UTD aussortieren falls platzbedarf
+- tuning wieder reaktivieren
+- README finalisieren
+- beautifying HTML-Doc
+
 
 
 
@@ -53,7 +54,7 @@ Infos zu bedenken: ABGABEDATUM: 12 Juni
 
 
 
-Farbschema
+Farbschema:
 
 Hauptfarbe: deepskyblue						
 schattigerung: lightblue
@@ -796,7 +797,7 @@ Since there is a high risk of multicollinearity in our data, this is also examin
 ## calculating Models
 
 ```{r lm controlled by Timon}
-# Fitting a Multiple Linear Regression model to predict the log-transformed price.
+
 # We use log(price) to account for the right-skewed distribution of Airbnb prices.
 lm.main <- lm(log(price) ~ 
                 review_scores_rating + 
@@ -1204,7 +1205,7 @@ leaflet() %>%
   addProviderTiles(providers$CartoDB.Positron) %>%
   setView(lng = 6.65, lat = 46.52, zoom = 9) %>%
   addCircleMarkers(
-    data = df_full,
+    data = df.full,
     lng = ~longitude, lat = ~latitude,
     radius = 4, fillColor = ~marker_color,
     fillOpacity = 0.85, stroke = FALSE,

@@ -50,6 +50,22 @@ ToDos backlog:
 Infos zu bedenken: ABGABEDATUM: 12 Juni
 
 
+Farbschema
+
+Hauptfarbe: deepskyblue						
+schattigerung: lightblue
+Sekundärfarbe: maroon1 --> wenn dunkler benötigt bis "maroon4"
+Drittfarbe: gold
+Akzentfarbe: firebrick1
+
+
+generell können auch dunklere Varianten der Farben verwendet werden. dies ist normalerweise dadurch möglich, dass man die zahl hinden bis 4 erhöht. 
+Dies gilt für alle Farben ausser deepskyblue
+
+
+
+
+
 Coding Conventions. 
 • data sets are named with the prefix “d.” (e.g.,
 d.cats). 
@@ -500,7 +516,7 @@ missing_data <- d.airbnb_listings_feat %>%
 
 # Plot missing values
 p.missing_values <- ggplot(missing_data, aes(x = reorder(Variable, Missing_Percentage), y = Missing_Percentage)) +
-  geom_bar(stat = "identity", fill = "steelblue") +
+  geom_bar(stat = "identity", fill = "deepskyblue") +
   coord_flip() +
   labs(title = "Percentage of Missing Values per Variable",
        x = "Variables",
@@ -636,7 +652,7 @@ cor_long <- as.data.frame(cor_matrix_full) %>%
 ggplot(cor_long, aes(x = Var1, y = Var2, fill = Correlation)) +
   geom_tile(color = "white") +
   geom_text(aes(label = round(Correlation, 2)), size = 2.8) +
-  scale_fill_gradient2(low = "darkred", mid = "white", high = "steelblue",
+  scale_fill_gradient2(low = "maroon4", mid = "deepskyblue", high = "gold",
                        midpoint = 0, limits = c(-1, 1)) +
   labs(title = "Correlation Heatmap of Numerical Variables",
        x = NULL, y = NULL) +
@@ -651,8 +667,8 @@ The most important Relationship in the dataset from what we see in the correlati
 
 ```{r price_vs_accommodates}
 ggplot(d.airbnb_listings_feat, aes(x = accommodates, y = log_price)) +
-  geom_jitter(alpha = 0.3, width = 0.2, color = "steelblue") +
-  geom_smooth(method = "lm", color = "darkred", se = TRUE) +
+  geom_jitter(alpha = 0.3, width = 0.2, color = "deepskyblue") +
+  geom_smooth(method = "lm", color = "firebrick1", se = TRUE) +
   scale_x_continuous(breaks = seq(1, max(d.airbnb_listings_feat$accommodates, na.rm = TRUE), 2)) +
   labs(title = "Log Price vs. Accommodates",
        x = "Number of Guests",
@@ -700,7 +716,7 @@ We calculated price per guest as a feature and visualize it here.
 
 ```{r price_per_guest}
 p_ppg <- ggplot(d.airbnb_listings_feat, aes(x = price_per_guest)) +
-  geom_histogram(bins = 50, fill = "darkorange", color = "white", alpha = 0.7) +
+  geom_histogram(bins = 50, fill = "deepskyblue", color = "white", alpha = 0.7) +
   scale_x_log10() +
   labs(title = "Price per Guest (Log Scale)",
        x = "Price per Guest (CHF)", y = "Count")
@@ -804,9 +820,13 @@ multicollinearity(lm.main)
 ```{r}
 # --- LM controlled plots ---
 # Visualizing the raw relationship between review scores, log(price), and superhost status.
-ggplot(data = d.airbnb_listings_feat, mapping = aes(review_scores_rating, log(price), color = host_is_superhost)) +
-  geom_point(alpha = 0.4) +
-  geom_smooth(method = "lm")
+p.lm_uncontrolled <- ggplot(data = d.airbnb_listings_feat, mapping = aes(review_scores_rating, log(price), color = host_is_superhost)) +
+  geom_point(alpha = 0.4, color = "deepskyblue") +
+  geom_smooth(method = "lm") +
+  scale_color_manual(values = c("FALSE" = "gold2", "TRUE" = "firebrick1")) +
+    labs(title = "LM uncontrolled: Log(Price) vs. Review Rating",
+       x = "Review Scores Rating",
+       y = "Log(Price)")
 
 # Creating a grid of hypothetical data to predict and plot the fitted LM lines cleanly.
 # We hold 'room_type' and 'accommodates' constant to isolate the specific effects of reviews and superhost status.
@@ -822,13 +842,16 @@ d.lm_predict <- expand.grid(
 d.lm_predict$pred <- predict(lm.main, newdata = d.lm_predict)
 
 # Plotting the actual data points alongside our model's predicted regression lines
-ggplot(d.airbnb_listings_feat, 
+p.lm_controlled <-ggplot(d.airbnb_listings_feat, 
        aes(review_scores_rating, log(price), color = host_is_superhost)) +
-  geom_point(alpha = 0.3) +
+  geom_point(alpha = 0.3, color = "deepskyblue") +
   geom_line(data = d.lm_predict, aes(y = pred), size = 1.2) +
+  scale_color_manual(values = c("FALSE" = "gold2", "TRUE" = "firebrick1"))
   labs(title = "LM Predictions: Log(Price) vs. Review Rating",
        x = "Review Scores Rating",
        y = "Log(Price)")
+  
+p.lm_uncontrolled + p.lm_controlled
 ```
 
 ## Interpretation
@@ -1006,9 +1029,9 @@ p.glm_binomial <- ggplot(d.glm_predict, aes(x = accommodates, y = prob,
   geom_ribbon(aes(ymin = prob_lower, ymax = prob_upper), alpha = 0.2, color = NA) +
   geom_line(size = 1.2) +
   scale_x_continuous(breaks = 1:10) +
-  scale_color_manual(values = c("tomato", "seagreen"),
+  scale_color_manual(values = c("gold", "firebrick1"),
                      labels = c("Regular Host", "Superhost")) +
-  scale_fill_manual(values = c("tomato", "seagreen"),
+  scale_fill_manual(values = c("gold", "firebrick1"),
                     labels = c("Regular Host", "Superhost")) +
   labs(title    = "Probability of Charging an Above-Median Price",
        subtitle = "By guest capacity and Superhost status (entire home, average rating)",
@@ -1104,7 +1127,7 @@ The partial effect plots are the main reason to choose a GAM in the first place.
 
 ```{r gam_partial_effects}
 plot(gam.main, pages = 1, shade = TRUE,
-     col = "steelblue", shade.col = "lightblue", seWithMean = TRUE)
+     col = "firebrick1", shade.col = "lightblue", seWithMean = TRUE)
 
 edf.table <- as.data.frame(summary(gam.main)$s.table) %>% round(3)
 kable(edf.table, caption = "Smooth Terms: Estimated Degrees of Freedom (EDF)")
@@ -1270,20 +1293,28 @@ cat("Test set size:", nrow(d.svm_test), "\n")
 # We use 10-fold cross-validation to find the optimal 'cost' and 'gamma' parameters 
 # for the radial basis function (RBF) kernel.
 
-tuned_svm <- tune(
-  svm,
-  traffic_light ~ ., # 'traffic_light' was already converted to a factor in the GAM step
-  data = d.svm_train,
-  kernel = "radial",
-  ranges = list(
-    cost = 2^(-6:10),
-    gamma = 2^(-5:2)
-  )
-)
+#tuned_svm <- tune(
+#  svm,
+#  traffic_light ~ ., # 'traffic_light' was already converted to a factor in the GAM step
+#  data = d.svm_train,
+#  kernel = "radial",
+#  ranges = list(
+#    cost = 2^(-6:10),
+#    gamma = 2^(-5:2)
+#  )
+#)
 
 # Extracting the best parameters found during cross-validation
-svm.model_cost <- as.numeric(tuned_svm$best.parameters["cost"])
-svm.model_gamma <- as.numeric(tuned_svm$best.parameters["gamma"])
+#svm.model_cost <- as.numeric(tuned_svm$best.parameters["cost"])
+#svm.model_gamma <- as.numeric(tuned_svm$best.parameters["gamma"])
+
+###einschub!!!!!!
+svm.model_cost <- 256
+svm.model_gamma <- 0.625
+
+
+
+
 
 
 #displaying Parameters for visual confirmation

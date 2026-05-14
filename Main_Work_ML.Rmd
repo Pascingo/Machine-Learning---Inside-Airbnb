@@ -10,13 +10,16 @@ output:
     tod-depth: 3
     number_sections: true
     theme: cosmo
+    fontsize: 10pt
+    geometry: margin=2cm
+    linestretch: 1.0
 editor_options: 
   markdown: 
     wrap: 72
 ---
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE, cache = TRUE, comment = NA, warning = FALSE)
+knitr::opts_chunk$set(echo = FALSE, cache = TRUE, comment = NA, warning = FALSE, message=FALSE)
 
 ```
 
@@ -24,11 +27,11 @@ Tasks ab 29.04
 - Frühlingsputz (PASCAL)
 - Colors finalisieren (TIMON)
 - Coding Conventions kontrollieren (TIMON)
-- df.full --> bugfix (DAVIDE)
+- df.full --> bugfix (DAVIDE) --> done
 - df. zu d.ändern (DAVIDE)
 - SVM Theorieteil finalisieren. (TIMON)
 - LM Limitationen (TIMON)
-- AI Chapter (PASCAL)
+- AI Chapter (PASCAL) --> done
 - AI-kontrolle & übersetzungskontrolle (DAVIDE)
 
 
@@ -40,7 +43,7 @@ ToDos backlog:
 - Data Quality kontrollieren & übersetzen.  
 - Lesson Learned Kapitel
 - EDA/DQ/UTD aussortieren falls platzbedarf
-- tuning wieder reaktivieren
+- tuning wieder reaktivieren --> done
 - README finalisieren
 - beautifying HTML-Doc
 
@@ -1205,7 +1208,7 @@ leaflet() %>%
   addProviderTiles(providers$CartoDB.Positron) %>%
   setView(lng = 6.65, lat = 46.52, zoom = 9) %>%
   addCircleMarkers(
-    data = df.full,
+    data = df.map,
     lng = ~longitude, lat = ~latitude,
     radius = 4, fillColor = ~marker_color,
     fillOpacity = 0.85, stroke = FALSE,
@@ -1297,20 +1300,20 @@ cat("Test set size:", nrow(d.svm_test), "\n")
 # We use 10-fold cross-validation to find the optimal 'cost' and 'gamma' parameters 
 # for the radial basis function (RBF) kernel.
 
-#tuned_svm <- tune(
-#  svm,
-#  traffic_light ~ ., # 'traffic_light' was already converted to a factor in the GAM step
-#  data = d.svm_train,
-#  kernel = "radial",
-#  ranges = list(
-#    cost = 2^(-6:10),
-#    gamma = 2^(-5:2)
-#  )
-#)
+tuned_svm <- tune(
+  svm,
+  traffic_light ~ ., # 'traffic_light' was already converted to a factor in the GAM step
+  data = d.svm_train,
+  kernel = "radial",
+  ranges = list(
+    cost = 2^(-6:10),
+    gamma = 2^(-5:2)
+  )
+)
 
 # Extracting the best parameters found during cross-validation
-#svm.model_cost <- as.numeric(tuned_svm$best.parameters["cost"])
-#svm.model_gamma <- as.numeric(tuned_svm$best.parameters["gamma"])
+svm.model_cost <- as.numeric(tuned_svm$best.parameters["cost"])
+svm.model_gamma <- as.numeric(tuned_svm$best.parameters["gamma"])
 
 ###einschub!!!!!!
 svm.model_cost <- 256

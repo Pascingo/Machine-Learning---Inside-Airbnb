@@ -1532,7 +1532,6 @@ A primary limitation of the nn_expanded model is the inherent "black box" nature
 
 
 # Results
-Wir können sagen, dass für Hosts keine Motivation gibt, 
 # Conclusion
 
 # Limitations
@@ -1541,5 +1540,6 @@ Wir können sagen, dass für Hosts keine Motivation gibt,
 
 # Use of GenAI
 
+Throughout this machine learning project, we leveraged various Generative AI tools specifically ChatGPT, Gemini, and Claude to support our analytical workflow. A primary use case was troubleshooting complex issues that extended beyond our existing knowledge base. When encountering technical bottlenecks, we used these models to break down and explain the underlying concepts, enabling us to systematically find the right solutions. Furthermore, we utilized GenAI as a critical review mechanism for our modeling approach. We consulted the AI to verify whether we had made the appropriate theoretical assumptions, such as selecting the correct data distributions for our models. It also served as a valuable sounding board to double-check our final analytical interpretations, ensuring our conclusions were statistically sound. Finally, these tools provided essential linguistic support. We actively used GenAI to translate our documentation and findings into professional English, ensuring a high-quality final report.
 
 # Annex

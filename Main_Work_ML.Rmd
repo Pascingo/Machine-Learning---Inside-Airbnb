@@ -143,6 +143,7 @@ library(pROC)
 library(Metrics)
 library(performance)
 library(broom)
+library(kableExtra)
 library(stringr)
 library(ggplot2)
 library(patchwork)
@@ -810,7 +811,9 @@ lm.main <- lm(log(price) ~
                 as.factor(room_type), 
               data = d.airbnb_listings_feat)
 
-summary(lm.main)
+tidy(lm.main) %>%
+  kable(format = "latex", digits = 2, booktabs = TRUE, caption = "Model Output") %>%
+  kable_styling(font_size = 8, latex_options = "scale_down")
 
 
 
@@ -822,7 +825,7 @@ multicollinearity(lm.main)
 
 ### LM Controlled Plots (TIMON - Davide translated to english and commments)
 
-```{r}
+```{r, out.width="49%", fig.show='hold'}
 
 # plot log-price and scores + superhost
 p.lm_uncontrolled <- ggplot(data = d.airbnb_listings_feat, mapping = aes(review_scores_rating, log(price), color = host_is_superhost), ylim = 8) +
@@ -877,21 +880,28 @@ glm.poisson <- glm(estimated_occupancy_l365d ~ price + host_is_superhost +
                      review_scores_rating + accommodates + room_type, 
                    data = d.airbnb_listings_feat, 
                    family = "poisson")
-
-summary(glm.poisson)
-
-
-# Checking for Overdispersion.
+# Dispersion check
 dispersion_ratio <- glm.poisson$deviance / glm.poisson$df.residual
-print(paste("Dispersion Ratio:", dispersion_ratio))
 
 glm.quasipoisson <- glm(estimated_occupancy_l365d ~ price + host_is_superhost + 
                           review_scores_rating + accommodates + room_type, 
                         data = d.airbnb_listings_feat, 
                         family = "quasipoisson")
 
-summary(glm.quasipoisson)
-AIC(glm.quasipoisson)
+tidy.poisson <- tidy(glm.poisson) %>% mutate(Model = "Poisson")
+tidy.quasi <- tidy(glm.quasipoisson) %>% mutate(Model = "Quasi-Poisson")
+
+combined_models <- bind_rows(tidy.poisson, tidy.quasi) %>%
+  select(Model, term, estimate, std.error, statistic, p.value)
+
+combined_models %>%
+  kable( 
+        digits = 3, 
+        booktabs = TRUE, 
+        caption = paste0("Comparing Models (Dispersion Ratio: ", round(dispersion_ratio, 2), ")")) %>%
+  kable_styling(font_size = 8, latex_options = c("scale_down", "hold_position")) %>%
+  collapse_rows(columns = 1, valign = "top")
+
 ```
 
 ## Crossvalidation

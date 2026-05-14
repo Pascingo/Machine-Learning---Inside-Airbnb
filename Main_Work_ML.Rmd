@@ -615,10 +615,10 @@ kable(top_properties, caption = "Top 10 Property Types in the Canton of Vaud")
 ```
 
 
-Client Interpretation: "While standard apartments like "entire rental
+Client Interpretation: While standard apartments like "entire rental
 unit" are the most common, specialty properties like chalets, homes and
 villas command a significant premium, which our model will need to
-capture."
+capture.
 
 
 ### Correlation Matrix (Crucial before Machine Learning)
@@ -642,7 +642,7 @@ kable(round(cor_matrix, 2), caption = "Correlation Matrix of Key Numerical Drive
 ```
 
 
-```{r correlation_heatmap, fig.height=8, fig.width=10}
+```{r correlation_heatmap, out.width="49%", fig.show='hold'}
 # Select all numerical variables, drop binaries we already analysed separately
 num_vars <- d.airbnb_listings_feat %>%
   select(where(is.numeric)) %>%
@@ -669,10 +669,10 @@ ggplot(cor_long, aes(x = Var1, y = Var2, fill = Correlation)) +
 Interpretation:
 The heatmap confirms what we already suspected: *accommodates, beds and bathrooms* **correlate strongly** with each other. This is a clear sign of multicollinearity, which we need to keep in mind for the LM. The variable *price* and *log_price* show the expected relationships with *capacity* variables, while review-related variables form their own cluster. *number_of_reviews* and *estimated_occupancy_l365d* are highly correlated — listings that get booked more often naturally collect more reviews.
 
-### Log Price vs. Accommodates (Scatter)
+### Log Price vs. Accommodates (Scatter, out.width="49%", fig.show='hold')
 The most important Relationship in the dataset from what we see in the correlation matrix above. 
 
-```{r price_vs_accommodates}
+```{r price_vs_accommodates, out.width="49%", fig.show='hold'}
 ggplot(d.airbnb_listings_feat, aes(x = accommodates, y = log_price)) +
   geom_jitter(alpha = 0.3, width = 0.2, color = "deepskyblue") +
   geom_smooth(method = "lm", color = "firebrick1", se = TRUE) +
@@ -685,7 +685,7 @@ ggplot(d.airbnb_listings_feat, aes(x = accommodates, y = log_price)) +
 ### Log Price by Review Score Group (H1)
 We display review_scores_rating as a histogram, but never in relation to the price.
 
-```{r price_by_rating}
+```{r price_by_rating, out.width="49%", fig.show='hold'}
 d.airbnb_listings_feat %>%
   filter(!is.na(review_scores_rating)) %>%
   mutate(rating_group = cut(review_scores_rating,
@@ -704,7 +704,7 @@ The medians across rating groups are surprisingly close. Higher-rated listings d
 
 
 ### Spatial Data: Mapping the Listings by Log(Price)
-```{r}
+```{r, out.width="49%", fig.show='hold'}
 # Cleaned up the map to focus purely on location and price.
 ggplot(data = d.airbnb_listings_feat, aes(x = longitude, y = latitude)) +
   geom_point(aes(color = log_price), alpha = 0.6, size = 1.5) +
@@ -721,7 +721,7 @@ ggplot(data = d.airbnb_listings_feat, aes(x = longitude, y = latitude)) +
 ### Price per Guest Distribution
 We calculated price per guest as a feature and visualize it here. 
 
-```{r price_per_guest}
+```{r price_per_guest, out.width="49%", fig.show='hold'}
 p_ppg <- ggplot(d.airbnb_listings_feat, aes(x = price_per_guest)) +
   geom_histogram(bins = 50, fill = "deepskyblue", color = "white", alpha = 0.7) +
   scale_x_log10() +
@@ -764,7 +764,7 @@ print(superhost_analysis)
 ```
 
 
-```{r Binary Predictor: Superhost Status}
+```{r Binary Predictor: Superhost Status, out.width="49%", fig.show='hold'}
 # Adding this because it's a key part of the business case and fulfills the binary variable requirement.
 ggplot(data = d.airbnb_listings_feat, aes(x = as.factor(host_is_superhost), y = log_price, fill = as.factor(host_is_superhost))) +
   geom_boxplot(alpha = 0.7) +
@@ -1227,7 +1227,7 @@ leaflet() %>%
     opacity  = 0.85
   )
 
-# Note: df_train and df_test are passed on to the SVM block.
+# Note: df.train and df.test are passed on to the SVM block.
 ```
 
 ## Interpretation

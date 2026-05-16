@@ -906,10 +906,9 @@ the market because they have been active for a longer time, and
 therefore set lower prices in order to achieve a higher occupancy rate.
 This is relevant for Airbnb, as these results show that reviews on the
 host side are a key factor in price setting. It is also interesting that
-Superhosts apparently develop their own understanding for how prices can
+Superhosts might develop their own understanding for how prices can
 be set. The exact reasons underlying this difference cannot be examined
-within the scope of this paper. However, these findings provide Airbnb
-with clarified insights that can serve as a basis for further work.
+within the scope of this paper.
 
 ## Limitations
 A linear model often comes with certain limitations, as the degree of complexity is limited. We can only observe linear effects. We can assume that capacity is not a linear effect, since the price of a location can vary depending on whether it accommodates 3 or 4 people, whereas the effect of one fewer person is less significant if the location accommodates 15 or 16 people. A GAM model could reveal such effects. 

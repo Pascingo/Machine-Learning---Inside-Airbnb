@@ -28,9 +28,9 @@ knitr::opts_chunk$set(echo = FALSE, cache = TRUE, comment = NA, warning = FALSE,
 Tasks ab 29.04 
 - Frühlingsputz (PASCAL) 
 - Colors finalisieren (TIMON)
-Coding Conventions kontrollieren (TIMON) 
+- Coding Conventions kontrollieren (TIMON) 
 - SVM Theorieteil finalisieren. (TIMON) 
-- LM Limitationen (TIMON) 
+- LM Limitationen (TIMON) *erledigt*
 - AI-kontrolle & übersetzungskontrolle (DAVIDE)
 
 @Pascal: du bist der einzige der pro Modell "Business Case" pro Kapitel

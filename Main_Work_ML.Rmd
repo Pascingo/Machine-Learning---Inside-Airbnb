@@ -27,11 +27,14 @@ knitr::opts_chunk$set(echo = FALSE, cache = TRUE, comment = NA, warning = FALSE,
 
 Tasks ab 29.04 
 - Frühlingsputz (PASCAL) 
-- Colors finalisieren (TIMON) -
-Coding Conventions kontrollieren (TIMON) - df.full --\> bugfix (DAVIDE)
---\> done - df. zu d.ändern (DAVIDE) --\> done - SVM Theorieteil
-finalisieren. (TIMON) - LM Limitationen (TIMON) - AI Chapter (PASCAL)
---\> done - AI-kontrolle & übersetzungskontrolle (DAVIDE)
+- Colors finalisieren (TIMON)
+Coding Conventions kontrollieren (TIMON) 
+- df.full --\> bugfix (DAVIDE) --\> done 
+- df. zu d.ändern (DAVIDE) --\> done 
+- SVM Theorieteil finalisieren. (TIMON) 
+- LM Limitationen (TIMON) 
+- AI Chapter (PASCAL) --\> done 
+- AI-kontrolle & übersetzungskontrolle (DAVIDE)
 
 @Pascal: du bist der einzige der pro Modell "Business Case" pro Kapitel
 hat. Link zur Hypothese fehlt jedoch. @Timon: bei dir fehlt jeweils:
@@ -1544,20 +1547,20 @@ cat("Test set size:", nrow(d.svm_test), "\n")
 # We use 10-fold cross-validation to find the optimal 'cost' and 'gamma' parameters 
 # for the radial basis function (RBF) kernel.
 
-tuned_svm <- tune(
-  svm,
-  traffic_light ~ ., # 'traffic_light' was already converted to a factor in the GAM step
-  data = d.svm_train,
-  kernel = "radial",
-  ranges = list(
-    cost = 2^(-6:10),
-    gamma = 2^(-5:2)
-  )
-)
+# tuned_svm <- tune(
+#   svm,
+#   traffic_light ~ ., # 'traffic_light' was already converted to a factor in the GAM step
+#   data = d.svm_train,
+#   kernel = "radial",
+#   ranges = list(
+#     cost = 2^(-6:10),
+#     gamma = 2^(-5:2)
+#   )
+# )
 
 # Extracting the best parameters found during cross-validation
-svm.model_cost <- as.numeric(tuned_svm$best.parameters["cost"])
-svm.model_gamma <- as.numeric(tuned_svm$best.parameters["gamma"])
+#svm.model_cost <- as.numeric(tuned_svm$best.parameters["cost"])
+#svm.model_gamma <- as.numeric(tuned_svm$best.parameters["gamma"])
 
 ###einschub!!!!!!
 svm.model_cost <- 256
@@ -1575,9 +1578,9 @@ svm.model_gamma <- 0.625
 
 
 #displaying Parameters for visual confirmation
-cat("Optimal Cost:", svm.model_cost, "\n")
-cat("Optimal Gamma:", svm.model_gamma, "\n")
-cat("Best Cross-Validation Performance (Error Rate):", round(tuned_svm$best.performance, 4), "\n")
+#cat("Optimal Cost:", svm.model_cost, "\n")
+#cat("Optimal Gamma:", svm.model_gamma, "\n")
+#cat("Best Cross-Validation Performance (Error Rate):", round(tuned_svm$best.performance, 4), "\n")
 
 ```
 

@@ -28,14 +28,23 @@ Tasks ab 29.04
 - Colors finalisieren (TIMON)
 - Coding Conventions kontrollieren (TIMON)
 - df.full --> bugfix (DAVIDE) --> done
-- df. zu d.ändern (DAVIDE)
+- df. zu d.ändern (DAVIDE) --> done
 - SVM Theorieteil finalisieren. (TIMON)
 - LM Limitationen (TIMON)
 - AI Chapter (PASCAL) --> done
 - AI-kontrolle & übersetzungskontrolle (DAVIDE)
 
+@Pascal: 
+du bist der einzige der pro Modell "Business Case" pro Kapitel hat. Link zur Hypothese fehlt jedoch. 
+@Timon: 
+bei dir fehlt jeweils: link zur hypo & limitations
+@Davide: 
+bei mir fehlt business case pro modell
 
-
+Fragen in die Runde: 
+1. Business Case behalten --> Timon und ich müssen das ergänzen für unsere Modelle
+2. Umwandlung von Business Case zur Link zur Hypothese --> Pascal und Timon müssen umschreiben resp. sowieso ergänzen
+3. link zur hypo skippen und in der Interpretation auf Hypo und RQs gezielt eingehen? 
 
 ToDos backlog:
 - R-chunks sauber personen zuweisen
@@ -71,6 +80,11 @@ Dies gilt für alle Farben ausser deepskyblue
 
 
 
+**Note zu RQ und Hypos**
+
+Es sollte Möglich sein, die jeweiligen Modell in einer oder beiden Hypothesen zu verordnen. Sprich: ich untersuche mit meinem Modell H1 und finde dass mehr reviews den Preis steigen lassen blablabla. Zudem kann es in gewissen Modellen sinn machen, beide Hypothesen anzuschauen und zu beantworten. es kann aber auch sein, dass man zb H1 anschaut und mit Faktoren wie "accommodates" kontrolliert. dann habe ich zwar location-sided-Indicators, jedoch habe ich keinen Fokus auf die H2.**
+
+Eine dritte Option ist, dass ich nicht eine der beiden Hypothesen untersuche, sondern die zweite Forshcungsfrage und versuche vorhersagen zu treffen. dies macht beispielsweise beim SVM sinn. da müsst ihr selbst enscheiden, welchen Fokus ihr setzen wollt
 
 
 Coding Conventions. 
@@ -106,25 +120,20 @@ to the Canton of Vaud to capture regional economic effects.
 
 ## Research Questions
 
-Several questions can be derived from the business case. These questions are intended to help us examine pricing dynamics and facilitate the development of a pricing strategy for Airbnb. 
-RQ1 - First, **we need to determine which factors influence guests’ willingness to pay**. Furthermore, the nature of this influence is, of course, central to our analysis. 
-RQ2 - Once these factors are identified, a second question immediately arises: **to what extent can these factors be used to predict whether the prices of a rental property are justified?**
+Several questions can be derived from the business case. These questions are intended to help us examine pricing dynamics and facilitate the development of a pricing strategy for Airbnb.
+
+- RQ1 - First, **we need to determine which factors influence guests’ willingness to pay**. Furthermore, the nature of this influence is, of course, central to our analysis. 
+- RQ2 - Once these factors are identified, a second question immediately arises: **to what extent can these factors be used to predict whether the prices of a rental property are justified?**
 
 Willingness to pay is actually the central variable here. However, it is not easy to measure, which is why a different approach must be taken. The approach we have chosen stems from the idea that the market generally functions well and that landlords intuitively already align with willingness to pay. As a result, the existing price for a rental property can also be assumed to be the price that tenants are willing to pay. Any deviations are offset in our subsequent calculations by the large number of observations. Thus, on average, the actual price will correspond to the price that tenants are willing to pay. 
 
 
-### Hypothesis
+## Hypothesis
 
-H1: When host-centered indicators improve, tenants' willingness to pay increases. 
-H2: When location-centered indicators improve, tenants’ willingness to pay increases. 
+- H1: When host-centered indicators improve, tenants' willingness to pay increases.
+- H2: When location-centered indicators improve, tenants’ willingness to pay increases. 
 
 Host-centered indicators are those that relate to the host’s performance, such as ratings or Superhost status. In contrast, location-centered indicators are those that relate to factors such as the size of the rental property. 
-
-
-**Note**
-
-**Es sollte Möglich sein, die jeweiligen Modell in einer oder beiden Hypothesen zu verordnen. Sprich: ich untersuche mit meinem Modell H1 und finde dass mehr reviews den Preis steigen lassen blablabla. Zudem kann es in gewissen Modellen sinn machen, beide Hypothesen anzuschauen und zu beantworten. es kann aber auch sein, dass man zb H1 anschaut und mit Faktoren wie "accommodates" kontrolliert. dann habe ich zwar location-sided-Indicators, jedoch habe ich keinen Fokus auf die H2.**
-**Eine dritte Option ist, dass ich nicht eine der beiden Hypothesen untersuche, sondern die zweite Forshcungsfrage und versuche vorhersagen zu treffen. dies macht beispielsweise beim SVM sinn. da müsst ihr selbst enscheiden, welchen Fokus ihr setzen wollt**
 
 
 # Data Preparation
@@ -209,7 +218,7 @@ d.listings_clean <- d.listings_clean %>%
 
 According to the requirements for this paper, the dataset is limited to a maximum of 20 variables. To meet this specification, we have removed columns from the dataset that will not be used in our analysis. Consequently, `d.listings_clean` is our final, cleaned dataset, which we will use to run all subsequent models.
 
-```{r final Call cleaned Dataset, echo=TRUE}
+```{r final Call cleaned Dataset, echo=FALSE}
 str(d.listings_clean)
 rm(d.airbnb_listings, d.raw_data_listings)
 
@@ -217,7 +226,7 @@ rm(d.airbnb_listings, d.raw_data_listings)
 
 Subsequently, we calculated several additional features to include them as permanent columns in the dataset, ensuring they do not have to be recomputed for each analysis. These include: the log-transformed price—as price data is typically heavily right-skewed—the price per guest (total price divided by the number of guests accommodated), a boolean indicator for high demand, and a binary variable identifying whether the price exceeds the median.
 
-```{r initial FE (Pascal), echo=FALSE}
+```{r initial FE (Pascal), echo=TRUE}
 d.airbnb_listings_feat <- d.listings_clean %>%
   mutate(
     log_price = log(price),
@@ -226,9 +235,6 @@ d.airbnb_listings_feat <- d.listings_clean %>%
     price_high = as.integer(price > median(price, na.rm =TRUE))
   )
 ```
-
-
-
 
 # Understanding the Data
 
@@ -513,7 +519,7 @@ vis_miss(d.airbnb_listings_feat)
 gg_miss_var(d.airbnb_listings_feat)
 gg_miss_upset(d.airbnb_listings_feat)
 ```
-### Aus Understanding the Data
+## From Understanding the Data to Insights
 ```{r}
 # Calculate percentage of missing values per column
 missing_data <- d.airbnb_listings_feat %>%
@@ -531,7 +537,7 @@ p.missing_values <- ggplot(missing_data, aes(x = reorder(Variable, Missing_Perce
        y = "% Missing")
 p.missing_values
 ```
-### Missing Values (NA) Check
+## Missing Values (NA) Check
 
 This step is less for the client and essential for your ML models. Most
 modeling functions (like lm() or svm()) will throw errors or silently
@@ -551,7 +557,7 @@ kable(na_summary, caption = "Count of Missing Values per Variable")
 
 # Exploratory Data Analysis (DAVIDE)
 
-### Overall Market Overview (Prices & Capacity)
+## Overall Market Overview (Prices & Capacity)
 
 This is the absolute minimum, maximum, median, and mean for the most
 important numeric variables.
@@ -566,7 +572,7 @@ print(summary_stats)
 ```
 
 
-### Analysis by Room Type
+## Analysis by Room Type
 
 Since we want to know how many different types of rooms there are, we
 group the data and calculate the counts, percentages, and price ranges
@@ -594,7 +600,7 @@ market, making up 75% of all listings. As expected, the Hotel room
 command the highest median price (264.5 CHF), compared to shared rooms
 (47 CHF)."
 
-### Detailed property_type Analysis
+## Detailed property_type Analysis
 
 We already analyzed room_type, but Airbnb often has dozens of
 property_types (e.g., "Entire chalet", "Private room in castle", etc.).
@@ -622,7 +628,7 @@ villas command a significant premium, which our model will need to
 capture.
 
 
-### Correlation Matrix (Crucial before Machine Learning)
+## Correlation Matrix (Crucial before Machine Learning)
 
 Before we train our LM, GAM, or SVM, we need to know how our numerical
 variables relate to each other. This helps us identify multicollinearity
@@ -670,7 +676,7 @@ ggplot(cor_long, aes(x = Var1, y = Var2, fill = Correlation)) +
 Interpretation:
 The heatmap confirms what we already suspected: *accommodates, beds and bathrooms* **correlate strongly** with each other. This is a clear sign of multicollinearity, which we need to keep in mind for the LM. The variable *price* and *log_price* show the expected relationships with *capacity* variables, while review-related variables form their own cluster. *number_of_reviews* and *estimated_occupancy_l365d* are highly correlated — listings that get booked more often naturally collect more reviews.
 
-### Log Price vs. Accommodates (Scatter, out.width="49%", fig.show='hold')
+## Log Price vs. Accommodates (Scatter, out.width="49%", fig.show='hold')
 The most important Relationship in the dataset from what we see in the correlation matrix above. 
 
 ```{r price_vs_accommodates, out.width="49%", fig.show='hold'}
@@ -683,7 +689,7 @@ ggplot(d.airbnb_listings_feat, aes(x = accommodates, y = log_price)) +
        y = "Log Price")
 ```
 
-### Log Price by Review Score Group (H1)
+## Log Price by Review Score Group (H1)
 We display review_scores_rating as a histogram, but never in relation to the price.
 
 ```{r price_by_rating, out.width="49%", fig.show='hold'}
@@ -704,7 +710,7 @@ Interpretation:
 The medians across rating groups are surprisingly close. Higher-rated listings do not automatically charge more — which is consistent with the pattern we later see in the Superhost analysis: well-rated hosts often compete on price rather than charge a premium.
 
 
-### Spatial Data: Mapping the Listings by Log(Price)
+## Spatial Data: Mapping the Listings by Log(Price)
 ```{r, out.width="49%", fig.show='hold'}
 # Cleaned up the map to focus purely on location and price.
 ggplot(data = d.airbnb_listings_feat, aes(x = longitude, y = latitude)) +
@@ -719,7 +725,7 @@ ggplot(data = d.airbnb_listings_feat, aes(x = longitude, y = latitude)) +
   theme_minimal()
 ```
 
-### Price per Guest Distribution
+## Price per Guest Distribution
 We calculated price per guest as a feature and visualize it here. 
 
 ```{r price_per_guest, out.width="49%", fig.show='hold'}
@@ -743,7 +749,7 @@ Interpretation:
 Most listings settle between 30 and 100 CHF per guest. Hotel rooms charge the highest per-guest price, while shared rooms are clearly the cheapest option per head. Entire homes look more expensive overall but actually offer the best value when you split the cost across guests.
 
 
-### Superhost vs. Regular Host Breakdown
+## Superhost vs. Regular Host Breakdown
 
 This business case specifically mentions superhost status. So we took a
 look to see how many there are and if they actually charge more or even
@@ -783,7 +789,7 @@ ggplot(data = d.airbnb_listings_feat, aes(x = as.factor(host_is_superhost), y = 
 
 
 
-# LM (TIMON - Davide translated to english and commments)
+# LM (TIMON)
 
 ## Theory
 
@@ -798,7 +804,9 @@ of the rental property. Additionally, we introduce two control variables. First,
 A linear model allows us to analyze multiple variables and their effect on a dependent variable. It is important that the dependent variable be normally distributed. Since this is not the case here, as is often the case with price variables, this variable is logarithmized.
 Since there is a high risk of multicollinearity in our data, this is also examined.
 
-## calculating Models
+## Link to Hypothesis
+
+## Model
 
 ```{r lm controlled by Timon}
 
@@ -823,7 +831,7 @@ tidy(lm.main) %>%
 multicollinearity(lm.main)
 ```
 
-### LM Controlled Plots (TIMON - Davide translated to english and commments)
+## LM Controlled Plots (TIMON)
 
 ```{r, out.width="49%", fig.show='hold'}
 
@@ -864,14 +872,20 @@ p.lm_controlled <-ggplot(d.airbnb_listings_feat,
 p.lm_uncontrolled | p.lm_controlled
 ```
 
-## Interpretation
+## Interpretation LM
 The model shows that both the hosts’ rating and their Superhost status have a significant influence. The rating has a positive effect of *`r round(lm.main$coefficients[2], digits = 3)`*. In contrast, Superhost status has a negative effect of *`r round(lm.main$coefficients[3], digits = 3)`*. The assumption that tenants are willing to pay more when renting from a Superhost therefore does not necessarily seem to hold true. One possible explanation for this phenomenon is that Superhosts may have a better understanding of the market because they have been active for a longer time, and therefore set lower prices in order to achieve a higher occupancy rate.
 This is relevant for Airbnb, as these results show that reviews on the host side are a key factor in price setting. It is also interesting that Superhosts apparently develop their own understanding for how prices can be set. The exact reasons underlying this difference cannot be examined within the scope of this paper. However, these findings provide Airbnb with clarified insights that can serve as a basis for further work.
 
-# GLM Poisson (PASCAL - Davide translated to english and commments)
+## Limitations
+
+# GLM Poisson (PASCAL)
 
 ## Theory
 With the GLM model with Poisson-family / quasi-poisson family is used to analyse count data. Count data is strictly positive and counted (not continuous). Using this model we want to see which variables lead to the highest occupancy, meaning most of the time the airbnb is rented out. As the data is probably overdispersed, meaning the data has not the same variance and much more cheap listings than expensive ones, we need to use a quasi-poisson model that can handle this kind of data much better. First we fit a normal poisson-family, then check for overdispersion, and if necessary we use a quasi-poisson-family.
+
+
+## Link to Hypothesis
+
 
 ## Model
 ```{r}
@@ -951,7 +965,7 @@ boxplot(cv.mse.poisson, cv.mse.quasipoisson, names = c("Poisson-Model","Quasipoi
 
 
 
-## Interpretation GLM-Poisson:
+## Interpretation GLM-Poisson
 
 As expected, the GLM with a Poisson distribution produced overdispersion, since the variability in the Airbnb data was to be expected. The model calculated the standard errors too small, which is why all variables were highly significant in the first output. The dispersion was then calculated and found to be greater than 1, specifically 56.53. A quasi-Poisson model was used as a solution, which adjusts the standard errors upward.
 
@@ -981,15 +995,13 @@ A primary limitation of this model is the potential for reverse causality, as hi
 # GLM Binomial (DAVIDE)
 
 ## Theory
-
-### Why GLM for Airbnb Pricing?
+**Why GLM for Airbnb Pricing?**
 When the outcome we want to model is binary — yes/no, above/below — a standard linear regression no longer fits. A Binomial GLM with a logit link is the natural choice: it bounds predictions between 0 and 1 and returns coefficients we can read as log-odds. Exponentiating them gives odds ratios, which are easier to communicate to a non-technical audience.
 
-### Justification for our Use Case
 We want to know which listings end up in the upper half of the market. To do that, we created the binary variable *price_high*, which equals 1 if a listing's price is above the median and 0 otherwise. The split at the median gives us two equally sized classes, so the model is not biased toward a majority outcome.
 
 
-### Link to Hypotheses
+## Link to Hypotheses
 This model speaks mainly to H1: do host-centered indicators (Superhost status, ratings) push up the price? The control variables (*accommodates*, *room_type*) are not the focus but make sure we don't confuse host effects with listing characteristics.
 
 ## Model
@@ -1061,7 +1073,7 @@ p.glm_binomial
 ```
 
 
-## Interpretation GLM Binomial: Calculating Odds Ratios (DAVIDE)
+## Interpretation GLM Binomial
 
 After controlling for size, room type and rating, Superhosts have **31% lower odds** of charging an above-median price (OR = 0.69, CI [0.57, 0.84], p = 0.0002). 
 
@@ -1083,19 +1095,18 @@ A few things to keep in mind:
 # GAM Model (DAVIDE)
 
 ## Theory
-### Why GAM for Airbnb Pricing?
+**Why GAM for Airbnb Pricing?**
 A standard linear model assumes that every predictor moves the price at a constant rate. For Airbnb data that's almost never true. A Generalized Additive Model (GAM) replaces the fixed coefficients with smooth functions that the model learns from the data itself. Each predictor gets its own curve instead of a single slope, which lets the model bend where the data actually bends.
 
 The result sits between a linear regression and a black-box model: more flexible than the LM, more interpretable than a Random Forest or Neural Network. Each smooth term can still be plotted on its own and read like a coefficient.
 
-### Justification for our Use Case
 Three things in our data make a GAM the right fit:
 
 1. Price effects are non-linear. Going from 2 to 4 guests roughly doubles the price; going from 8 to 10 barely moves it. Review scores show a similar pattern. A drop from 4.0 to 3.5 hurts much more than the difference between 4.8 and 5.0. A linear model averages these curves and gets both ends wrong.
 2. Location is non-linear by nature. Vaud combines lakeshore towns, urban centres, alpine resorts, and rural areas, each with their own price logic. A 2D smoother over longitude and latitude captures this surface without us having to engineer postcode dummies or distance-to-lake variables. This is the main reason we picked GAM over LM.
 3. Interpretability stays. Hosts should be able to see why a price is recommended, not just get a number from a black box. The partial effect plots make every smooth term readable on its own.
 
-### Link to Hypotheses
+## Link to Hypothesis
 The GAM speaks mainly to **H2** through the spatial spline *s(longitude, latitude)*, while controlling for **H1** via *host_is_superhost* and *review_scores_rating*. It is our main tool for checking whether location effects on willingness to pay are non-linear and clustered, something a linear model cannot answer.
   
 ## Model
@@ -1114,10 +1125,10 @@ set.seed(42)
 n <- nrow(d.airbnb_listings_feat_gam)
 train.idx <- sample(seq_len(n), size = floor(0.8 * n))
 
-df.train <- d.airbnb_listings_feat_gam[ train.idx, ]
-df.test  <- d.airbnb_listings_feat_gam[-train.idx, ]
+d.train <- d.airbnb_listings_feat_gam[ train.idx, ]
+d.test  <- d.airbnb_listings_feat_gam[-train.idx, ]
 
-cat("Train:", nrow(df.train), " | Test:", nrow(df.test), "\n")
+cat("Train:", nrow(d.train), " | Test:", nrow(d.test), "\n")
 ```
 
 We model *log(price)* rather than the raw price. The price distribution is heavily right-skewed (see EDA-Part), and the log transform stabilises variance and brings the residuals close to normal. Coefficients on the log scale can be read multiplicatively: a coefficient of β corresponds to roughly a $(exp(β) − 1) × 100%$ price change.
@@ -1134,7 +1145,7 @@ gam.main <- gam(log(price) ~
                   bathrooms,
                 family = gaussian(),
                 method = "REML",
-                data   = df.train)
+                data   = d.train)
 
 summary(gam.main)
 ```
@@ -1146,8 +1157,8 @@ The partial effect plots are the main reason to choose a GAM in the first place.
 plot(gam.main, pages = 1, shade = TRUE,
      col = "firebrick1", shade.col = "lightblue", seWithMean = TRUE)
 
-edf.table <- as.data.frame(summary(gam.main)$s.table) %>% round(3)
-kable(edf.table, caption = "Smooth Terms: Estimated Degrees of Freedom (EDF)")
+d.table <- as.data.frame(summary(gam.main)$s.table) %>% round(3)
+kable(d.table, caption = "Smooth Terms: Estimated Degrees of Freedom (EDF)")
 
 cat("R-squared:         ", round(summary(gam.main)$r.sq,  3), "\n")
 cat("Deviance explained:", round(summary(gam.main)$dev.expl, 3), "\n")
@@ -1160,7 +1171,7 @@ To make the comparison fair, we fit a linear model on the exact same data, targe
 lm.gam_comparison <- lm(log(price) ~ accommodates + review_scores_rating +
                           log1p(number_of_reviews) + longitude + latitude +
                           room_type + host_is_superhost + bathrooms,
-                        data = df.train)
+                        data = d.train)
 
 cat("LM  R²:", round(summary(lm.gam_comparison)$r.squared, 3), "\n")
 cat("GAM R²:", round(summary(gam.main)$r.sq, 3), "\n")
@@ -1174,14 +1185,14 @@ We set the threshold at ±15%, anchored in the residual standard deviation of th
 
 ```{r traffic_light_labels}
 # Predictions on log scale
-df.train$fitted_logprice <- as.numeric(predict(gam.main, newdata = df.train))
-df.test$fitted_logprice  <- as.numeric(predict(gam.main, newdata = df.test))
+d.train$fitted_logprice <- as.numeric(predict(gam.main, newdata = d.train))
+d.test$fitted_logprice  <- as.numeric(predict(gam.main, newdata = d.test))
 
 # Smearing correction (Duan 1983) for back-transforming log predictions
 sigma2   <- summary(gam.main)$scale
 smearing <- exp(sigma2 / 2)
-df.train$fitted_price <- exp(df.train$fitted_logprice) * smearing
-df.test$fitted_price  <- exp(df.test$fitted_logprice)  * smearing
+d.train$fitted_price <- exp(d.train$fitted_logprice) * smearing
+d.test$fitted_price  <- exp(d.test$fitted_logprice)  * smearing
 
 # Apply traffic-light rule consistently to train and test
 make.traffic_light <- function(price, fitted, threshold = 15) {
@@ -1193,14 +1204,14 @@ make.traffic_light <- function(price, fitted, threshold = 15) {
   ) %>% as.factor()
 }
 
-df.train$pct_diff      <- (df.train$price - df.train$fitted_price) / df.train$fitted_price * 100
-df.test$pct_diff       <- (df.test$price  - df.test$fitted_price)  / df.test$fitted_price  * 100
-df.train$traffic_light <- make.traffic_light(df.train$price, df.train$fitted_price)
-df.test$traffic_light  <- make.traffic_light(df.test$price,  df.test$fitted_price)
+d.train$pct_diff      <- (d.train$price - d.train$fitted_price) / d.train$fitted_price * 100
+d.test$pct_diff       <- (d.test$price  - d.test$fitted_price)  / d.test$fitted_price  * 100
+d.train$traffic_light <- make.traffic_light(d.train$price, d.train$fitted_price)
+d.test$traffic_light  <- make.traffic_light(d.test$price,  d.test$fitted_price)
 
 # Sanity check: distribution should look similar across train and test
-cat("\nTrain:\n"); print(prop.table(table(df.train$traffic_light)))
-cat("\nTest:\n");  print(prop.table(table(df.test$traffic_light)))
+cat("\nTrain:\n"); print(prop.table(table(d.train$traffic_light)))
+cat("\nTest:\n");  print(prop.table(table(d.test$traffic_light)))
 ```
 
 
@@ -1208,17 +1219,17 @@ cat("\nTest:\n");  print(prop.table(table(df.test$traffic_light)))
 The map below plots every listing in the dataset, coloured by its traffic-light verdict. Each point shows the actual price, the GAM-recommended price, and the percentage deviation when clicked.
 
 ```{r gam_leaflet_map}
-df.map <- bind_rows(df.train, df.test)
+d.map <- bind_rows(d.train, d.test)
 color_map <- c("Underpriced" = "#EF9F27",
                "Fair Price"  = "#1D9E75",
                "Overpriced"  = "#D85A30")
-df.map$marker_color <- color_map[as.character(df.map$traffic_light)]
+d.map$marker_color <- color_map[as.character(d.map$traffic_light)]
 
 leaflet() %>%
   addProviderTiles(providers$CartoDB.Positron) %>%
   setView(lng = 6.65, lat = 46.52, zoom = 9) %>%
   addCircleMarkers(
-    data = df.map,
+    data = d.map,
     lng = ~longitude, lat = ~latitude,
     radius = 4, fillColor = ~marker_color,
     fillOpacity = 0.85, stroke = FALSE,
@@ -1237,10 +1248,10 @@ leaflet() %>%
     opacity  = 0.85
   )
 
-# Note: df.train and df.test are passed on to the SVM block.
+# Note: d.train and d.test are passed on to the SVM block.
 ```
 
-## Interpretation
+## Interpretation GAM
 The GAM explains 66.4% of the deviance (adjusted R² = 0.658) on 2,527 training listings. That's a clear improvement over the LM benchmark (R² = 0.607) on the same data, and the AIC drops from 2,599 to 2,279. A substantial gain that confirms the smooth terms earn their additional degrees of freedom.
 
 Parametric terms
@@ -1279,9 +1290,11 @@ Spatial spline describes, doesn't explain. It fits the price surface very well b
 
 
 
-# SVM (TIMON - Davide reviewed)
+# SVM (TIMON)
 
 ## Theory
+
+## Link to Hypothesis
 
 ## Model
 
@@ -1297,8 +1310,8 @@ svm.coloums <- c("traffic_light", "price", "accommodates", "review_scores_rating
                  "number_of_reviews", "room_type", "host_is_superhost")
 
 # Creating the 80% Training and 20% Test datasets
-d.svm_train <- df.train[, svm.coloums]
-d.svm_test  <- df.test[, svm.coloums]
+d.svm_train <- d.train[, svm.coloums]
+d.svm_test  <- d.test[, svm.coloums]
 
 # Verifying the split visually
 cat("Training set size:", nrow(d.svm_train), "\n")
@@ -1367,7 +1380,7 @@ cat("\nSVM Test Accuracy:", round(svm_accuracy * 100, 2), "%\n")
 
 
 
-## Interpretion
+## Interpretion SVM
 
 Support Vector Machine (SVM) Classification To operationalize our
 pricing decision-support system, we trained a Support Vector Machine
@@ -1403,12 +1416,13 @@ location. While we have the coordinates, these alone are hardly
 meaningful. For example, the distance to city centers or landmarks would
 be important to enable better categorization.
 
+## Limitations
 
-
-# ANN (DAVIDE) Identisch mit Pascal
+# ANN (Pascal)
 
 ## Theory
 
+## Link to Hypothesis
 
 ## Model
 
@@ -1545,14 +1559,14 @@ A primary limitation of the nn_expanded model is the inherent "black box" nature
 
 
 # Results
+
 # Conclusion
 
-# Limitations
-
+# Limitations of the overall UseCase
 
 
 # Use of GenAI
 
 Throughout this machine learning project, we leveraged various Generative AI tools specifically ChatGPT, Gemini, and Claude to support our analytical workflow. A primary use case was troubleshooting complex issues that extended beyond our existing knowledge base. When encountering technical bottlenecks, we used these models to break down and explain the underlying concepts, enabling us to systematically find the right solutions. Furthermore, we utilized GenAI as a critical review mechanism for our modeling approach. We consulted the AI to verify whether we had made the appropriate theoretical assumptions, such as selecting the correct data distributions for our models. It also served as a valuable sounding board to double-check our final analytical interpretations, ensuring our conclusions were statistically sound. Finally, these tools provided essential linguistic support. We actively used GenAI to translate our documentation and findings into professional English, ensuring a high-quality final report.
 
-# Annex
+# Appendix

@@ -871,7 +871,7 @@ This is relevant for Airbnb, as these results show that reviews on the host side
 # GLM Poisson (PASCAL - Davide translated to english and commments)
 
 ## Theory
-With the GLM model with Poisson-family / quasi-poisson family is used to analyse count data. Count data is strictly positive and counted (not continuous). Using this model we want to see which variables lead to the highest occupancy, meaning most of the time the airbnb is rented out. As the data is probably overdispersed - meaning the data has not the same variance and much more cheap listings than expensive ones - we need to use a quasi-poisson model that can handle this kind of data much better. First we fit a normal poisson-family, then check for overdispersion, and if necessary we use a quasi-poisson-family.
+With the GLM model with Poisson-family / quasi-poisson family is used to analyse count data. Count data is strictly positive and counted (not continuous). Using this model we want to see which variables lead to the highest occupancy, meaning most of the time the airbnb is rented out. As the data is probably overdispersed, meaning the data has not the same variance and much more cheap listings than expensive ones, we need to use a quasi-poisson model that can handle this kind of data much better. First we fit a normal poisson-family, then check for overdispersion, and if necessary we use a quasi-poisson-family.
 
 ## Model
 ```{r}
@@ -1120,7 +1120,7 @@ df.test  <- d.airbnb_listings_feat_gam[-train.idx, ]
 cat("Train:", nrow(df.train), " | Test:", nrow(df.test), "\n")
 ```
 
-We model *log(price)* rather than the raw price. The price distribution is heavily right-skewed (see EDA-Part), and the log transform stabilises variance and brings the residuals close to normal. Coefficients on the log scale can be read multiplicatively: a coefficient of β corresponds to roughly a (exp(β) − 1) × 100% price change.
+We model *log(price)* rather than the raw price. The price distribution is heavily right-skewed (see EDA-Part), and the log transform stabilises variance and brings the residuals close to normal. Coefficients on the log scale can be read multiplicatively: a coefficient of β corresponds to roughly a $(exp(β) − 1) × 100%$ price change.
 We use *method = "REML"* instead of the default. REML is less prone to undersmoothing and gives more reliable confidence intervals
 
 ```{r gam_fit}

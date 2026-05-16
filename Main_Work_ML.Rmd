@@ -25,7 +25,9 @@ knitr::opts_chunk$set(echo = FALSE, cache = TRUE, comment = NA, warning = FALSE,
 
 ```
 
-Tasks ab 29.04 - Frühlingsputz (PASCAL) - Colors finalisieren (TIMON) -
+Tasks ab 29.04 
+- Frühlingsputz (PASCAL) 
+- Colors finalisieren (TIMON) -
 Coding Conventions kontrollieren (TIMON) - df.full --\> bugfix (DAVIDE)
 --\> done - df. zu d.ändern (DAVIDE) --\> done - SVM Theorieteil
 finalisieren. (TIMON) - LM Limitationen (TIMON) - AI Chapter (PASCAL)
@@ -137,8 +139,6 @@ location-centered indicators are those that relate to factors such as
 the size of the rental property.
 
 # Data Preparation
-
-## Cleaning the Dataset
 
 First step: Loading Packages
 
@@ -505,9 +505,7 @@ For review scores, the data is most likely Missing Not At Random: a listing with
 
 
 ```{r}
-vis_miss(d.airbnb_listings_feat)
 gg_miss_var(d.airbnb_listings_feat)
-gg_miss_upset(d.airbnb_listings_feat)
 ```
 
 ## Missing Value Patterns
@@ -1568,6 +1566,14 @@ svm.model_gamma <- 0.625
 
 
 
+
+
+
+
+
+
+
+
 #displaying Parameters for visual confirmation
 cat("Optimal Cost:", svm.model_cost, "\n")
 cat("Optimal Gamma:", svm.model_gamma, "\n")
@@ -1833,8 +1839,6 @@ points systematically represented a specific market segment, such as
 poorly managed properties.
 
 # Synthesis, Conclusion & Recommendations
-
-# Synthesis & Recommendations
 
 ## What the Models Agree On
 

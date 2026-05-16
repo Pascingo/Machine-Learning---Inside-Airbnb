@@ -29,11 +29,8 @@ Tasks ab 29.04
 - Frühlingsputz (PASCAL) 
 - Colors finalisieren (TIMON)
 Coding Conventions kontrollieren (TIMON) 
-- df.full --\> bugfix (DAVIDE) --\> done 
-- df. zu d.ändern (DAVIDE) --\> done 
 - SVM Theorieteil finalisieren. (TIMON) 
 - LM Limitationen (TIMON) 
-- AI Chapter (PASCAL) --\> done 
 - AI-kontrolle & übersetzungskontrolle (DAVIDE)
 
 @Pascal: du bist der einzige der pro Modell "Business Case" pro Kapitel

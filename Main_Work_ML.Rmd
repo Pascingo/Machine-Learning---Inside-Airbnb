@@ -80,11 +80,17 @@ untersuche, sondern die zweite Forshcungsfrage und versuche vorhersagen
 zu treffen. dies macht beispielsweise beim SVM sinn. da müsst ihr selbst
 enscheiden, welchen Fokus ihr setzen wollt
 
-Coding Conventions. • data sets are named with the prefix “d.” (e.g.,
-d.cats). • linear model objects are named with the prefix “lm.” (e.g.,
-lm.cats) • plots are named with the prefix "p." • within the text
-R-objects are written using code formatting (e.g., lm.cats) • variable
-names are written using italic (e.g., Body.weight) • these conventions
+Coding Conventions. 
+• data sets are named with the prefix “d.” (e.g.,
+d.cats). 
+• linear model objects are named with the prefix “lm.” (e.g.,
+lm.cats) 
+• plots are named with the prefix "p." 
+
+• within the text R-objects are written using code formatting (e.g., lm.cats) 
+
+• variable names are written using italic (e.g., Body.weight) 
+• these conventions
 are arbitrary, but hopefully useful to the reader
 
 # Introduction
@@ -805,9 +811,7 @@ The GAM, SVM and ANN are evaluated on held-out test data. The split is made **on
 
 ## Theory
 
-With this initial model, we aim to examine the first hypothesis and
-investigate which host-centered indicators influence the price of a
-rental property.
+With this initial model, we aim to examine the first hypothesis if host-centered indicators shift price?
 
 For this, we use the *review_scores_rating*. We also include the factor
 *host_is_superhost* to distinguish between the two groups. We measure
@@ -820,15 +824,7 @@ the price.
 A linear model allows us to analyze multiple variables and their effect
 on a dependent variable. It is important that the dependent variable be
 normally distributed. Since this is not the case here, as is often the
-case with price variables, this variable is logarithmized. Since there
-is a high risk of multicollinearity in our data, this is also examined.
-
-DAVIDE Vorschlag: 
-A linear model estimates the effect of each predictor as a constant slope on the response. It's the simplest tool in our toolkit and serves as a baseline. Anything more complex needs to clearly beat it to justify the additional complexity. The dependent variable should be approximately normally distributed for the standard errors to be reliable, so we log-transform `price` before fitting. Several predictors in our data correlate with each other (capacity, beds, bathrooms), so we explicitly check the variance inflation factors to make sure the coefficient estimates remain readable.
-
-## Link to Hypothesis
-DAVIDE Vorschlag:
-We focus on H1 with this model: do host-centered indicators (review score, Superhost status) shift price? Listing size (`accommodates`) and `room_type` are included as controls so we don't mistake structural effects for host effects.
+case with price variables, this variable is logarithmized. We assumed that there is a risk of high collinearity in our data. therefore we checked for it, to make sure, that the results are robust. 
 
 ## Model
 
@@ -916,13 +912,8 @@ within the scope of this paper. However, these findings provide Airbnb
 with clarified insights that can serve as a basis for further work.
 
 ## Limitations
-DAVIDE Vorschlag:
-A few caveats:
-
-- *Linear effects only*. Capacity is almost certainly non-linear — diminishing returns from 8 to 16 guests, for example — and the model can't capture this. The GAM will.
-- *No location*. We don't include longitude or latitude, so the Vaud-internal price gap between Lausanne and rural areas ends up unexplained in the residuals.
-- *Multicollinearity*. Several predictors correlate. The VIF check controls for the worst cases, but interpreting individual coefficients gets noisier when correlated predictors share variance.
-- *Listed price ≠ willingness to pay*. The same caveat applies to every model in this study.
+A linear model often comes with certain limitations, as the degree of complexity is limited. We can only observe linear effects. We can assume that capacity is not a linear effect, since the price of a location can vary depending on whether it accommodates 3 or 4 people, whereas the effect of one fewer person is less significant if the location accommodates 15 or 16 people. A GAM model could reveal such effects. 
+Another limitation is the absence of the “location” variable. While we could include latitude and longitude, these variables alone do not have a significant impact on price. For example, we would need the distance to the nearest city center to measure this accurately. 
 
 # GLM Poisson (PASCAL)
 

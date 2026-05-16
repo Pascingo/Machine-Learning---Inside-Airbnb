@@ -1501,11 +1501,10 @@ isn't.
 # SVM (TIMON)
 
 ## Theory
-DAVIDE Vorschlag:
-A Support Vector Machine separates classes by drawing the widest possible margin between them. With a non-linear kernel — we use a radial basis function — it can handle decision boundaries that no linear classifier could capture. The trade-off is interpretability: an SVM gives a prediction, not a coefficient. We accept that trade-off here because the SVM's role is different from the other models. It is not about explaining what drives price; it is about operationalising the GAM into a working tool that labels listings as Underpriced, Fair, or Overpriced.
+A Support Vector Machine separates classes by drawing the widest possible margin between them. We use a radial kernel. This allows us to define the hyperplane more precisely. As a result, with SVM we do not obtain a coefficient that can be interpreted, but rather a model that enables us to predict which group an observation will fall into. 
+In the following model, we apply exactly that. We look at the traffic light groups defined in the GAM and try to predict, using the available variables, which group a location will fall into. By splitting the data into a training and test dataset, we enable ourselves to test the model, with the drawback that we lose a portion of the training data. 
 
-## Link to Hypothesis
-The SVM does not test a hypothesis directly. Instead, it answers our second research question: to what extent can the identified price drivers be used to predict whether a listing's price is justified? The GAM produces a fair-market price for each listing; the SVM learns to map listing features and the chosen price onto one of the three verdicts.
+With the SVM, we are not testing any of the hypotheses, but rather the second research question: to what extent can we predict whether the prices of a rental property are justified? The GAM generates a fair market price for each rental property. The SVM, on the other hand, examines whether the current rental prices are justified. 
 
 ## Model
 

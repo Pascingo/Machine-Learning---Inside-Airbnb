@@ -73,10 +73,10 @@ ToDos backlog: - R-chunks sauber personen zuweisen
 - 4.2 NA-Check irgendwie noch was dazu schreiben
 - 5.1 & 5.2 Outputs kabeln und verschönern
 - 5.4 Korrelationsmatrix grösser machen. 
-- 10.4.1 R Output verschönern
 - 5.8 Grafik grösser machen. 
 - 5.9 OUtput verschönern. 
 - Braucht es bei 6 für die eine Seite wirklich drei Kapitel oder kann man das in eines zusammenfassen?
+- 7.2 Rmodel einblenden (kabel) allenfalls direkt mit VIF kombinineren. 
 - 7.3 Grafiken Kleiner machen. 
 - Brauchen wir wirklich bei jedem Model das KApitel Link to Hypothesis? --> lieber in den THeorieblock einbauen und so Platz sparen. 
 - 8.4 Grafik kleiner machen
@@ -86,6 +86,7 @@ ToDos backlog: - R-chunks sauber personen zuweisen
 - 10.3 machen diese 4 Visualisierungen wirklich Sinn? 
 - 10.3 einzelne kleine R-OUtputs in eine Tabelle und zusammen darstellen. 
 - 10.4.1 die einzelnen OUtputs in eine Tablle bringen und zusammen darstellen
+- 11.2 COnfusion matrix schöner mahcen (TIMON) *erledigt*
 - 12.3 Output schöner darstellen (kabel)
 - 12 keine einzige Darstellung beim ANN?
 

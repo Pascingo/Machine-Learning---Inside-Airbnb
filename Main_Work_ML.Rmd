@@ -26,10 +26,10 @@ knitr::opts_chunk$set(echo = TRUE, cache = TRUE, comment = NA, warning = FALSE, 
 ```
 
 Tasks ab 17.05:
--   Lesson Learned Kapitel (Jeder selbst: unterkapitel pro person)
--   Formatting conventions übernehmen (jeder für sich)
--   Kapitelstruktur überarbeiten - Davide, Pascal
--   Kontrollieren ob alle Modelle einen "Leader" haben (NAMEN aus Kapiteltitel löschen). PASCAL
+-   Lesson Learned Kapitel (Jeder selbst: unterkapitel pro person)(Pascal done)
+-   Formatting conventions übernehmen (jeder für sich)(Pascal done)
+-   Kapitelstruktur überarbeiten - Davide, Pascal(done)
+-   Kontrollieren ob alle Modelle einen "Leader" haben (NAMEN aus Kapiteltitel löschen). PASCAL-->Done
 -   Variabel-"call" kontrollieren. (ALLE)
 
 -   beautifying HTML-Doc:
@@ -851,7 +851,7 @@ The **ANN** doesn't add new information so much as it checks our assumptions. If
 The GAM, SVM and ANN are evaluated on held-out test data. The split is made **once** — on the cleaned dataset, before any model fits — and reused throughout. This matters especially for the SVM: its training labels come from the GAM's fair-price band, so if we split after labelling, GAM information would leak into the SVM's test set. We split first, fit the GAM only on the training set, then derive labels.
 
 
-# Linear Model (TIMON)
+# Linear Model
 
 ## Theory
 
@@ -961,7 +961,7 @@ Through this analysis we can also answer the first hypothesis. Host centered Var
 A linear model often comes with certain limitations, as the degree of complexity is limited. We can only observe linear effects. We can assume that capacity is not a linear effect, since the price of a location can vary depending on whether it accommodates 3 or 4 people, whereas the effect of one fewer person is less significant if the location accommodates 15 or 16 people. A GAM model could reveal such effects. 
 Another limitation is the absence of the “location” variable. While we could include latitude and longitude, these variables alone do not have a significant impact on price. For example, we would need the distance to the nearest city center to measure this accurately. 
 
-# GLM Poisson (PASCAL)
+# GLM Poisson
 
 ## Theory
 
@@ -976,12 +976,11 @@ First we fit a normal poisson-family, then check for overdispersion, and
 if necessary we use a quasi-poisson-family.
 
 ## Link to Hypothesis
-DAVIDE Vorschlag:
 This is the only model in our set that targets occupancy rather than price. Both hypotheses are in scope — host-centered indicators (H1) and structural indicators (H2) can both drive how often a listing gets booked. The answer turns out to be the missing piece of the Superhost puzzle the other models will surface.
 
 ## Model
 
-```{r}
+```{r, GLM Poisson Lead Pascal}
 
 glm.poisson <- glm(estimated_occupancy_l365d ~ price + host_is_superhost + 
                      review_scores_rating + accommodates + room_type, 
@@ -1064,7 +1063,7 @@ overdispersion, since the variability in the Airbnb data was to be
 expected. The model calculated the standard errors too small, which is
 why all variables were highly significant in the first output. The
 dispersion was then calculated and found to be greater than 1,
-specifically 56.53. A quasi-Poisson model was used as a solution, which
+specifically `r round(dispersion_ratio, 2)`. A quasi-Poisson model was used as a solution, which
 adjusts the standard errors upward.
 
 ### Interpretation GLM-Quasipoisson
@@ -1095,21 +1094,6 @@ fluctuations. If the model were overfitting, we would repeatedly observe
 random fluctuations. In our case, however, we only get a single outlier,
 which suggests that we have a stable model without overfitting.
 
-## Business Case (Cmmt Davide: ich würde löschen)
-
-The *glm.quasipoisson model* directly supports our revenue management
-objectives by identifying the core demand-side drivers of
-estimated_occupancy_l365d. It strongly supports H1 by demonstrating that
-host-centered indicators drastically increase demand; for example,
-achieving host_is_superhost status boosts expected occupancy by
-approximately 2.6 times. The model also confirms H2, showing that
-physical attributes like larger accommodates capacities and renting an
-entire home over a Private room significantly improve booking rates.
-These findings provide hosts with actionable, non-pricing levers to
-optimize their overall yield. Ultimately, improving review_scores_rating
-or attaining Superhost status offers hosts a powerful "occupancy
-buffer," allowing them to command higher prices while maintaining strong
-booking volumes.
 
 ## Limitations
 
@@ -1121,14 +1105,11 @@ survivorship bias if these removed data points represent poorly managed
 or unsuccessful listings. Furthermore, our feature set omits critical
 demand drivers like precise neighborhood desirability, seasonality, and
 listing photo quality, meaning unobserved factors likely account for
-significant residual variance. Because the Quasi-Poisson approach uses a
-quasi-likelihood function, it does not produce an AIC value (shown as
-AIC: NA), which complicates direct statistical comparisons with
-non-quasi models. A potential next step could be exploring a Negative
+significant residual variance. A potential next step could be exploring a Negative
 Binomial model as an alternative method to handle overdispersion while
 retaining standard likelihood metrics for easier comparison.
 
-# GLM Binomial (DAVIDE)
+# GLM Binomial
 
 ## Theory
 
@@ -1146,7 +1127,7 @@ confuse host effects with listing characteristics.
 
 Feature Engeneering
 
-```{r glm_binomial_extended}
+```{r glm_binomial_extended, Lead Davide}
 # Predict the probability that a listing is priced above the market median
 # We control for the most obvious price drivers so the host coefficients can be read cleanly
 glm.binomial <- glm(price_high ~ host_is_superhost + 
@@ -1159,7 +1140,7 @@ glm.binomial <- glm(price_high ~ host_is_superhost +
 summary(glm.binomial)
 ```
 
-```{r glm_binomial_results}
+```{r glm_binomial_results, Lead Davide}
 # Convert log-odds into odds ratios with 95% confidence intervals for easier reading
 d.results_glm_binomial <- tidy(glm.binomial, conf.int = TRUE) %>%
   mutate(
@@ -1181,7 +1162,7 @@ predicted probability of charging an above-median price across listing
 sizes, split by Superhost status. Everything else is held at its average
 so the two lines differ only in the variable we care about.
 
-```{r glm_binomial_plot}
+```{r glm_binomial_plot, Lead Davide}
 # Build a prediction grid: vary accommodates and superhost, hold the rest constant
 d.glm_predict <- expand.grid(
   accommodates         = seq(1, 10, by = 1),
@@ -1254,7 +1235,7 @@ A few things to keep in mind:
 -   The cutoff moves with the market. The median is just our sample's
     median. If the market shifts, so does it.
 
-# GAM (DAVIDE)
+# GAM
 
 ## Theory
 
@@ -1297,7 +1278,7 @@ something a linear model cannot answer.
 
 ## Model
 
-```{r gam_data_split}
+```{r gam_data_split, Lead Davide}
 # Data preparation: keep only variables used in the GAM, drop rows with NAs
 d.airbnb_listings_feat_gam <- d.airbnb_listings_feat %>%
   select(price, accommodates, review_scores_rating,
@@ -1325,7 +1306,7 @@ to roughly a $(exp(β) − 1) × 100%$ price change. We use *method =
 "REML"* instead of the default. REML is less prone to undersmoothing and
 gives more reliable confidence intervals
 
-```{r gam_fit}
+```{r gam_fit, Lead Davide}
 gam.main <- gam(log(price) ~
                   s(accommodates) +
                   s(review_scores_rating) +
@@ -1347,7 +1328,7 @@ The partial effect plots are the main reason to choose a GAM in the
 first place. Each smooth term is shown on its own, with the shaded area
 representing the 95% confidence band.
 
-```{r gam_partial_effects}
+```{r gam_partial_effects, Lead Davide}
 plot(gam.main, pages = 1, shade = TRUE,
      col = "firebrick1", shade.col = "lightblue", seWithMean = TRUE)
 
@@ -1362,7 +1343,7 @@ To make the comparison fair, we fit a linear model on the exact same
 data, target, and predictors. The only difference is the absence of
 smooth terms.
 
-```{r gam_lm_benchmark}
+```{r gam_lm_benchmark, Lead Davide}
 # Fair LM benchmark (same target, same training data)
 lm.gam_comparison <- lm(log(price) ~ accommodates + review_scores_rating +
                           log1p(number_of_reviews) + longitude + latitude +
@@ -1545,7 +1526,7 @@ pricing tool that's enough; for causal claims (does proximity to the
 lake cause higher prices, or just correlate with better properties?) it
 isn't.
 
-# SVM (TIMON)
+# SVM
 
 ## Theory
 A Support Vector Machine separates classes by drawing the widest possible margin between them. We use a radial kernel. This allows us to define the hyperplane more precisely. As a result, with SVM we do not obtain a coefficient that can be interpreted, but rather a model that enables us to predict which group an observation will fall into. 
@@ -1555,7 +1536,7 @@ With the SVM, we are not testing any of the hypotheses, but rather the second re
 
 ## Model
 
-```{r generating Split for SVM (TIMON) - Entfernen sobald OK von Timon da ist}
+```{r SVM, Lead Timon}
 
 # Setting a seed ensures reproducibility. 
 set.seed(42) 
@@ -1654,18 +1635,17 @@ The tuned SVM with an RBF kernel reaches `r round(svm_accuracy * 100, 2)`% accur
 There are a few clear limitations to the model that can be identified right away. The accuracy is too low for a company like Airbnb to provide pricing recommendations to hosts, especially since the category most severely affected is the *Fair Price* category. This leads, in particular, to hosts being incorrectly advised to adjust their prices. Once again, the main cause of the inaccuracy in this model is the location data. We suspect that at the very least, the distance to the nearest city center would have a significant impact on the accuracy of the estimates. 
 
 
-# ANN (PASCAL)
+# ANN
 
 ## Theory
-DAVIDE Vorschlag:
-An Artificial Neural Network learns flexible, non-linear relationships by chaining together layers of weighted nodes. Unlike the LM or GAM, it does not produce readable coefficients — it learns a mapping from inputs to output and treats the rest as internal weights. That makes it powerful but opaque. We use the ANN here as a flexibility check: if the much more interpretable GAM already captures most of the signal, the ANN should not gain much from being more flexible. If it does, we are leaving structure on the table.
+An Artificial Neural Network learns flexible, non-linear relationships by chaining together layers of weighted nodes. Unlike the LM or GAM, it does not produce readable coefficients, it learns a mapping from inputs to output and treats the rest as internal weights. That makes it powerful but opaque. We use the ANN here as a flexibility check: if the much more interpretable GAM already captures most of the signal, the ANN should not gain much from being more flexible. If it does, we are leaving structure on the table.
 
 ## Link to Hypothesis
-We use the ANN to revisit H1 from a different angle. The Naive ANN tests whether host-centered variables alone (review score, review count, Superhost status, capacity) can predict price. The Expanded ANN adds room and property type as controls. Comparing the two shows whether any apparent Superhost effect survives once we compare like with like — a stronger test than just plotting raw medians.
+We use the ANN to revisit H1 from a different angle. The Naive ANN tests whether host-centered variables alone (*review score*, *review count*, *Superhost status*, *capacity*) can predict price. The Expanded ANN adds *room* and *property type* as controls. Comparing the two shows whether any apparent Superhost effect survives once we compare like, with like a stronger test than just plotting raw medians.
 
 ## Model
 
-```{r}
+```{r, Basic ANN Lead Pascal}
 # Selecting basic variables. We omit missing values for this simplified approach.
 d.ann_naive <- d.airbnb_listings_feat %>%
   select(
@@ -1724,7 +1704,7 @@ print("Predicted Prices (Naive Model): Regular Host vs. Superhost")
 print(real_prices_naive)
 ```
 
-```{r}
+```{r, Expanded ANN, Lead Pascal}
 
 # Data Preparation & Dimensionality Reduction
 d_model_ready <- d.airbnb_listings_feat %>%
@@ -1799,17 +1779,7 @@ inputs. Once we controlled for these structural factors to compare
 similar listings, the price gap practically vanished (482.64 CHF for
 Superhosts vs. 483.29 CHF for regular hosts). This refutes our initial
 hypothesis: when comparing apples to apples, Superhost status alone does
-not significantly increase a guest's willingness to pay.
-
-## Business Case
-
-The nn_expanded model serves as the analytical core of our pricing
-decision-support system by accurately predicting a listing's market
-value based on combined structural and host-centric features. By
-comparing this to the nn_naive model, we successfully refute our central
-hypothesis, demonstrating that achieving host_is_superhost status does
-not command a higher nightly price from guests. Instead, the data
-reveals that Superhosts often achieve their high status through
+not significantly increase a guest's willingness to pay. Superhosts often achieve their high status through
 competitive pricing strategies designed to maximize occupancy rather
 than nightly margins. Ultimately, a guest's willingness to pay is
 dictated almost entirely by physical listing attributes like
@@ -1820,7 +1790,7 @@ capture market share and drive booking volume.
 
 ## Limitations
 
-A primary limitation of the nn_expanded model is the inherent "black
+A primary limitation of the `nn_expanded model` is the inherent "black
 box" nature of Artificial Neural Networks, which drastically reduces the
 interpretability of individual price drivers compared to transparent
 linear models. Because neural networks require mathematical
@@ -1913,3 +1883,10 @@ used GenAI to translate our documentation and findings into professional
 English, ensuring a high-quality final report.
 
 # Appendix
+## Lessons learned
+### Pascal
+Working on this project was a huge reality check in the best way possible. In our classes, we are used to getting "perfect" datasets that are practically made for the specific algorithms we are learning. But working with our actual `d.airbnb_listings_feat` dataset showed me how much effort actually goes into data cleaning and prepping before you can even start modeling. I personally focused on building the GLM-Poisson and ANN models, and trying to get them to perform well on real, messy data required a lot more critical thinking and trial-and-error than our standard assignments.
+
+Since we split up the workload, I didn't code every single model myself. Instead, my role for the LM, GLM-Binomial, GAM, and SVM models was to check and review the work of my team members. This turned out to be a super valuable learning experience on its own. Reading through their code allowed me to see exactly how other people translate what we learned in class into practice. Seeing their different approaches to problem-solving and troubleshooting bugs really helped expand my own coding mindset.
+
+Finally, figuring out how to collaborate effectively on code was a massive win for us. We used GitHub with RStudio for the first time, and it honestly made a world of difference. We finally found a setup that actually works for coding together as a group, which saved us a lot of headaches and is definitely a workflow I’ll be taking into future projects.

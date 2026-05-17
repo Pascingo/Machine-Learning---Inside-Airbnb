@@ -26,9 +26,9 @@ knitr::opts_chunk$set(echo = TRUE, cache = TRUE, comment = NA, warning = FALSE, 
 ```
 
 Tasks ab 17.05:
--   Lesson Learned Kapitel (Jeder selbst: unterkapitel pro person)
--   Formatting conventions übernehmen (jeder für sich)
--   Kapitelstruktur überarbeiten - Davide, Pascal
+-   Lesson Learned Kapitel (Jeder selbst: unterkapitel pro person)(Pascal done)
+-   Formatting conventions übernehmen (jeder für sich)(Pascal done)
+-   Kapitelstruktur überarbeiten - Davide, Pascal(done)
 -   Kontrollieren ob alle Modelle einen "Leader" haben (NAMEN aus Kapiteltitel löschen). PASCAL-->Done
 -   Variabel-"call" kontrollieren. (ALLE)
 

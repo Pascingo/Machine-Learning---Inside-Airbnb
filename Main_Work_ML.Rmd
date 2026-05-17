@@ -1904,3 +1904,10 @@ used GenAI to translate our documentation and findings into professional
 English, ensuring a high-quality final report.
 
 # Appendix
+## Lessons learned
+### Pascal
+Working on this project was a huge reality check in the best way possible. In our classes, we are used to getting "perfect" datasets that are practically made for the specific algorithms we are learning. But working with our actual `d.airbnb_listings_feat` dataset showed me how much effort actually goes into data cleaning and prepping before you can even start modeling. I personally focused on building the GLM-Poisson and ANN models, and trying to get them to perform well on real, messy data required a lot more critical thinking and trial-and-error than our standard assignments.
+
+Since we split up the workload, I didn't code every single model myself. Instead, my role for the LM, GLM-Binomial, GAM, and SVM models was to check and review the work of my team members. This turned out to be a super valuable learning experience on its own. Reading through their code allowed me to see exactly how other people translate what we learned in class into practice. Seeing their different approaches to problem-solving and troubleshooting bugs really helped expand my own coding mindset.
+
+Finally, figuring out how to collaborate effectively on code was a massive win for us. We used GitHub with RStudio for the first time, and it honestly made a world of difference. We finally found a setup that actually works for coding together as a group, which saved us a lot of headaches and is definitely a workflow I’ll be taking into future projects.

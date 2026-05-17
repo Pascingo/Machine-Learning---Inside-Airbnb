@@ -27,7 +27,7 @@ knitr::opts_chunk$set(echo = FALSE, cache = TRUE, comment = NA, warning = FALSE,
 
 Tasks ab 29.04 
 - Frühlingsputz (PASCAL) 
-- Colors finalisieren (TIMON)
+- Colors finalisieren (TIMON) *erledigt*
 - Coding Conventions kontrollieren (TIMON) *erledigt*
 - SVM Theorieteil finalisieren. (TIMON) *erledigt*
 - LM Limitationen (TIMON) *erledigt*
@@ -39,10 +39,15 @@ link zur hypo & limitations @Davide: bei mir fehlt business case pro
 modell
 
 Fragen in die Runde: 1. Business Case behalten --\> Timon und ich müssen
-das ergänzen für unsere Modelle 2. Umwandlung von Business Case zur Link
+das ergänzen für unsere Modelle 
+2. Umwandlung von Business Case zur Link
 zur Hypothese --\> Pascal und Timon müssen umschreiben resp. sowieso
-ergänzen 3. link zur hypo skippen und in der Interpretation auf Hypo und
+ergänzen 
+3. link zur hypo skippen und in der Interpretation auf Hypo und
 RQs gezielt eingehen?
+
+
+
 
 ToDos backlog: - R-chunks sauber personen zuweisen
 
@@ -319,7 +324,7 @@ produces a leniency bias on top of any genuine quality signal.
 
 ```{r, fig.show='hold', out.width='49%'}
 p.room <- ggplot(d.airbnb_listings_feat, aes(x = room_type, fill = room_type)) +
-  geom_bar(show.legend = FALSE) +
+  geom_bar(show.legend = FALSE, fill = "deepskyblue") +
   labs(title = "Proportion of Room Types", x = "Room Type", y = "Count") +
   theme(axis.text.x = element_text(angle = 45, hjust = 1))
 
@@ -339,7 +344,7 @@ Superhosts. This is a meaningful minority, but far from the norm.
 
 ```{r, fig.show='hold', out.width='33%'}
 p.logprice_room <- ggplot(d.airbnb_listings_feat, aes(x = room_type, y = log_price, fill = room_type)) +
-  geom_boxplot(alpha = 0.7, show.legend = FALSE) +
+  geom_boxplot(alpha = 0.7, show.legend = FALSE, fill = "deepskyblue") +
   labs(title = "Log Price by Room Type", x = "Room Type", y = "Log Price") +
   theme(axis.text.x = element_text(angle = 45, hjust = 1))
 
@@ -693,7 +698,7 @@ d.airbnb_listings_feat %>%
                             labels = c("≤3", "3–4", "4–4.5", "4.5–4.8", "4.8–5"),
                             include.lowest = TRUE)) %>%
   ggplot(aes(x = rating_group, y = log_price, fill = rating_group)) +
-  geom_boxplot(alpha = 0.7, show.legend = FALSE) +
+  geom_boxplot(alpha = 0.7, show.legend = FALSE, fill = "deepskyblue") +
   labs(title = "Log Price by Review Score Group",
        x = "Review Score Rating",
        y = "Log Price")
@@ -707,7 +712,7 @@ Medians across rating groups are surprisingly close. Higher-rated listings do no
 # Cleaned up the map to focus purely on location and price.
 ggplot(data = d.airbnb_listings_feat, aes(x = longitude, y = latitude)) +
   geom_point(aes(color = log_price), alpha = 0.6, size = 1.5) +
-  scale_color_viridis_c(option = "plasma") +
+  scale_color_continuous(palette = c("deepskyblue", "firebrick1", "gold")) +
   labs(
     title = "Airbnb Listings in Vaud by Log(Price)",
     x = "Longitude",
@@ -731,7 +736,7 @@ p_ppg <- ggplot(d.airbnb_listings_feat, aes(x = price_per_guest)) +
        x = "Price per Guest (CHF)", y = "Count")
 
 p_ppg_room <- ggplot(d.airbnb_listings_feat, aes(x = room_type, y = price_per_guest, fill = room_type)) +
-  geom_boxplot(alpha = 0.7, show.legend = FALSE) +
+  geom_boxplot(alpha = 0.7, show.legend = FALSE, fill = "deepskyblue") +
   scale_y_log10() +
   labs(title = "Price per Guest by Room Type",
        x = "Room Type", y = "Price per Guest (Log)") +
@@ -768,7 +773,7 @@ At first glance the boxplot shows almost no difference in median price between S
 ```{r Binary Predictor: Superhost Status, out.width="49%", fig.show='hold'}
 # Adding this because it's a key part of the business case and fulfills the binary variable requirement.
 ggplot(data = d.airbnb_listings_feat, aes(x = as.factor(host_is_superhost), y = log_price, fill = as.factor(host_is_superhost))) +
-  geom_boxplot(alpha = 0.7) +
+  geom_boxplot(alpha = 0.7, fill = "deepskyblue") +
   scale_x_discrete(labels = c("0" = "Regular Host", "1" = "Superhost")) +
   labs(
     title = "Price Difference: Superhosts vs. Regular Hosts",
@@ -910,6 +915,7 @@ host side are a key factor in price setting. It is also interesting that
 Superhosts might develop their own understanding for how prices can
 be set. The exact reasons underlying this difference cannot be examined
 within the scope of this paper.
+Through this analysis we can also answer the first hypothesis. Host centered Variables, in this case the *review_scores_rating* and *host_is_superhost*, do change the price of a venue.
 
 ## Limitations
 A linear model often comes with certain limitations, as the degree of complexity is limited. We can only observe linear effects. We can assume that capacity is not a linear effect, since the price of a location can vary depending on whether it accommodates 3 or 4 people, whereas the effect of one fewer person is less significant if the location accommodates 15 or 16 people. A GAM model could reveal such effects. 
@@ -1005,7 +1011,7 @@ for(i in 1:200){
   
 }
 
-boxplot(cv.mse.poisson, cv.mse.quasipoisson, names = c("Poisson-Model","Quasipoisson-Model"))
+boxplot(cv.mse.poisson, cv.mse.quasipoisson, names = c("Poisson-Model","Quasipoisson-Model"), col = "deepskyblue")
 
 ```
 

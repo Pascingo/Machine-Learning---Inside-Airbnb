@@ -9933,86 +9933,113 @@ examines whether the current rental prices are justified.</p>
 <pre><code>Training set size: 2527 </code></pre>
 <pre><code>Test set size: 632 </code></pre>
 <pre><code>[1] &quot;Confusion Matrix:&quot;</code></pre>
-<pre><code>             Actual
-Predicted     Fair Price Overpriced Underpriced
-  Fair Price         113         43          42
-  Overpriced          28        105           5
-  Underpriced         68          9         219</code></pre>
+<table class="table table-bordered" style="margin-left: auto; margin-right: auto;border-bottom: 0;">
+<caption>
+<span style="color:black; font-weight:bold;">SVM Confusion Matrix</span>
+</caption>
+<thead>
+<tr>
+<th style="text-align:left;">
+</th>
+<th style="text-align:right;">
+Fair Price
+</th>
+<th style="text-align:right;">
+Overpriced
+</th>
+<th style="text-align:right;">
+Underpriced
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left;">
+Fair Price
+</td>
+<td style="text-align:right;background-color: deepskyblue !important;">
+113
+</td>
+<td style="text-align:right;background-color: rgba(255, 52, 179, 255) !important;">
+43
+</td>
+<td style="text-align:right;background-color: rgba(255, 52, 179, 255) !important;">
+42
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Overpriced
+</td>
+<td style="text-align:right;background-color: rgba(255, 52, 179, 255) !important;">
+28
+</td>
+<td style="text-align:right;background-color: deepskyblue !important;">
+105
+</td>
+<td style="text-align:right;background-color: rgba(255, 52, 179, 255) !important;">
+5
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Underpriced
+</td>
+<td style="text-align:right;background-color: rgba(255, 52, 179, 255) !important;">
+68
+</td>
+<td style="text-align:right;background-color: rgba(255, 52, 179, 255) !important;">
+9
+</td>
+<td style="text-align:right;background-color: deepskyblue !important;">
+219
+</td>
+</tr>
+</tbody>
+<tfoot>
+<tr>
+<td style="padding: 0; " colspan="100%">
+<span style="font-style: italic;">Note: </span>
+</td>
+</tr>
+<tr>
+<td style="padding: 0; " colspan="100%">
+<sup></sup> Blue: correct identifications <br> Red: wrong
+identifications
+</td>
+</tr>
+</tfoot>
+</table>
 <pre><code>
 SVM Test Accuracy: 69.15 %</code></pre>
 </div>
 <div id="interpretion-svm" class="section level2" number="11.3">
 <h2><span class="header-section-number">11.3</span> Interpretion
 SVM</h2>
-<p>Support Vector Machine (SVM) Classification To operationalize our
-pricing decision-support system, we trained a Support Vector Machine
-(SVM) using a radial basis function (RBF) kernel. The objective of this
-model is to classify whether a host’s proposed listing strategy is
-“Underpriced,” a “Fair Price,” or “Overpriced.”</p>
-<p>We established the ground truth labels for these three categories
-based on the percentage deviation from our GAM’s expected market price.
-The data was split into an 80% training set and a 20% test set. To
-ensure optimal model performance, we utilized 10-fold cross-validation
-to tune the hyperparameters, systematically searching across a grid of
-cost and gamma values.</p>
-<p>By feeding the SVM both the listing characteristics (e.g.,
-accommodates, room type, superhost status) and the specific price the
-host intends to charge, the model learns the non-linear boundaries
-between our three pricing tiers. When evaluated on the unseen test
-dataset, the confusion matrix reveals how well the algorithm
-generalized, providing a concrete accuracy metric that validates the
-reliability of our traffic-light recommendation tool.</p>
-<p>Using the variables contained in the dataset and some targeted
-tuning, we’ve managed to achieve an accuracy of 62%. The model’s main
-challenge lies in determining whether a price is fair or not, where it
-only performed little better than randomness. This is evident not only
-in the “Fair Price” category but also in the other two, where the
-largest group of incorrect predictions is found in the “Fair Price”
-group.</p>
-<p>However, the data itself represents a clear shortcoming for the
-model. Prediction is virtually impossible without operationalizing the
-location. While we have the coordinates, these alone are hardly
-meaningful. For example, the distance to city centers or landmarks would
-be important to enable better categorization.</p>
-<p>DAVIDE Text geglättet: The tuned SVM with an RBF kernel reaches 62%
-accuracy on the test set. That’s well above chance (33% for three
-balanced classes) but below what a production tool would need. The
-biggest single weakness is the Fair Price class — most
-misclassifications either enter or exit this middle band, which makes
-intuitive sense: the boundary between “fair” and “slightly under or
-over” is intrinsically fuzzier than the boundary between “underpriced”
-and “overpriced”. The bigger limitation is the data itself. We feed
-coordinates to the SVM but don’t operationalise them — no distance to
-the lake, to a city centre, to a ski resort. The GAM gets around this
-with its 2D spline; the SVM treats longitude and latitude as two
-independent features, which they aren’t. Adding engineered location
-variables would likely lift accuracy meaningfully.</p>
 <p>The tuned SVM with an RBF kernel reaches 69.15% accuracy on the test
-set. That’s well above chance (33% for three balanced classes) but below
-what a production tool would need. The biggest single weakness is the
-Fair Price class. Most misclassifications either enter or exit this
-middle band, which makes intuitive sense: the boundary between “fair”
-and “slightly under or over” is intrinsically fuzzier than the boundary
-between “underpriced” and “overpriced”.</p>
+set. This means the model clearly outperforms chance, which would be 33%
+for a three-class model. The main issues arise when classifying <em>Fair
+Price</em>. This makes sense, however, since this is the only class that
+is bounded both above and below and therefore does not exhibit the
+significant deviations that can be accounted for in the other two
+categories. For a company like Airbnb, the accuracy is likely too low to
+make predictions. However, the model shows that estimation within such
+classes is fundamentally possible. The second Research Question is
+therefore not easy to answer. We are able to predict wether a price for
+a location is justified, the accuracy is just not good enough for a
+company as Airbnb.</p>
 </div>
 <div id="limitations-4" class="section level2" number="11.4">
 <h2><span class="header-section-number">11.4</span> Limitations</h2>
-<p>DAVIDE Vorschlag: A few things to keep in mind:</p>
-<ul>
-<li><em>Black box</em>. The SVM gives a verdict but no reason. A host
-using the tool sees “Overpriced” but not which feature pushed them
-there. The GAM is the better tool for that question.</li>
-<li><em>The verdict is only as good as the GAM</em>. Training labels
-come from the GAM’s fair-price ±15% band. Any region or property type
-where the GAM is off is also where the SVM inherits the error.</li>
-<li><em>Fair Price is the hardest class</em>. Confusion matrix shows the
-model mistakes Fair for the other two more often than the reverse. The
-middle category is intrinsically the fuzziest one to draw a boundary
-around.</li>
-<li><em>Location not operationalised</em>. Raw coordinates aren’t
-enough. Distance-to-lake, distance-to-landmark, or distance-to-transport
-would all likely move the accuracy needle.</li>
-</ul>
+<p>There are a few clear limitations to the model that can be identified
+right away. The accuracy is too low for a company like Airbnb to provide
+pricing recommendations to hosts, especially since the category most
+severely affected is the <em>Fair Price</em> category. This leads, in
+particular, to hosts being incorrectly advised to adjust their prices.
+Once again, the main cause of the inaccuracy in this model is the
+location data. We suspect that at the very least, the distance to the
+nearest city center would have a significant impact on the accuracy of
+the estimates.</p>
 </div>
 </div>
 <div id="ann-pascal" class="section level1" number="12">

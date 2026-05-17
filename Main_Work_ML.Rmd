@@ -28,8 +28,8 @@ knitr::opts_chunk$set(echo = FALSE, cache = TRUE, comment = NA, warning = FALSE,
 Tasks ab 29.04 
 - Frühlingsputz (PASCAL) 
 - Colors finalisieren (TIMON)
-- Coding Conventions kontrollieren (TIMON) 
-- SVM Theorieteil finalisieren. (TIMON) 
+- Coding Conventions kontrollieren (TIMON) *erledigt*
+- SVM Theorieteil finalisieren. (TIMON) *erledigt*
 - LM Limitationen (TIMON) *erledigt*
 - AI-kontrolle & übersetzungskontrolle (DAVIDE)
 
@@ -824,7 +824,7 @@ the price.
 A linear model allows us to analyze multiple variables and their effect
 on a dependent variable. It is important that the dependent variable be
 normally distributed. Since this is not the case here, as is often the
-case with price variables, this variable is logarithmized. We assumed that there is a risk of high collinearity in our data. therefore we checked for it, to make sure, that the results are robust. 
+case with price variables, this variable is logarithmized. We assumed that there is a risk of high collinearity in our data. Therefore we checked for it, to make sure, that the results are robust. 
 
 ## Model
 
@@ -853,7 +853,7 @@ multicollinearity(lm.main)
 
 ## Visualisation
 
-```{r, out.width="49%", fig.show='hold'}
+```{r, out.width="100%", fig.show='hold'}
 
 # plot log-price and scores + superhost
 p.lm_uncontrolled <- ggplot(data = d.airbnb_listings_feat, mapping = aes(review_scores_rating, log(price), color = host_is_superhost), ylim = 8) +
@@ -889,7 +889,8 @@ p.lm_controlled <-ggplot(d.airbnb_listings_feat,
        y = "Log(Price)") +
     ylim(3,8)
   
-p.lm_uncontrolled | p.lm_controlled
+(p.lm_uncontrolled | p.lm_controlled) +
+  plot_layout(widths = c(10,10))
 ```
 
 ## Interpretation
@@ -1523,9 +1524,6 @@ svm.coloums <- c("traffic_light", "price", "accommodates", "review_scores_rating
 d.svm_train <- d.train[, svm.coloums]
 d.svm_test  <- d.test[, svm.coloums]
 
-# Verifying the split visually
-cat("Training set size:", nrow(d.svm_train), "\n")
-cat("Test set size:", nrow(d.svm_test), "\n")
 
 ```
 
@@ -1545,12 +1543,12 @@ cat("Test set size:", nrow(d.svm_test), "\n")
 # )
 
 # Extracting the best parameters found during cross-validation
-#svm.model_cost <- as.numeric(tuned_svm$best.parameters["cost"])
-#svm.model_gamma <- as.numeric(tuned_svm$best.parameters["gamma"])
+#svm_model_cost <- as.numeric(tuned_svm$best.parameters["cost"])
+#svm_model_gamma <- as.numeric(tuned_svm$best.parameters["gamma"])
 
 ###einschub!!!!!!
-svm.model_cost <- 256
-svm.model_gamma <- 0.625
+svm_model_cost <- 256
+svm_model_gamma <- 0.625
 
 
 
@@ -1564,8 +1562,8 @@ svm.model_gamma <- 0.625
 
 
 #displaying Parameters for visual confirmation
-#cat("Optimal Cost:", svm.model_cost, "\n")
-#cat("Optimal Gamma:", svm.model_gamma, "\n")
+#cat("Optimal Cost:", svm_model_cost, "\n")
+#cat("Optimal Gamma:", svm_model_gamma, "\n")
 #cat("Best Cross-Validation Performance (Error Rate):", round(tuned_svm$best.performance, 4), "\n")
 
 ```
@@ -1577,8 +1575,8 @@ svm.model_gamma <- 0.625
 svm.main <- svm(traffic_light ~ ., 
                 data = d.svm_train, 
                 kernel = "radial", 
-                cost = svm.model_cost, 
-                gamma = svm.model_gamma, 
+                cost = svm_model_cost, 
+                gamma = svm_model_gamma, 
                 scale = TRUE) # Scaling to treat all features equally
 
 # Predicting the traffic light categories on test-data

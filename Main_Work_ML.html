@@ -8346,10 +8346,13 @@ Variabel-“call” kontrollieren. (ALLE)</p>
 <li>3.5 Grafiken grösser machen (TIMON) <em>erledigt</em></li>
 <li>3.8 Grafiken grösser machen / Titelproblem lösen. (TIMON)
 <em>erledigt</em></li>
-<li>3.10 Grafik kleiner machen (TIMON)</li>
-<li>4 &amp; 4.1 Grafiken kleiner machen (TIMON)</li>
+<li>3.10 Grafik kleiner machen (TIMON) <em>machen wir nicht
+mehr</em></li>
+<li>4 &amp; 4.1 Grafiken kleiner machen (TIMON) **machen wir nicht
+mehr*</li>
 <li>4.2 NA-Check irgendwie noch was dazu schreiben (TIMON)</li>
-<li>5.1 &amp; 5.2 Outputs kabeln und verschönern (TIMON)</li>
+<li>5.1 &amp; 5.2 Outputs kabeln und verschönern (TIMON)
+<em>erledigt</em></li>
 <li>5.4 Korrelationsmatrix grösser machen. (TIMON)</li>
 <li>5.8 Grafik grösser machen. (TIMON)</li>
 <li>5.9 OUtput verschönern. (TIMON)</li>
@@ -8385,7 +8388,8 @@ darstellen</li>
 <li>Ai-Kontrolle</li>
 </ul>
 <p>OFFENE FRAGEN: - 3.6 brauchen wir den zweiten Plot? - 3.5 wie können
-wir die überlappungen lösen? - 3.10 brauchen wir das?</p>
+wir die überlappungen lösen? - 3.10 brauchen wir das? - 4 &amp; 4.1
+zeigen die nicht das gleiche?</p>
 <ul>
 <li>generell Grafiken auf eine Grösse fixieren –&gt; Darstellung ist auf
 100%, Darstellung kann mehr als 1 Plot haben.</li>
@@ -8910,14 +8914,127 @@ summary_stats &lt;- d.airbnb_listings_feat %&gt;%
   select(price, log_price, accommodates, number_of_reviews) %&gt;%
   summary()
 
-print(summary_stats)</code></pre>
-<pre><code>     price          log_price      accommodates    number_of_reviews
- Min.   :  20.0   Min.   :2.996   Min.   : 1.000   Min.   :  0.00   
- 1st Qu.:  80.0   1st Qu.:4.382   1st Qu.: 2.000   1st Qu.:  1.00   
- Median : 120.0   Median :4.787   Median : 3.000   Median :  7.00   
- Mean   : 178.7   Mean   :4.858   Mean   : 3.755   Mean   : 29.53   
- 3rd Qu.: 185.0   3rd Qu.:5.220   3rd Qu.: 5.000   3rd Qu.: 32.00   
- Max.   :9342.0   Max.   :9.142   Max.   :16.000   Max.   :637.00   </code></pre>
+
+kable(summary_stats, booktabs = TRUE) %&gt;%
+  kable_styling()</code></pre>
+<table class="table" style="margin-left: auto; margin-right: auto;">
+<thead>
+<tr>
+<th style="text-align:left;">
+</th>
+<th style="text-align:left;">
+price
+</th>
+<th style="text-align:left;">
+log_price
+</th>
+<th style="text-align:left;">
+accommodates
+</th>
+<th style="text-align:left;">
+number_of_reviews
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left;">
+</td>
+<td style="text-align:left;">
+Min. : 20.0
+</td>
+<td style="text-align:left;">
+Min. :2.996
+</td>
+<td style="text-align:left;">
+Min. : 1.000
+</td>
+<td style="text-align:left;">
+Min. : 0.00
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+</td>
+<td style="text-align:left;">
+1st Qu.: 80.0
+</td>
+<td style="text-align:left;">
+1st Qu.:4.382
+</td>
+<td style="text-align:left;">
+1st Qu.: 2.000
+</td>
+<td style="text-align:left;">
+1st Qu.: 1.00
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+</td>
+<td style="text-align:left;">
+Median : 120.0
+</td>
+<td style="text-align:left;">
+Median :4.787
+</td>
+<td style="text-align:left;">
+Median : 3.000
+</td>
+<td style="text-align:left;">
+Median : 7.00
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+</td>
+<td style="text-align:left;">
+Mean : 178.7
+</td>
+<td style="text-align:left;">
+Mean :4.858
+</td>
+<td style="text-align:left;">
+Mean : 3.755
+</td>
+<td style="text-align:left;">
+Mean : 29.53
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+</td>
+<td style="text-align:left;">
+3rd Qu.: 185.0
+</td>
+<td style="text-align:left;">
+3rd Qu.:5.220
+</td>
+<td style="text-align:left;">
+3rd Qu.: 5.000
+</td>
+<td style="text-align:left;">
+3rd Qu.: 32.00
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+</td>
+<td style="text-align:left;">
+Max. :9342.0
+</td>
+<td style="text-align:left;">
+Max. :9.142
+</td>
+<td style="text-align:left;">
+Max. :16.000
+</td>
+<td style="text-align:left;">
+Max. :637.00
+</td>
+</tr>
+</tbody>
+</table>
 <p>The mean price sits well above the median, which means a small number
 of luxury listings is pulling the average upward. The price range
 stretches over several orders of magnitude. For any market-level summary
@@ -8942,15 +9059,129 @@ room_type_analysis &lt;- d.airbnb_listings_feat %&gt;%
   ) %&gt;%
   arrange(desc(Total_Listings)) # Sorts by the most common room type
 
-print(room_type_analysis)</code></pre>
-<pre><code># A tibble: 4 × 7
-  room_type       Total_Listings Percentage_of_Market Min_Price Median_Price
-  &lt;fct&gt;                    &lt;int&gt;                &lt;dbl&gt;     &lt;dbl&gt;        &lt;dbl&gt;
-1 Entire home/apt           2907                 75          24        141  
-2 Private room               940                 24.3        20         67.5
-3 Shared room                 19                  0.5        23         47  
-4 Hotel room                   8                  0.2        54        264. 
-# ℹ 2 more variables: Average_Price &lt;dbl&gt;, Max_Price &lt;dbl&gt;</code></pre>
+kable(room_type_analysis, booktabs = TRUE)  %&gt;%
+  kable_styling()</code></pre>
+<table class="table" style="margin-left: auto; margin-right: auto;">
+<thead>
+<tr>
+<th style="text-align:left;">
+room_type
+</th>
+<th style="text-align:right;">
+Total_Listings
+</th>
+<th style="text-align:right;">
+Percentage_of_Market
+</th>
+<th style="text-align:right;">
+Min_Price
+</th>
+<th style="text-align:right;">
+Median_Price
+</th>
+<th style="text-align:right;">
+Average_Price
+</th>
+<th style="text-align:right;">
+Max_Price
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left;">
+Entire home/apt
+</td>
+<td style="text-align:right;">
+2907
+</td>
+<td style="text-align:right;">
+75.0
+</td>
+<td style="text-align:right;">
+24
+</td>
+<td style="text-align:right;">
+141.0
+</td>
+<td style="text-align:right;">
+209.8
+</td>
+<td style="text-align:right;">
+9342
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Private room
+</td>
+<td style="text-align:right;">
+940
+</td>
+<td style="text-align:right;">
+24.3
+</td>
+<td style="text-align:right;">
+20
+</td>
+<td style="text-align:right;">
+67.5
+</td>
+<td style="text-align:right;">
+84.5
+</td>
+<td style="text-align:right;">
+1450
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Shared room
+</td>
+<td style="text-align:right;">
+19
+</td>
+<td style="text-align:right;">
+0.5
+</td>
+<td style="text-align:right;">
+23
+</td>
+<td style="text-align:right;">
+47.0
+</td>
+<td style="text-align:right;">
+71.9
+</td>
+<td style="text-align:right;">
+325
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Hotel room
+</td>
+<td style="text-align:right;">
+8
+</td>
+<td style="text-align:right;">
+0.2
+</td>
+<td style="text-align:right;">
+54
+</td>
+<td style="text-align:right;">
+264.5
+</td>
+<td style="text-align:right;">
+223.0
+</td>
+<td style="text-align:right;">
+349
+</td>
+</tr>
+</tbody>
+</table>
 <p>Entire homes and apartments make up roughly three quarters of the
 market. Hotel rooms have the highest median at 264.5 CHF, shared rooms
 the lowest at 47 CHF. The same pattern we already saw in the log-price
@@ -8973,66 +9204,135 @@ top_properties &lt;- d.airbnb_listings_feat %&gt;%
   arrange(desc(Total_Listings)) %&gt;%
   slice_head(n = 10) # Keep only the top 10
 
-kable(top_properties, caption = &quot;Top 10 Property Types in the Canton of Vaud&quot;)</code></pre>
-<table>
-<caption>Top 10 Property Types in the Canton of Vaud</caption>
+kable(top_properties, caption = &quot;Top 10 Property Types in the Canton of Vaud&quot;, booktabs = TRUE) %&gt;%
+  kable_styling</code></pre>
+<table class="table" style="margin-left: auto; margin-right: auto;">
+<caption>
+Top 10 Property Types in the Canton of Vaud
+</caption>
 <thead>
-<tr class="header">
-<th align="left">property_type</th>
-<th align="right">Total_Listings</th>
-<th align="right">Median_Price</th>
+<tr>
+<th style="text-align:left;">
+property_type
+</th>
+<th style="text-align:right;">
+Total_Listings
+</th>
+<th style="text-align:right;">
+Median_Price
+</th>
 </tr>
 </thead>
 <tbody>
-<tr class="odd">
-<td align="left">Entire rental unit</td>
-<td align="right">1973</td>
-<td align="right">128.0</td>
+<tr>
+<td style="text-align:left;">
+Entire rental unit
+</td>
+<td style="text-align:right;">
+1973
+</td>
+<td style="text-align:right;">
+128.0
+</td>
 </tr>
-<tr class="even">
-<td align="left">Private room in rental unit</td>
-<td align="right">409</td>
-<td align="right">64.0</td>
+<tr>
+<td style="text-align:left;">
+Private room in rental unit
+</td>
+<td style="text-align:right;">
+409
+</td>
+<td style="text-align:right;">
+64.0
+</td>
 </tr>
-<tr class="odd">
-<td align="left">Entire home</td>
-<td align="right">287</td>
-<td align="right">250.0</td>
+<tr>
+<td style="text-align:left;">
+Entire home
+</td>
+<td style="text-align:right;">
+287
+</td>
+<td style="text-align:right;">
+250.0
+</td>
 </tr>
-<tr class="even">
-<td align="left">Entire chalet</td>
-<td align="right">219</td>
-<td align="right">250.0</td>
+<tr>
+<td style="text-align:left;">
+Entire chalet
+</td>
+<td style="text-align:right;">
+219
+</td>
+<td style="text-align:right;">
+250.0
+</td>
 </tr>
-<tr class="odd">
-<td align="left">Private room in bed and breakfast</td>
-<td align="right">194</td>
-<td align="right">69.5</td>
+<tr>
+<td style="text-align:left;">
+Private room in bed and breakfast
+</td>
+<td style="text-align:right;">
+194
+</td>
+<td style="text-align:right;">
+69.5
+</td>
 </tr>
-<tr class="even">
-<td align="left">Entire condo</td>
-<td align="right">184</td>
-<td align="right">136.5</td>
+<tr>
+<td style="text-align:left;">
+Entire condo
+</td>
+<td style="text-align:right;">
+184
+</td>
+<td style="text-align:right;">
+136.5
+</td>
 </tr>
-<tr class="odd">
-<td align="left">Private room in home</td>
-<td align="right">154</td>
-<td align="right">66.0</td>
+<tr>
+<td style="text-align:left;">
+Private room in home
+</td>
+<td style="text-align:right;">
+154
+</td>
+<td style="text-align:right;">
+66.0
+</td>
 </tr>
-<tr class="even">
-<td align="left">Entire villa</td>
-<td align="right">50</td>
-<td align="right">370.0</td>
+<tr>
+<td style="text-align:left;">
+Entire villa
+</td>
+<td style="text-align:right;">
+50
+</td>
+<td style="text-align:right;">
+370.0
+</td>
 </tr>
-<tr class="odd">
-<td align="left">Private room in villa</td>
-<td align="right">45</td>
-<td align="right">68.0</td>
+<tr>
+<td style="text-align:left;">
+Private room in villa
+</td>
+<td style="text-align:right;">
+45
+</td>
+<td style="text-align:right;">
+68.0
+</td>
 </tr>
-<tr class="even">
-<td align="left">Room in hotel</td>
-<td align="right">40</td>
-<td align="right">177.0</td>
+<tr>
+<td style="text-align:left;">
+Room in hotel
+</td>
+<td style="text-align:right;">
+40
+</td>
+<td style="text-align:right;">
+177.0
+</td>
 </tr>
 </tbody>
 </table>

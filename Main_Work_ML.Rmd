@@ -37,13 +37,13 @@ Tasks ab 17.05:
       - 3.4 Grafiken grösser machen (TIMON) *erledigt*
       - 3.5 Grafiken grösser machen (TIMON) *erledigt*
       - 3.8 Grafiken grösser machen / Titelproblem lösen. (TIMON) *erledigt*
-      - 3.10 Grafik kleiner machen (TIMON)
-      - 4 & 4.1 Grafiken kleiner machen (TIMON)
+      - 3.10 Grafik kleiner machen (TIMON) *machen wir nicht mehr*
+      - 4 & 4.1 Grafiken kleiner machen (TIMON) **machen wir nicht mehr*
       - 4.2 NA-Check irgendwie noch was dazu schreiben (TIMON)
-      - 5.1 & 5.2 Outputs kabeln und verschönern (TIMON)
-      - 5.4 Korrelationsmatrix grösser machen. (TIMON)
-      - 5.8 Grafik grösser machen. (TIMON)
-      - 5.9 OUtput verschönern. (TIMON)
+      - 5.1 & 5.2 Outputs kabeln und verschönern (TIMON) *erledigt*
+      - 5.4 Korrelationsmatrix grösser machen. (TIMON) *erledigt*
+      - 5.8 Grafik grösser machen. (TIMON) *erledigt*
+      - 5.9 OUtput verschönern. (TIMON) *erledigt*
       - Braucht es bei 6 für die eine Seite wirklich drei Kapitel oder kann man das in eines zusammenfassen? (TIMON)
       - 7.2 Rmodel einblenden (kabel) allenfalls direkt mit VIF kombinineren. (TIMON)
       - 7.3 Grafiken Kleiner machen. 
@@ -78,6 +78,9 @@ OFFENE FRAGEN:
 - 3.6 brauchen wir den zweiten Plot?
 - 3.5 wie können wir die überlappungen lösen?
 - 3.10 brauchen wir das?
+- 4 & 4.1 zeigen die nicht das gleiche?
+- 5.4 kann man nicht die Tabelle weglassen und die relevanten Werte einfach nennen im Text? so iet es ein Bisschen doppelt. 
+
 
 
 
@@ -601,7 +604,9 @@ summary_stats <- d.airbnb_listings_feat %>%
   select(price, log_price, accommodates, number_of_reviews) %>%
   summary()
 
-print(summary_stats)
+
+kable(summary_stats, booktabs = TRUE) %>%
+  kable_styling()
 ```
 The mean price sits well above the median, which means a small number of luxury listings is pulling the average upward. The price range stretches over several orders of magnitude. For any market-level summary we use the median to avoid this skew.
 
@@ -625,7 +630,8 @@ room_type_analysis <- d.airbnb_listings_feat %>%
   ) %>%
   arrange(desc(Total_Listings)) # Sorts by the most common room type
 
-print(room_type_analysis)
+kable(room_type_analysis, booktabs = TRUE)  %>%
+  kable_styling()
 ```
 
 Entire homes and apartments make up roughly three quarters of the market. Hotel rooms have the highest median at 264.5 CHF, shared rooms the lowest at 47 CHF. The same pattern we already saw in the log-price boxplots above.
@@ -648,7 +654,8 @@ top_properties <- d.airbnb_listings_feat %>%
   arrange(desc(Total_Listings)) %>%
   slice_head(n = 10) # Keep only the top 10
 
-kable(top_properties, caption = "Top 10 Property Types in the Canton of Vaud")
+kable(top_properties, caption = "Top 10 Property Types in the Canton of Vaud", booktabs = TRUE) %>%
+  kable_styling()
 ```
 
 Standard rental units dominate, but specialty properties like chalets, villas, homes command a noticeable premium. The LM and GAM both include `room_type` for exactly this reason.
@@ -796,7 +803,8 @@ superhost_analysis <- d.airbnb_listings_feat %>%
   ) %>%
   mutate(host_is_superhost = ifelse(host_is_superhost == 1, "Yes", "No"))
 
-print(superhost_analysis)
+kable(superhost_analysis, booktabs = TRUE) %>%
+  kable_styling()
 ```
 
 At first glance the boxplot shows almost no difference in median price between Superhosts and regular hosts. This is our first sign that the Superhost badge does not translate into a price premium — a pattern that the GLM Binomial, the GAM and the Neural Network will all confirm independently in the next chapters.
@@ -884,7 +892,8 @@ tidy(lm.main) %>%
 # Checking for multicollinearity using Variance Inflation Factor (VIF).
 # Values range from 1 to infinity. A value of exactly 1 indicates no collinearity.
 # Values > 5-10 suggest problematic multicollinearity among the predictor variables.
-multicollinearity(lm.main)
+kable(multicollinearity(lm.main)[1:5], booktabs = TRUE) %>%
+  kable_styling()
 ```
 
 ## Visualisation

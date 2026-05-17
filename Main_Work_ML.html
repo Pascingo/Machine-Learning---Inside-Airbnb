@@ -9932,7 +9932,6 @@ examines whether the current rental prices are justified.</p>
 <h2><span class="header-section-number">11.2</span> Model</h2>
 <pre><code>Training set size: 2527 </code></pre>
 <pre><code>Test set size: 632 </code></pre>
-<pre><code>[1] &quot;Confusion Matrix:&quot;</code></pre>
 <table class="table table-bordered" style="margin-left: auto; margin-right: auto;border-bottom: 0;">
 <caption>
 <span style="color:black; font-weight:bold;">SVM Confusion Matrix</span>
@@ -9941,13 +9940,13 @@ examines whether the current rental prices are justified.</p>
 <tr>
 <th style="text-align:left;">
 </th>
-<th style="text-align:right;">
+<th style="text-align:left;">
 Fair Price
 </th>
-<th style="text-align:right;">
+<th style="text-align:center;">
 Overpriced
 </th>
-<th style="text-align:right;">
+<th style="text-align:center;">
 Underpriced
 </th>
 </tr>
@@ -9957,13 +9956,13 @@ Underpriced
 <td style="text-align:left;">
 Fair Price
 </td>
-<td style="text-align:right;background-color: deepskyblue !important;">
+<td style="text-align:left;background-color: deepskyblue !important;">
 113
 </td>
-<td style="text-align:right;background-color: rgba(255, 52, 179, 255) !important;">
+<td style="text-align:center;background-color: rgba(255, 52, 179, 255) !important;">
 43
 </td>
-<td style="text-align:right;background-color: rgba(255, 52, 179, 255) !important;">
+<td style="text-align:center;background-color: rgba(255, 52, 179, 255) !important;">
 42
 </td>
 </tr>
@@ -9971,13 +9970,13 @@ Fair Price
 <td style="text-align:left;">
 Overpriced
 </td>
-<td style="text-align:right;background-color: rgba(255, 52, 179, 255) !important;">
+<td style="text-align:left;background-color: rgba(255, 52, 179, 255) !important;">
 28
 </td>
-<td style="text-align:right;background-color: deepskyblue !important;">
+<td style="text-align:center;background-color: deepskyblue !important;">
 105
 </td>
-<td style="text-align:right;background-color: rgba(255, 52, 179, 255) !important;">
+<td style="text-align:center;background-color: rgba(255, 52, 179, 255) !important;">
 5
 </td>
 </tr>
@@ -9985,13 +9984,13 @@ Overpriced
 <td style="text-align:left;">
 Underpriced
 </td>
-<td style="text-align:right;background-color: rgba(255, 52, 179, 255) !important;">
+<td style="text-align:left;background-color: rgba(255, 52, 179, 255) !important;">
 68
 </td>
-<td style="text-align:right;background-color: rgba(255, 52, 179, 255) !important;">
+<td style="text-align:center;background-color: rgba(255, 52, 179, 255) !important;">
 9
 </td>
-<td style="text-align:right;background-color: deepskyblue !important;">
+<td style="text-align:center;background-color: deepskyblue !important;">
 219
 </td>
 </tr>
@@ -9999,19 +9998,16 @@ Underpriced
 <tfoot>
 <tr>
 <td style="padding: 0; " colspan="100%">
-<span style="font-style: italic;">Note: </span>
+<span style="font-style: italic;"> </span>
 </td>
 </tr>
 <tr>
 <td style="padding: 0; " colspan="100%">
-<sup></sup> Blue: correct identifications <br> Red: wrong
-identifications
+<sup></sup> SVM Test Accuracy: 69.15%
 </td>
 </tr>
 </tfoot>
 </table>
-<pre><code>
-SVM Test Accuracy: 69.15 %</code></pre>
 </div>
 <div id="interpretion-svm" class="section level2" number="11.3">
 <h2><span class="header-section-number">11.3</span> Interpretion

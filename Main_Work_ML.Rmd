@@ -1596,7 +1596,7 @@ kable(svm.conf_matrix, booktabs = TRUE, escape = FALSE, caption = "<span style='
   column_spec(2, background = c("deepskyblue", "maroon1", "maroon1")) %>%
   column_spec(3, background = c("maroon1", "deepskyblue", "maroon1")) %>%
   column_spec(4, background = c("maroon1", "maroon1", "deepskyblue")) %>%
-  footnote(general = paste0("SVM Test Accuracy: ", round(svm_accuracy * 100, 2), "%"), general_title = " ")
+  footnote(general = paste0("SVM Test Accuracy: ", round(svm_accuracy * 100, 2), "% \n", "Training set size: ", nrow(d.svm_train), "\n Test set size: " , nrow(d.svm_test)), general_title = "Information:")
              
 ```
 

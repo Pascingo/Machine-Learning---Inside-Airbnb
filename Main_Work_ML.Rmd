@@ -21,7 +21,7 @@ editor_options:
 ---
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = FALSE, cache = TRUE, comment = NA, warning = FALSE, message=FALSE)
+knitr::opts_chunk$set(echo = TRUE, cache = TRUE, comment = NA, warning = FALSE, message=FALSE)
 
 ```
 
@@ -54,7 +54,7 @@ Tasks ab 17.05:
       - 10.3 machen diese 4 Visualisierungen wirklich Sinn? 
       - 10.3 einzelne kleine R-OUtputs in eine Tabelle und zusammen darstellen. 
       - 10.4.1 die einzelnen OUtputs in eine Tablle bringen und zusammen darstellen
-      - 11.2 COnfusion matrix schöner mahcen (TIMON) *erledigt*
+      - 11.2 COnfusion matrix schöner machen (TIMON) *erledigt*
       - 12.3 Output schöner darstellen (kabel)
       - 12 keine einzige Darstellung beim ANN?
       
@@ -181,9 +181,11 @@ the size of the rental property.
 
 # Data Preparation
 
-First step: Loading Packages
 
-```{r Libraries, results = "hide", echo=FALSE, warning=FALSE}
+In a first step we need to load the relevant packages. following that we load all the datasets that are relevant to us. 
+
+
+```{r Libraries, results = "hide", echo=TRUE, warning=FALSE}
 library(tidyverse)
 library(janitor)
 library(mgcv)
@@ -206,13 +208,8 @@ library(leaflet)
 library(leaflet.extras)
 library(patchwork)
 
-
 theme_set(theme_minimal())
-```
 
-Second step: Reading all available Datasets
-
-```{r reading Dataset, echo=FALSE}
 path_listings <- "./Data_Vaud_all/listings-2.csv"
 d.raw_data_listings <- read.csv(path_listings, header = TRUE)
 ```
@@ -221,7 +218,7 @@ Cleaning the Airbnb-Listings Data. We keep only the variables needed for
 our project. We reduce the amount of variables to exact 20, according to
 the requirements by our lecturers.
 
-```{r cleaning Dataset, echo=FALSE}
+```{r cleaning Dataset, echo=TRUE}
 d.airbnb_listings <- d.raw_data_listings %>%
   clean_names()
 
@@ -262,12 +259,6 @@ a maximum of 20 variables. To meet this specification, we have removed
 columns from the dataset that will not be used in our analysis.
 Consequently, `d.listings_clean` is our final, cleaned dataset, which we
 will use to run all subsequent models.
-
-```{r final Call cleaned Dataset, echo=FALSE}
-str(d.listings_clean)
-rm(d.airbnb_listings, d.raw_data_listings)
-
-```
 
 Subsequently, we calculated several additional features to include them
 as permanent columns in the dataset, ensuring they do not have to be
@@ -315,7 +306,7 @@ d.airbnb_listings_feat <- d.airbnb_listings_feat %>%
 
 ## Prices
 
-```{r, fig.show='hold', out.width="49%", echo=FALSE}
+```{r, fig.show='hold', out.width="100%", echo=FALSE}
 p.price <- ggplot(d.airbnb_listings_feat, aes(x = price)) +
   geom_histogram(bins = 50, fill = "deepskyblue", color = "white", alpha = 0.7) +
   labs(title = "Distribution of Raw Price", x = "Price", y = "Count")
@@ -324,7 +315,7 @@ p.logprice <- ggplot(d.airbnb_listings_feat, aes(x = log_price)) +
   geom_histogram(bins = 50, fill = "deepskyblue", color = "white", alpha = 0.7) +
   labs(title = "Distribution of Log Price", x = "Log Price", y = "Count")
 
-p.price + p.logprice
+p.price | p.logprice
 ```
 
 Prices are heavily right-skewed. After log-transformation the
@@ -333,7 +324,7 @@ LM, GAM and most diagnostics later.
 
 ## Capacity & Rating
 
-```{r, fig.show='hold', out.width='49%'}
+```{r, fig.show='hold', out.width='100%'}
 p.acc <- ggplot(d.airbnb_listings_feat, aes(x = accommodates)) +
   geom_histogram(binwidth = 1, fill = "deepskyblue", color = "white") +
   scale_x_continuous(breaks = seq(1, max(d.airbnb_listings_feat$accommodates, na.rm = TRUE), by = 1)) +
@@ -352,7 +343,7 @@ produces a leniency bias on top of any genuine quality signal.
 
 ## Room Types & Superhost Status
 
-```{r, fig.show='hold', out.width='49%'}
+```{r, fig.show='hold', out.width='100%'}
 p.room <- ggplot(d.airbnb_listings_feat, aes(x = room_type, fill = room_type)) +
   geom_bar(show.legend = FALSE, fill = "deepskyblue") +
   labs(title = "Proportion of Room Types", x = "Room Type", y = "Count") +
@@ -372,7 +363,7 @@ Superhosts. This is a meaningful minority, but far from the norm.
 
 ## Log Prices and rooms / neighbourhoods
 
-```{r, fig.show='hold', out.width='33%'}
+```{r, fig.show='hold', out.width='100%'}
 p.logprice_room <- ggplot(d.airbnb_listings_feat, aes(x = room_type, y = log_price, fill = room_type)) +
   geom_boxplot(alpha = 0.7, show.legend = FALSE, fill = "deepskyblue") +
   labs(title = "Log Price by Room Type", x = "Room Type", y = "Log Price") +
@@ -399,23 +390,23 @@ Across neighbourhoods, Riviera-Pays-d'Enhaut and Aigle sit at the top, Gros-de-V
 
 ## Host Variables
 
-```{r host_features, fig.show='hold', out.width='16%'}
+```{r host_features, fig.show='hold', out.width='100%'}
 p.resp_time <- ggplot(d.airbnb_listings_feat %>% filter(host_response_time != "N/A" & !is.na(host_response_time)), aes(x = host_response_time)) +
   geom_bar(fill = "deepskyblue") +
-  labs(title = "Host Response Time", x = "Response Time", y = "Count") +
+  labs(title = "Response Time", x = "Response Time", y = "Count") +
   theme(axis.text.x = element_text(angle = 45, hjust = 1))
 
 p.resp_rate <- ggplot(d.airbnb_listings_feat, aes(x = host_response_rate)) +
   geom_histogram(bins = 20, fill = "deepskyblue", color = "white") +
-  labs(title = "Host Response Rate", x = "Rate (0 to 1)", y = "Count")
+  labs(title = "Response Rate", x = "Rate (0 to 1)", y = "Count")
 
 p.acc_rate <- ggplot(d.airbnb_listings_feat, aes(x = host_acceptance_rate)) +
   geom_histogram(bins = 20, fill = "deepskyblue", color = "white") +
-  labs(title = "Host Acceptance Rate", x = "Rate (0 to 1)", y = "Count")
+  labs(title = "Acceptance Rate", x = "Rate", y = "Count")
 
 p.pic <- ggplot(d.airbnb_listings_feat %>% filter(!is.na(host_has_profile_pic)), aes(x = host_has_profile_pic)) +
   geom_bar(fill = "deepskyblue") +
-  labs(title = "Has Profile Pic", x = "t = True, f = False", y = "Count")
+  labs(title = "Profile Pic", x = "t = True, f = False", y = "Count")
 
 p.verified <- ggplot(d.airbnb_listings_feat %>% filter(!is.na(host_identity_verified)), aes(x = host_identity_verified)) +
   geom_bar(fill = "deepskyblue") +
@@ -429,7 +420,7 @@ Hosts in Vaud are highly responsive and reliable: most reply within an hour, res
 
 ## Properties & Neighborhoods
 
-```{r, fig.show='hold', out.width='49%'}
+```{r, fig.show='hold', out.width='100%'}
 
 p.prop <- d.airbnb_listings_feat %>%
   count(property_type) %>%
@@ -454,7 +445,7 @@ Entire rental units dominate the property mix, followed by private rooms in rent
 
 ## Furnishing
 
-```{r, fig.show='hold', out.width='49%'}
+```{r, fig.show='hold', out.width='100%'}
 p.baths <- ggplot(d.airbnb_listings_feat, aes(x = bathrooms)) +
   geom_histogram(binwidth = 0.5, fill = "deepskyblue", color = "white") +
   scale_x_continuous(breaks = seq(0, max(d.airbnb_listings_feat$bathrooms, na.rm = TRUE), by = 1)) +
@@ -474,7 +465,7 @@ Bathroom and bed counts cluster at the low end as expected. The bed distribution
 
 ## Utilisation
 
-```{r, fig.show='hold', out.width='33%'}
+```{r, fig.show='hold', out.width='100%'}
 # Minimum Nights (Log scale due to extreme outliers like 365+ nights)
 p.nights <- ggplot(d.airbnb_listings_feat, aes(x = minimum_nights)) +
   geom_histogram(bins = 30, fill = "deepskyblue", color = "white") +
@@ -672,7 +663,7 @@ cor_matrix <- cor(cor_data)
 kable(round(cor_matrix, 2), caption = "Correlation Matrix of Key Numerical Drivers")
 ```
 
-```{r correlation_heatmap, out.width="49%", fig.show='hold'}
+```{r correlation_heatmap, out.width="100%", fig.show='hold'}
 # Select all numerical variables, drop binaries we already analysed separately
 num_vars <- d.airbnb_listings_feat %>%
   select(where(is.numeric)) %>%
@@ -703,7 +694,7 @@ The heatmap confirms what we already suspected: `accommodates`, `beds` and `bath
 The most important Relationship in the dataset from what we see in the
 correlation matrix above.
 
-```{r price_vs_accommodates, out.width="49%", fig.show='hold'}
+```{r price_vs_accommodates, out.width="100%", fig.show='hold'}
 ggplot(d.airbnb_listings_feat, aes(x = accommodates, y = log_price)) +
   geom_jitter(alpha = 0.3, width = 0.2, color = "deepskyblue") +
   geom_smooth(method = "lm", color = "firebrick1", se = TRUE) +
@@ -720,7 +711,7 @@ ggplot(d.airbnb_listings_feat, aes(x = accommodates, y = log_price)) +
 We display `review_scores_rating` as a histogram, but never in relation to
 the price.
 
-```{r price_by_rating, out.width="49%", fig.show='hold'}
+```{r price_by_rating, out.width="100%", fig.show='hold'}
 d.airbnb_listings_feat %>%
   filter(!is.na(review_scores_rating)) %>%
   mutate(rating_group = cut(review_scores_rating,
@@ -738,7 +729,7 @@ Medians across rating groups are surprisingly close. Higher-rated listings do no
 
 ## Spatial Data: Mapping the Listings by Log(Price)
 
-```{r, out.width="49%", fig.show='hold'}
+```{r, out.width="100%", fig.show='hold'}
 # Cleaned up the map to focus purely on location and price.
 ggplot(data = d.airbnb_listings_feat, aes(x = longitude, y = latitude)) +
   geom_point(aes(color = log_price), alpha = 0.6, size = 1.5) +
@@ -758,7 +749,7 @@ Hot spots cluster along Lake Geneva and around Lausanne, with rural and alpine a
 
 We calculated price per guest as a feature then visualized them.
 
-```{r price_per_guest, out.width="49%", fig.show='hold'}
+```{r price_per_guest, out.width="100%", fig.show='hold'}
 p_ppg <- ggplot(d.airbnb_listings_feat, aes(x = price_per_guest)) +
   geom_histogram(bins = 50, fill = "deepskyblue", color = "white", alpha = 0.7) +
   scale_x_log10() +
@@ -800,7 +791,7 @@ print(superhost_analysis)
 
 At first glance the boxplot shows almost no difference in median price between Superhosts and regular hosts. This is our first sign that the Superhost badge does not translate into a price premium — a pattern that the GLM Binomial, the GAM and the Neural Network will all confirm independently in the next chapters.
 
-```{r Binary Predictor: Superhost Status, out.width="49%", fig.show='hold'}
+```{r Binary Predictor: Superhost Status, out.width="100%", fig.show='hold'}
 # Adding this because it's a key part of the business case and fulfills the binary variable requirement.
 ggplot(data = d.airbnb_listings_feat, aes(x = as.factor(host_is_superhost), y = log_price, fill = as.factor(host_is_superhost))) +
   geom_boxplot(alpha = 0.7, fill = "deepskyblue") +

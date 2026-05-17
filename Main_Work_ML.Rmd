@@ -25,46 +25,62 @@ knitr::opts_chunk$set(echo = FALSE, cache = TRUE, comment = NA, warning = FALSE,
 
 ```
 
-Tasks ab 29.04 
-- Frühlingsputz (PASCAL) 
-- Colors finalisieren (TIMON) *erledigt*
-- Coding Conventions kontrollieren (TIMON) *erledigt*
-- SVM Theorieteil finalisieren. (TIMON) *erledigt*
-- LM Limitationen (TIMON) *erledigt*
-- AI-kontrolle & übersetzungskontrolle (DAVIDE)
+Tasks ab 17.05:
+-   Lesson Learned Kapitel (Jeder selbst: unterkapitel pro person)
+-   Formatting conventions übernehmen (jeder für sich)
+-   Kapitelstruktur überarbeiten - Davide, Pascal
+-   Kontrollieren ob alle Modelle einen "Leader" haben (NAMEN aus Kapiteltitel löschen). PASCAL
+-   Variabel-"call" kontrollieren. (ALLE)
 
-@Pascal: du bist der einzige der pro Modell "Business Case" pro Kapitel
-hat. Link zur Hypothese fehlt jedoch. @Timon: bei dir fehlt jeweils:
-link zur hypo & limitations @Davide: bei mir fehlt business case pro
-modell
-
-Fragen in die Runde: 1. Business Case behalten --\> Timon und ich müssen
-das ergänzen für unsere Modelle 
-2. Umwandlung von Business Case zur Link
-zur Hypothese --\> Pascal und Timon müssen umschreiben resp. sowieso
-ergänzen 
-3. link zur hypo skippen und in der Interpretation auf Hypo und
-RQs gezielt eingehen?
-
+-   beautifying HTML-Doc:
+      - 2.0 Output --> drin lassen wenn ja verschönern. 
+      - 3.4 Grafiken grösser machen
+      - 3.5 Grafiken grösser machen
+      - 3.8 Grafiken grösser machen / Titelproblem lösen. 
+      - 3.10 Grafik kleiner machen
+      - 4 & 4.1 Grafiken kleiner machen
+      - 4.2 NA-Check irgendwie noch was dazu schreiben
+      - 5.1 & 5.2 Outputs kabeln und verschönern
+      - 5.4 Korrelationsmatrix grösser machen. 
+      - 5.8 Grafik grösser machen. 
+      - 5.9 OUtput verschönern. 
+      - Braucht es bei 6 für die eine Seite wirklich drei Kapitel oder kann man das in eines zusammenfassen?
+      - 7.2 Rmodel einblenden (kabel) allenfalls direkt mit VIF kombinineren. 
+      - 7.3 Grafiken Kleiner machen. 
+      - 8.4 Grafik kleiner machen
+      - 9.3 Modelouput schön machen, bzw den OUtput oben entfernen. 
+      - 10.3 Train und Test irgedwo sauber verpacken. nicht einfach so einblenden. 
+      - 10.3output verschönern 
+      - 10.3 machen diese 4 Visualisierungen wirklich Sinn? 
+      - 10.3 einzelne kleine R-OUtputs in eine Tabelle und zusammen darstellen. 
+      - 10.4.1 die einzelnen OUtputs in eine Tablle bringen und zusammen darstellen
+      - 11.2 COnfusion matrix schöner mahcen (TIMON) *erledigt*
+      - 12.3 Output schöner darstellen (kabel)
+      - 12 keine einzige Darstellung beim ANN?
+      
+      (jeder seine Modelle, TIMON macht alles vor den Modellen. )
 
 
 
 ToDos backlog: - R-chunks sauber personen zuweisen
 
 -   Data Quality kontrollieren & übersetzen.\
--   Lesson Learned Kapitel
 -   EDA/DQ/UTD aussortieren falls platzbedarf
 -   tuning wieder reaktivieren --\> done
 -   README finalisieren
--   beautifying HTML-Doc
+-   color fomatting kontrollieren. 
+-   Ai-Kontrolle
 
 
 
 
-- generell Grafiken auf eine Grösse fixieren --> absprache 
+
+- generell Grafiken auf eine Grösse fixieren --> Darstellung ist auf 100%, Darstellung kann mehr als 1 Plot haben. 
+
+- Brauchen wir wirklich bei jedem Model das KApitel Link to Hypothesis? --> lieber in den THeorieblock einbauen und so Platz sparen. 
 
 
-- Kap 2 Output --> drin lassen wenn ja verschönern. 
+- 2.0 Output --> drin lassen wenn ja verschönern. 
 - 3.4 Grafiken grösser machen.
 - 3.5 Grafiken grösser machen
 - 3.8 Grafiken grösser machen / Titelproblem lösen. 
@@ -78,7 +94,6 @@ ToDos backlog: - R-chunks sauber personen zuweisen
 - Braucht es bei 6 für die eine Seite wirklich drei Kapitel oder kann man das in eines zusammenfassen?
 - 7.2 Rmodel einblenden (kabel) allenfalls direkt mit VIF kombinineren. 
 - 7.3 Grafiken Kleiner machen. 
-- Brauchen wir wirklich bei jedem Model das KApitel Link to Hypothesis? --> lieber in den THeorieblock einbauen und so Platz sparen. 
 - 8.4 Grafik kleiner machen
 - 9.3 Modelouput schön machen, bzw den OUtput oben entfernen. 
 - 10.3 Train und Test irgedwo sauber verpacken. nicht einfach so einblenden. 
@@ -92,6 +107,15 @@ ToDos backlog: - R-chunks sauber personen zuweisen
 
 
 Infos zu bedenken: ABGABEDATUM: 12 Juni
+
+Kaitelstruktur: 
+Theorie (Theorieteil, Businesscase und Link zu Hypothese)
+Model
+Optionales
+Interpretation (Bezug auf Businescase)
+Limitation (Abstriche am Businescase)
+
+
 
 Farbschema:
 
@@ -130,6 +154,8 @@ lm.cats)
 • variable names are written using italic (e.g., Body.weight) 
 • these conventions
 are arbitrary, but hopefully useful to the reader
+
+
 
 # Introduction
 
@@ -866,7 +892,7 @@ case with price variables, this variable is logarithmized. We assumed that there
 
 ## Model
 
-```{r lm controlled by Timon}
+```{r lm lead Timon}
 
 # We use log(price) to account for the right-skewed distribution of Airbnb prices.
 lm.main <- lm(log(price) ~ 

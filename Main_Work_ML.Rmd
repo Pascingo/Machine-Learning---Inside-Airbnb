@@ -420,7 +420,7 @@ Hosts in Vaud are highly responsive and reliable: most reply within an hour, res
 
 ## Properties & Neighborhoods
 
-```{r, fig.show='hold', out.width='100%'}
+```{r, fig.show='hold', out.width='90%'}
 
 p.prop <- d.airbnb_listings_feat %>%
   count(property_type) %>%

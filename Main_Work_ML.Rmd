@@ -34,9 +34,9 @@ Tasks ab 17.05:
 
 -   beautifying HTML-Doc:
       - 2.0 Output --> drin lassen wenn ja verschönern. (TIMON)
-      - 3.4 Grafiken grösser machen (TIMON)
-      - 3.5 Grafiken grösser machen (TIMON)
-      - 3.8 Grafiken grösser machen / Titelproblem lösen. (TIMON)
+      - 3.4 Grafiken grösser machen (TIMON) *erledigt*
+      - 3.5 Grafiken grösser machen (TIMON) *erledigt*
+      - 3.8 Grafiken grösser machen / Titelproblem lösen. (TIMON) *erledigt*
       - 3.10 Grafik kleiner machen (TIMON)
       - 4 & 4.1 Grafiken kleiner machen (TIMON)
       - 4.2 NA-Check irgendwie noch was dazu schreiben (TIMON)
@@ -70,6 +70,16 @@ ToDos backlog: - R-chunks sauber personen zuweisen
 -   README finalisieren
 -   color fomatting kontrollieren. 
 -   Ai-Kontrolle
+
+
+
+
+OFFENE FRAGEN:
+- 3.6 brauchen wir den zweiten Plot?
+- 3.5 wie können wir die überlappungen lösen?
+- 3.10 brauchen wir das?
+
+
 
 
 
@@ -470,7 +480,7 @@ Bathroom and bed counts cluster at the low end as expected. The bed distribution
 p.nights <- ggplot(d.airbnb_listings_feat, aes(x = minimum_nights)) +
   geom_histogram(bins = 30, fill = "deepskyblue", color = "white") +
   scale_x_log10() +
-  labs(title = "Minimum Nights $(Log_10$ Scale)", x = "Minimum Nights", y = "Count")
+  labs(title = "Minimum Nights", x = "Minimum Nights (Log)", y = "Count")
 
 p.num_rev <- ggplot(d.airbnb_listings_feat, aes(x = number_of_reviews)) +
   geom_histogram(bins = 30, fill = "deepskyblue", color = "white") +
@@ -491,7 +501,7 @@ Review counts are L-shaped: many listings have very few reviews, a small group h
 
 ## Feature Engineered Data
 
-```{r, fig.show='hold', out.width='49%'}
+```{r, fig.show='hold', out.width='100%'}
 
 # High Demand (Binary)
 p.demand <- ggplot(d.airbnb_listings_feat, aes(x = as.factor(high_demand))) +

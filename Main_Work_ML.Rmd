@@ -1859,6 +1859,6 @@ Coming into this project, my comfort zone was firmly in theory. I knew what a GL
 
 The GAM was probably my biggest single learning. I had never worked with smooth terms before, and seeing the 2D spatial spline pick up Vaud's geography was genuinely a moment where the theory clicked into practice.
 
-Another lesson, less technical but probably the most useful one, was around our several iterations. I rewrote most of my texts at least three times. Each round made them shorter, clearer, and less AI-flavoured. I went into this project assuming the modelling would be the hard part. By the end, communicating the results clearly turned out to be just as much work.
+Another lesson, less technical but probably the most useful one, was around our several iterations and the extra miles we took. I rewrote most of my texts at least three times. Each round made them shorter, clearer, and less AI-flavoured. I went into this project assuming the modelling would be the hard part. By the end, communicating the results clearly turned out to be just as much work.
 
 Finally, R Bootcamp in February laid the foundation, but this project was where I actually got comfortable. Reading the others' code, debugging together, learning shortcuts — that side-by-side learning was something I can't get from a tutorial.

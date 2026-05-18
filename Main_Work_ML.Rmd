@@ -26,7 +26,7 @@ knitr::opts_chunk$set(echo = TRUE, cache = TRUE, comment = NA, warning = FALSE, 
 ```
 
 Tasks ab 17.05:
--   Lesson Learned Kapitel (Jeder selbst: unterkapitel pro person)(*Pascal done*) (*TIMON done*)
+-   Lesson Learned Kapitel (Jeder selbst: unterkapitel pro person)(*Pascal done*) (*TIMON done*) (*Davide done*)
 -   Formatting conventions übernehmen (jeder für sich)(*Pascal done*)
 -   Kapitelstruktur überarbeiten - (*Davide done*), (*Pascal done*)
 -   Kontrollieren ob alle Modelle einen "Leader" haben (NAMEN aus Kapiteltitel löschen). PASCAL-->Done, Davide --> Done
@@ -48,13 +48,13 @@ Tasks ab 17.05:
       - 7.2 Rmodel einblenden (kabel) allenfalls direkt mit VIF kombinineren. (TIMON) *erledigt*
       - 7.3 Grafiken Kleiner machen. 
       - 8.4 Grafik kleiner machen
-      - 9.3 Modelouput schön machen, bzw den OUtput oben entfernen. 
+      - 9.3 Modelouput schön machen, bzw den Output oben entfernen. 
       - 10.3 Train und Test irgedwo sauber verpacken. nicht einfach so einblenden. 
-      - 10.3output verschönern 
+      - 10.3 Output verschönern 
       - 10.3 machen diese 4 Visualisierungen wirklich Sinn? 
-      - 10.3 einzelne kleine R-OUtputs in eine Tabelle und zusammen darstellen. 
-      - 10.4.1 die einzelnen OUtputs in eine Tablle bringen und zusammen darstellen
-      - 11.2 COnfusion matrix schöner machen (TIMON) *erledigt*
+      - 10.3 einzelne kleine R-Outputs in eine Tabelle und zusammen darstellen. 
+      - 10.4.1 die einzelnen Outputs in eine Tablle bringen und zusammen darstellen
+      - 11.2 Confusion matrix schöner machen (TIMON) *erledigt*
       - 12.3 Output schöner darstellen (kabel)
       - 12 keine einzige Darstellung beim ANN?
       

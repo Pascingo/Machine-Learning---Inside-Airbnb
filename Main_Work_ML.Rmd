@@ -34,11 +34,11 @@ Tasks ab 18.05:
       davide- 9.3 Modelouput schön machen, bzw den Output oben entfernen. 
       davide - 10.3 Train und Test irgedwo sauber verpacken. nicht einfach so einblenden. 
       davide- 10.3 Output verschönern kable statt cat
-      davide- 10.3 machen diese 4 Visualisierungen wirklich Sinn? 
+      davide- 10.3 machen diese 4 Visualisierungen wirklich Sinn? -> Lat/Long sieht aus wie LSD-Fiebertraum
       davide- 10.3 einzelne kleine R-Outputs in eine Tabelle und zusammen darstellen. kable statt cat
       davide- 10.4.1 die einzelnen Outputs in eine Tablle bringen und zusammen darstellen
-      pascal- 12.3 Output schöner darstellen (kabel)
-      pascal- 12 keine einzige Darstellung beim ANN! IMPORTANT
+      pascal- 12.3 Output schöner darstellen (kabel) done
+      pascal- 12 keine einzige Darstellung beim ANN! IMPORTANT (Kable erstellt, keine Ahnung wegen Plot, AI gibt auch keine Auskunft)
 
 ToDos backlog: - R-chunks sauber personen zuweisen
 

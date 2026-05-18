@@ -371,8 +371,8 @@ p.host <- ggplot(d.airbnb_listings_feat %>% filter(!is.na(host_is_superhost)), a
 p.room + p.host
 ```
 
-`Entire homes/apartments` and `Private rooms` dominate the inventory;
-`Hotel rooms` and `Shared rooms` are marginal. Roughly 30% of hosts are
+Entire homes/apartments and Private rooms dominate the inventory;
+Hotel rooms and Shared rooms are marginal. Roughly 30% of hosts are
 Superhosts. This is a meaningful minority, but far from the norm.
 
 ## Log Prices and rooms / neighbourhoods
@@ -546,7 +546,7 @@ and `visdat` packages. Using `vis_dat()` and `gg_miss_var()`,
 we identified that the missing data is not uniformly distributed but
 concentrated in specific features. 
 The plots below show where NAs sit and how they overlap.
-The biggest blocks of missing data are in the rate columns (response, acceptance) and the review score variables. For the rates, we considered treating NAs as zero but decided against it — that would penalise hosts who simply have no reported value rather than a low one.
+The biggest blocks of missing data are in the rate columns (*response*, *acceptance*) and the *review_scores* variables. For the rates, we considered treating NAs as zero but decided against it — that would penalise hosts who simply have no reported value rather than a low one.
 For review scores, the data is most likely Missing Not At Random: a listing without reviews is usually a new or unbooked listing rather than a poorly-rated one. Imputing zeros would mislabel these as bad listings, and imputing the mean would artificially shrink variance. We therefore drop these observations from the models that need a rating, rather than imputing.
 
 
@@ -578,7 +578,7 @@ The plot below summarises the share of missing values per variable. Anything abo
 
 ## NA Check on Key Variables
 
-A quick count of NAs on the variables we use most often in the models below. lm() and svm() silently drop rows with missing values, which can quietly shrink the training set — this check makes sure we know exactly how much.
+A quick count of NAs on the variables we use most often in the models below. `lm()` and `svm()` silently drop rows with missing values, which can quietly shrink the training set — this check makes sure we know exactly how much.
 
 ```{r}
 # Count the number of NAs for each key column in your dataset
@@ -662,7 +662,7 @@ Standard rental units dominate, but specialty properties like chalets, villas, h
 
 ## Correlation Matrix
 
-Before we train our `LM`, `GAM`, or `SVM`, we need to know how our numerical
+Before we train our LM, GAM, or SVM, we need to know how our numerical
 variables relate to each other. This helps us identify multicollinearity
 (when two predictors provide the same information) and strong price
 drivers.
@@ -721,7 +721,7 @@ ggplot(d.airbnb_listings_feat, aes(x = accommodates, y = log_price)) +
        y = "Log Price")
 ```
 
-**Capacity is the strongest single predictor in the dataset**, and the relationship looks roughly linear on the log scale, which is exactly why we work with `log(price)` throughout the `LM` and `GAM`.
+**Capacity is the strongest single predictor in the dataset**, and the relationship looks roughly linear on the log scale, which is exactly why we work with `log(price)` throughout the LM and GAM.
 
 ## Log Price by Review Score Group
 
@@ -831,20 +831,20 @@ We build six models, each looking at price or its proxy, occupancy from a differ
 | Model | Question | Hypothesis | Output |
 |---|---|---|---|
 | Linear Model | Which variables shift price linearly? | H1 | Coefficients |
-| GLM Poisson | Which variables drive *occupancy*? | H1 + H2 | Rate ratios |
+| GLM Poisson | Which variables drive occupancy? | H1 + H2 | Rate ratios |
 | GLM Binomial | Who ends up in the upper price half? | H1 | Odds ratios |
 | GAM | What does the non-linear price surface look like? | H2 (with H1 as control) | Smooth curves + fair price per listing |
 | SVM | Is a given listing under-, fair-, or overpriced? | RQ2 (prediction) | Classification verdict |
 | ANN | Does any host effect survive flexible controls? | H1 | Predicted prices for hypothetical hosts |
 
 
-The **LM** is our baseline — anything more complex needs to clearly beat it. The **GLM Poisson** runs the same question on a different target (occupancy instead of price), which lets us spot situations where a variable affects one but not the other. The **GLM Binomial** reduces the price question to a yes/no decision (above or below median), which makes the host effect cleaner to read.
+The LM is our baseline — anything more complex needs to clearly beat it. The GLM Poisson runs the same question on a different target (occupancy instead of price), which lets us spot situations where a variable affects one but not the other. The GLM Binomial reduces the price question to a yes/no decision (above or below median), which makes the host effect cleaner to read.
 
-The **GAM** is the strongest single model in this study. It captures the non-linear effects we already saw in the EDA and adds a 2D spatial term that no other model has. The **SVM** then operationalises the GAM into a working tool — given a listing and a chosen price, it returns Underpriced, Fair, or Overpriced.
+The GAM is the strongest single model in this study. It captures the non-linear effects we already saw in the EDA and adds a 2D spatial term that no other model has. The SVM then operationalises the GAM into a working tool — given a listing and a chosen price, it returns Underpriced, Fair, or Overpriced.
 
-The **ANN** doesn't add new information so much as it checks our assumptions. If a flexible neural network barely beats the GAM, the GAM is already capturing most of the available signal — and we can trust the interpretable model over the black box.
+The ANN doesn't add new information so much as it checks our assumptions. If a flexible neural network barely beats the GAM, the GAM is already capturing most of the available signal — and we can trust the interpretable model over the black box.
 
-The GAM, SVM and ANN are evaluated on held-out test data. The split is made **once** on the cleaned dataset, before any model fits and reused throughout. This matters especially for the SVM: its training labels come from the GAM's fair-price band, so if we split after labelling, GAM information would leak into the SVM's test set. We split first, fit the GAM only on the training set, then derive labels.
+The GAM, SVM and ANN are evaluated on held-out test data. The split is made once on the cleaned dataset, before any model fits and reused throughout. This matters especially for the SVM: its training labels come from the GAM's fair-price band, so if we split after labelling, GAM information would leak into the SVM's test set. We split first, fit the GAM only on the training set, then derive labels.
 
 
 # Linear Model
@@ -1101,7 +1101,7 @@ retaining standard likelihood metrics for easier comparison.
 
 ## Theory
 
-When the outcome we want to model is binary — yes/no, above/below — a standard linear regression no longer fits. A `Binomial GLM` with a logit link is the natural choice: it bounds predictions between 0 and 1 and returns coefficients we can read as log-odds. Exponentiating gives odds ratios, which are easier to communicate to a non-technical audience.
+When the outcome we want to model is binary — yes/no, above/below — a standard linear regression no longer fits. A Binomial GLM with a logit link is the natural choice: it bounds predictions between 0 and 1 and returns coefficients we can read as log-odds. Exponentiating gives odds ratios, which are easier to communicate to a non-technical audience.
 Our binary target *price_high* equals 1 if a listing's price is above the median and 0 otherwise. The median split gives us two equally sized classes, so the model is not biased toward a majority outcome.
 
 This model speaks mainly to H1: do host-centered indicators (Superhost
@@ -1249,8 +1249,8 @@ Three things in our data make a GAM the right fit:
     recommended, not just get a number from a black box. The partial
     effect plots make every smooth term readable on its own.
 
-The GAM speaks mainly to **H2** through the spatial spline *s(longitude*,
-*latitude*), while controlling for **H1** via *host_is_superhost* and
+The GAM speaks mainly to **H2** through the spatial spline *s(longitude)* and
+*s(latitude*), while controlling for **H1** via *host_is_superhost* and
 *review_scores_rating*. It is our main tool for checking whether
 location effects on willingness to pay are non-linear and clustered,
 something a linear model cannot answer.
@@ -1297,7 +1297,7 @@ summary(gam.main)
 
 ## Visualisation
 
-The partial effect plots are the main reason to choose a `GAM` in the
+The partial effect plots are the main reason to choose a GAM in the
 first place. Each smooth term is shown on its own, with the shaded area
 representing the 95% confidence band.
 
@@ -1456,7 +1456,7 @@ Take-aways for the pricing tool:
 
 ## Limitations
 
-The `GAM` is the strongest model in this study, but a few things are worth
+The GAM is the strongest model in this study, but a few things are worth
 keeping in mind: 
 
 - **Snapshot only**. The model is trained on a single point

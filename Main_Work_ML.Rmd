@@ -318,7 +318,7 @@ d.airbnb_listings_feat <- d.airbnb_listings_feat %>%
 
 ## Prices
 
-```{r, fig.show='hold', out.width="80%", echo=FALSE}
+```{r, fig.show='hold', out.width="100%", echo=FALSE}
 p.price <- ggplot(d.airbnb_listings_feat, aes(x = price)) +
   geom_histogram(bins = 50, fill = "deepskyblue", color = "white", alpha = 0.7) +
   labs(title = "Distribution of Raw Price", x = "Price", y = "Count")
@@ -375,7 +375,7 @@ Superhosts. This is a meaningful minority, but far from the norm.
 
 ## Log Prices and rooms / neighbourhoods
 
-```{r, fig.show='hold', out.width="80%"}
+```{r, fig.show='hold', out.width="100%"}
 p.logprice_room <- ggplot(d.airbnb_listings_feat, aes(x = room_type, y = log_price, fill = room_type)) +
   geom_boxplot(alpha = 0.7, show.legend = FALSE, fill = "deepskyblue") +
   labs(title = "Log Price by Room Type", x = "Room Type", y = "Log Price") +
@@ -402,7 +402,7 @@ Across neighbourhoods, Riviera-Pays-d'Enhaut and Aigle sit at the top, Gros-de-V
 
 ## Host Variables
 
-```{r host_features, fig.show='hold', out.width="80%"}
+```{r host_features, fig.show='hold', out.width="100%"}
 p.resp_time <- ggplot(d.airbnb_listings_feat %>% filter(host_response_time != "N/A" & !is.na(host_response_time)), aes(x = host_response_time)) +
   geom_bar(fill = "deepskyblue") +
   labs(title = "Response Time", x = "Response Time", y = "Count") +
@@ -432,7 +432,7 @@ Hosts in Vaud are highly responsive and reliable: most reply within an hour, res
 
 ## Properties & Neighborhoods
 
-```{r, fig.show='hold', out.width="80%"}
+```{r, fig.show='hold', out.width="100%"}
 
 p.prop <- d.airbnb_listings_feat %>%
   count(property_type) %>%
@@ -457,7 +457,7 @@ Entire rental units dominate the property mix, followed by private rooms in rent
 
 ## Furnishing
 
-```{r, fig.show='hold', out.width="80%"}
+```{r, fig.show='hold', out.width="100%"}
 p.baths <- ggplot(d.airbnb_listings_feat, aes(x = bathrooms)) +
   geom_histogram(binwidth = 0.5, fill = "deepskyblue", color = "white") +
   scale_x_continuous(breaks = seq(0, max(d.airbnb_listings_feat$bathrooms, na.rm = TRUE), by = 1)) +
@@ -477,7 +477,7 @@ Bathroom and bed counts cluster at the low end as expected. The bed distribution
 
 ## Utilisation
 
-```{r, fig.show='hold', out.width="80%"}
+```{r, fig.show='hold', out.width="100%"}
 # Minimum Nights (Log scale due to extreme outliers like 365+ nights)
 p.nights <- ggplot(d.airbnb_listings_feat, aes(x = minimum_nights)) +
   geom_histogram(bins = 30, fill = "deepskyblue", color = "white") +
@@ -503,7 +503,7 @@ Review counts are L-shaped: many listings have very few reviews, a small group h
 
 ## Feature Engineered Data
 
-```{r, fig.show='hold', out.width="80%"}
+```{r, fig.show='hold', out.width="100%"}
 
 # High Demand (Binary)
 p.demand <- ggplot(d.airbnb_listings_feat, aes(x = as.factor(high_demand))) +
@@ -523,7 +523,7 @@ High price is balanced by design — we split at the median, so both classes hav
 
 ## Verifications
 
-```{r, fig.show='hold', out.width="80%"}
+```{r, fig.show='hold', out.width="100%"}
 p.verifications <- d.airbnb_listings_feat %>%
   count(host_verifications) %>%
   top_n(5, n) %>%
@@ -554,7 +554,7 @@ gg_miss_var(d.airbnb_listings_feat)
 
 ## Missing Value Patterns
 
-```{r, out.width="80%"}
+```{r, out.width="100%"}
 # Calculate percentage of missing values per column
 missing_data <- d.airbnb_listings_feat %>%
   summarise(across(everything(), ~ mean(is.na(.)) * 100)) %>%
@@ -578,7 +578,7 @@ The plot below summarises the share of missing values per variable. Anything abo
 
 A quick count of NAs on the variables we use most often in the models below. `lm()` and `svm()` silently drop rows with missing values, which can quietly shrink the training set — this check makes sure we know exactly how much.
 
-```{r, out.width="80%"}
+```{r, out.width="100%"}
 # Count the number of NAs for each key column in your dataset
 na_summary <- d.airbnb_listings_feat %>%
   select(price, log_price, accommodates, number_of_reviews, host_is_superhost) %>%
@@ -597,7 +597,7 @@ kable(na_summary, caption = "Count of Missing Values per Variable")
 This is the absolute minimum, maximum, median, and mean for the most
 important numeric variables.
 
-```{r, out.width="80%"}
+```{r, out.width="100%"}
 # Basic summary statistics for key numerical variables
 summary_stats <- d.airbnb_listings_feat %>%
   select(price, log_price, accommodates, number_of_reviews) %>%
@@ -615,7 +615,7 @@ Since we want to know how many different types of rooms there are, we
 group the data and calculate the counts, percentages, and price ranges
 for each type.
 
-```{r, out.width="80%"}
+```{r, out.width="100%"}
 # Detailed breakdown by Room Type
 room_type_analysis <- d.airbnb_listings_feat %>%
   group_by(room_type) %>%
@@ -642,7 +642,7 @@ We already analyzed room_type, but Airbnb often has dozens of
 Summarizing the Top 10 property types in the Canton of Vaud provides
 us with a great market insight.
 
-```{r, out.width="80%"}
+```{r, out.width="100%"}
 top_properties <- d.airbnb_listings_feat %>%
   group_by(property_type) %>%
   summarise(
@@ -665,7 +665,7 @@ variables relate to each other. This helps us identify multicollinearity
 (when two predictors provide the same information) and strong price
 drivers.
 
-```{r correlation matrix, out.width="80%"}
+```{r correlation matrix, out.width="100%"}
 # Select relevant numerical variables (drop NAs just for the correlation calculation)
 cor_data <- d.airbnb_listings_feat %>%
   select(log_price, accommodates, number_of_reviews) %>%
@@ -678,7 +678,7 @@ cor_matrix <- cor(cor_data)
 kable(round(cor_matrix, 2), caption = "Correlation Matrix of Key Numerical Drivers")
 ```
 
-```{r correlation_heatmap, out.width="80%", fig.show='hold'}
+```{r correlation_heatmap, out.width="100%", fig.show='hold'}
 # Select all numerical variables, drop binaries we already analysed separately
 num_vars <- d.airbnb_listings_feat %>%
   select(where(is.numeric)) %>%
@@ -709,7 +709,7 @@ The heatmap confirms what we already suspected: *accommodates*, *beds* and *bath
 The most important Relationship in the dataset from what we see in the
 correlation matrix above.
 
-```{r price_vs_accommodates, out.width="80%", fig.show='hold'}
+```{r price_vs_accommodates, out.width="100%", fig.show='hold'}
 ggplot(d.airbnb_listings_feat, aes(x = accommodates, y = log_price)) +
   geom_jitter(alpha = 0.3, width = 0.2, color = "deepskyblue") +
   geom_smooth(method = "lm", color = "firebrick1", se = TRUE) +
@@ -726,7 +726,7 @@ ggplot(d.airbnb_listings_feat, aes(x = accommodates, y = log_price)) +
 We display *review_scores_rating* as a histogram, but never in relation to
 the price.
 
-```{r price_by_rating, out.width="80%", fig.show='hold'}
+```{r price_by_rating, out.width="100%", fig.show='hold'}
 d.airbnb_listings_feat %>%
   filter(!is.na(review_scores_rating)) %>%
   mutate(rating_group = cut(review_scores_rating,
@@ -744,7 +744,7 @@ Medians across rating groups are surprisingly close. Higher-rated listings do no
 
 ## Spatial Data: Mapping the Listings by Log(Price)
 
-```{r, out.width="80%", fig.show='hold'}
+```{r, out.width="100%", fig.show='hold'}
 # Cleaned up the map to focus purely on location and price.
 ggplot(data = d.airbnb_listings_feat, aes(x = longitude, y = latitude)) +
   geom_point(aes(color = log_price), alpha = 0.6, size = 1.5) +
@@ -764,7 +764,7 @@ Hot spots cluster along Lake Geneva and around Lausanne, with rural and alpine a
 
 We calculated price per guest as a feature then visualized them.
 
-```{r price_per_guest, out.width="80%", fig.show='hold'}
+```{r price_per_guest, out.width="100%", fig.show='hold'}
 p_ppg <- ggplot(d.airbnb_listings_feat, aes(x = price_per_guest)) +
   geom_histogram(bins = 50, fill = "deepskyblue", color = "white", alpha = 0.7) +
   scale_x_log10() +
@@ -789,7 +789,7 @@ This business case specifically mentions superhost status. So we took a
 look to see how many there are and if they actually charge more or even
 less.
 
-```{r, out.width="80%"}
+```{r, out.width="100%"}
 # Superhost statistics
 superhost_analysis <- d.airbnb_listings_feat %>%
   group_by(host_is_superhost) %>%
@@ -807,7 +807,7 @@ kable(superhost_analysis, booktabs = TRUE) %>%
 
 At first glance the boxplot shows almost no difference in median price between Superhosts and regular hosts. This is our first sign that the Superhost badge does not translate into a price premium — a pattern that the GLM Binomial, the GAM and the Neural Network will all confirm independently in the next chapters.
 
-```{r Binary Predictor: Superhost Status, out.width="80%", fig.show='hold'}
+```{r Binary Predictor: Superhost Status, out.width="100%", fig.show='hold'}
 # Adding this because it's a key part of the business case and fulfills the binary variable requirement.
 ggplot(data = d.airbnb_listings_feat, aes(x = as.factor(host_is_superhost), y = log_price, fill = as.factor(host_is_superhost))) +
   geom_boxplot(alpha = 0.7, fill = "deepskyblue") +
@@ -866,7 +866,7 @@ case with price variables, this variable is logarithmized.
 
 ## Model
 
-```{r lm lead Timon, out.width="80%", fig.show='hold'}
+```{r lm lead Timon, out.width="100%", fig.show='hold'}
 
 # We use log(price) to account for the right-skewed distribution of Airbnb prices.
 lm.main <- lm(log(price) ~ 
@@ -969,7 +969,7 @@ This is the only model in our set that targets occupancy rather than price. Both
 
 ## Model
 
-```{r, GLM Poisson Lead Pascal, out.width="80%"}
+```{r, GLM Poisson Lead Pascal, out.width="100%"}
 
 glm.poisson <- glm(estimated_occupancy_l365d ~ price + host_is_superhost + 
                      review_scores_rating + accommodates + room_type, 
@@ -1001,7 +1001,7 @@ combined_models %>%
 
 ## Crossvalidation
 
-```{r cross-validation Datasets 10-fold (TIMON), out.width="80%"}
+```{r cross-validation Datasets 10-fold (TIMON), out.width="100%"}
 set.seed(1)
 
 cv.mse.poisson <- c()
@@ -1114,7 +1114,7 @@ confuse host effects with listing characteristics.
 
 Feature Engeneering
 
-```{r glm_binomial_extended, Lead Davide, out.width="80%"}
+```{r glm_binomial_extended, Lead Davide, out.width="100%"}
 # Predict the probability that a listing is priced above the market median
 # We control for the most obvious price drivers so the host coefficients can be read cleanly
 glm.binomial <- glm(price_high ~ host_is_superhost + 
@@ -1127,7 +1127,7 @@ glm.binomial <- glm(price_high ~ host_is_superhost +
 summary(glm.binomial)
 ```
 
-```{r glm_binomial_results, Lead Davide, out.width="80%"}
+```{r glm_binomial_results, Lead Davide, out.width="100%"}
 # Convert log-odds into odds ratios with 95% confidence intervals for easier reading
 d.results_glm_binomial <- tidy(glm.binomial, conf.int = TRUE) %>%
   mutate(
@@ -1149,7 +1149,7 @@ predicted probability of charging an above-median price across listing
 sizes, split by Superhost status. Everything else is held at its average
 so the two lines differ only in the variable we care about.
 
-```{r glm_binomial_plot, Lead Davide, out.width="80%"}
+```{r glm_binomial_plot, Lead Davide, out.width="100%"}
 # Build a prediction grid: vary accommodates and superhost, hold the rest constant
 d.glm_predict <- expand.grid(
   accommodates         = seq(1, 10, by = 1),
@@ -1226,7 +1226,7 @@ The GAM speaks mainly to **H2** through the spatial spline `s(longitude, latitud
 
 ## Model
 
-```{r gam_data_split, Lead Davide, out.width="80%"}
+```{r gam_data_split, Lead Davide, out.width="100%"}
 # Data preparation: keep only variables used in the GAM, drop rows with NAs
 d.airbnb_listings_feat_gam <- d.airbnb_listings_feat %>%
   select(price, accommodates, review_scores_rating,
@@ -1248,7 +1248,7 @@ cat("Train:", nrow(d.train), " | Test:", nrow(d.test), "\n")
 
 We model `log(price)` rather than the raw price. The distribution is heavily right-skewed (see Chapter EDA). Coefficients on the log scale read multiplicatively: β corresponds to roughly `$(exp(β) − 1) × 100%$` price change. We use `method = "REML"` because it gives more reliable confidence intervals than the default.
 
-```{r gam_fit, Lead Davide, out.width="80%"}
+```{r gam_fit, Lead Davide, out.width="100%"}
 gam.main <- gam(log(price) ~
                   s(accommodates) +
                   s(review_scores_rating) +
@@ -1268,7 +1268,7 @@ summary(gam.main)
 
 The partial effect plots are the main reason to choose a GAM. Each smooth term is shown on its own, with the shaded area representing the 95% confidence band. We also fit an LM on the exact same data and predictors as a fair benchmark — the only difference is the absence of smooth terms.
 
-```{r gam_partial_effects, Lead Davide, out.width="80%"}
+```{r gam_partial_effects, Lead Davide, out.width="100%"}
 plot(gam.main, pages = 1, shade = TRUE,
      col = "firebrick1", shade.col = "lightblue", seWithMean = TRUE)
 
@@ -1279,7 +1279,7 @@ cat("R-squared:         ", round(summary(gam.main)$r.sq,  3), "\n")
 cat("Deviance explained:", round(summary(gam.main)$dev.expl, 3), "\n")
 ```
 
-```{r gam_lm_benchmark, Lead Davide, out.width="80%"}
+```{r gam_lm_benchmark, Lead Davide, out.width="100%"}
 # Fair LM benchmark (same target, same training data)
 lm.gam_comparison <- lm(log(price) ~ accommodates + review_scores_rating +
                           log1p(number_of_reviews) + longitude + latitude +
@@ -1296,7 +1296,7 @@ AIC(lm.gam_comparison, gam.main)
 The GAM predicts an expected price for every listing. Comparing actual to expected gives hosts a quick verdict — `Underpriced`, `Fair Price`, or `Overpriced`. We set the threshold at ±15%, anchored in the residual standard deviation on the log scale (exp(σ) − 1 ≈ 15%); a stricter or looser band would shift the proportions accordingly.
 
 
-```{r traffic_light_labels, out.width="80%"}
+```{r traffic_light_labels, out.width="100%"}
 # Predictions on log scale
 d.train$fitted_logprice <- as.numeric(predict(gam.main, newdata = d.train))
 d.test$fitted_logprice  <- as.numeric(predict(gam.main, newdata = d.test))
@@ -1333,7 +1333,7 @@ The map below plots every listing in the dataset, coloured by its
 traffic-light verdict. Each point shows the actual price, the
 GAM-recommended price, and the percentage deviation when clicked.
 
-```{r gam_leaflet_map, out.width="80%"}
+```{r gam_leaflet_map, out.width="100%"}
 d.map <- bind_rows(d.train, d.test)
 color_map <- c("Underpriced" = "#EF9F27",
                "Fair Price"  = "#1D9E75",
@@ -1400,7 +1400,7 @@ With the SVM, we are not testing any of the hypotheses, but rather the second re
 
 ## Model
 
-```{r SVM, Lead Timon, out.width="80%"}
+```{r SVM, Lead Timon, out.width="100%"}
 
 # Setting a seed ensures reproducibility. 
 set.seed(42) 
@@ -1418,7 +1418,7 @@ d.svm_test  <- d.test[, svm.coloums]
 
 ```
 
-```{r tuning model for optimal cost, out.width="80%"}
+```{r tuning model for optimal cost, out.width="100%"}
 # We use 10-fold cross-validation to find the optimal 'cost' and 'gamma' parameters 
 # for the radial basis function (RBF) kernel.
 
@@ -1459,7 +1459,7 @@ svm_model_gamma <- 0.625
 
 ```
 
-```{r TIMON, out.width="80%"}
+```{r TIMON, out.width="100%"}
 # --- Final SVM Model & Evaluation ---
 
 # Training the final Support Vector Machine using the optimized parameters
@@ -1509,7 +1509,7 @@ We use the ANN to revisit H1 from a different angle. The Naive ANN tests whether
 
 ## Model
 
-```{r, Basic ANN Lead Pascal, out.width="80%"}
+```{r, Basic ANN Lead Pascal, out.width="100%"}
 # Selecting basic variables. We omit missing values for this simplified approach.
 d.ann_naive <- d.airbnb_listings_feat %>%
   select(
@@ -1568,7 +1568,7 @@ print("Predicted Prices (Naive Model): Regular Host vs. Superhost")
 print(real_prices_naive)
 ```
 
-```{r, Expanded ANN, Lead Pascal, out.width="80%"}
+```{r, Expanded ANN, Lead Pascal, out.width="100%"}
 
 # Data Preparation & Dimensionality Reduction
 d_model_ready <- d.airbnb_listings_feat %>%

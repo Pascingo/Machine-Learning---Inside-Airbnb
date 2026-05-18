@@ -1637,6 +1637,8 @@ kable(results.df_exp,
 
 ```{r}
 plot(nn.naive)
+```
+```{r}
 plot(nn.expanded)
 ```
 

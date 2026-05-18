@@ -1854,3 +1854,11 @@ Another key learning was the SCRUM-like structuring of the work process. Within 
 
 Finally, working with GitHub on this scale was also fairly new to me. We used the integration with RStudio for the first time, and I’m personally thrilled by how simple it is. We had almost no issues with incorrect versions, even though we weren’t working with separate branches. I think, however, that splitting up the models really helped us in that regard. 
 
+### Davide
+Coming into this project, my comfort zone was firmly in theory. I knew what a GLM was on paper, but actually building one that holds up against messy data was a different exercise. Working on the GLM Binomial and GAM forced me to confront the gap between understanding a model and making it useful. Things that look elegant in a lecture slide turn out to require dozens of small judgement calls in practice: which variables to include, how to handle NAs, when to log-transform, where to draw a threshold.
+
+The GAM was probably my biggest single learning. I had never worked with smooth terms before, and seeing the 2D spatial spline pick up Vaud's geography was genuinely a moment where the theory clicked into practice.
+
+Another lesson, less technical but probably the most useful one, was around our several iterations. I rewrote most of my texts at least three times. Each round made them shorter, clearer, and less AI-flavoured. I went into this project assuming the modelling would be the hard part. By the end, communicating the results clearly turned out to be just as much work.
+
+Finally, R Bootcamp in February laid the foundation, but this project was where I actually got comfortable. Reading the others' code, debugging together, learning shortcuts — that side-by-side learning was something I can't get from a tutorial.

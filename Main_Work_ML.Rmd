@@ -44,8 +44,8 @@ Tasks ab 17.05:
       - 5.4 Korrelationsmatrix grösser machen. (TIMON) *erledigt*
       - 5.8 Grafik grösser machen. (TIMON) *erledigt*
       - 5.9 OUtput verschönern. (TIMON) *erledigt*
-      - Braucht es bei 6 für die eine Seite wirklich drei Kapitel oder kann man das in eines zusammenfassen? (TIMON)
-      - 7.2 Rmodel einblenden (kabel) allenfalls direkt mit VIF kombinineren. (TIMON)
+      - Braucht es bei 6 für die eine Seite wirklich drei Kapitel oder kann man das in eines zusammenfassen? (TIMON) *erledigt*
+      - 7.2 Rmodel einblenden (kabel) allenfalls direkt mit VIF kombinineren. (TIMON) *erledigt*
       - 7.3 Grafiken Kleiner machen. 
       - 8.4 Grafik kleiner machen
       - 9.3 Modelouput schön machen, bzw den OUtput oben entfernen. 
@@ -825,9 +825,8 @@ ggplot(data = d.airbnb_listings_feat, aes(x = as.factor(host_is_superhost), y = 
 
 # Modelling Approach
 
-We build six models, each looking at price or its proxy, occupancy from a different angle. The point isn't to pick one winner. It's to triangulate. When models with very different mechanics converge on the same answer, we can trust it more than any single result.
+We build six models, each looking at price or its proxy, occupancy from a different angle. The point isn't to pick one winner. It's to triangulate. When models with very different mechanics converge on the same answer, we can trust it more than any single result. To achieve this, we assigned every model a hypothesis to make sure that ever Hypothesis has a Model that matches the requirements of the model. 
 
-## Models and their roles
 
 | Model | Question | Hypothesis | Output |
 |---|---|---|---|
@@ -838,7 +837,6 @@ We build six models, each looking at price or its proxy, occupancy from a differ
 | SVM | Is a given listing under-, fair-, or overpriced? | RQ2 (prediction) | Classification verdict |
 | ANN | Does any host effect survive flexible controls? | H1 | Predicted prices for hypothetical hosts |
 
-## How the models connect
 
 The **LM** is our baseline — anything more complex needs to clearly beat it. The **GLM Poisson** runs the same question on a different target (occupancy instead of price), which lets us spot situations where a variable affects one but not the other. The **GLM Binomial** reduces the price question to a yes/no decision (above or below median), which makes the host effect cleaner to read.
 
@@ -846,9 +844,7 @@ The **GAM** is the strongest single model in this study. It captures the non-lin
 
 The **ANN** doesn't add new information so much as it checks our assumptions. If a flexible neural network barely beats the GAM, the GAM is already capturing most of the available signal — and we can trust the interpretable model over the black box.
 
-## Train/Test discipline
-
-The GAM, SVM and ANN are evaluated on held-out test data. The split is made **once** — on the cleaned dataset, before any model fits — and reused throughout. This matters especially for the SVM: its training labels come from the GAM's fair-price band, so if we split after labelling, GAM information would leak into the SVM's test set. We split first, fit the GAM only on the training set, then derive labels.
+The GAM, SVM and ANN are evaluated on held-out test data. The split is made **once** on the cleaned dataset, before any model fits and reused throughout. This matters especially for the SVM: its training labels come from the GAM's fair-price band, so if we split after labelling, GAM information would leak into the SVM's test set. We split first, fit the GAM only on the training set, then derive labels.
 
 
 # Linear Model
@@ -868,11 +864,11 @@ the price.
 A linear model allows us to analyze multiple variables and their effect
 on a dependent variable. It is important that the dependent variable be
 normally distributed. Since this is not the case here, as is often the
-case with price variables, this variable is logarithmized. We assumed that there is a risk of high collinearity in our data. Therefore we checked for it, to make sure, that the results are robust. 
+case with price variables, this variable is logarithmized.
 
 ## Model
 
-```{r lm lead Timon}
+```{r lm lead Timon, out.width="100%", fig.show='hold'}
 
 # We use log(price) to account for the right-skewed distribution of Airbnb prices.
 lm.main <- lm(log(price) ~ 
@@ -884,21 +880,13 @@ lm.main <- lm(log(price) ~
               data = d.airbnb_listings_feat)
 
 tidy(lm.main) %>%
-  kable(format = "latex", digits = 2, booktabs = TRUE, caption = "Model Output") %>%
-  kable_styling(font_size = 8, latex_options = "scale_down")
-
-
-
-# Checking for multicollinearity using Variance Inflation Factor (VIF).
-# Values range from 1 to infinity. A value of exactly 1 indicates no collinearity.
-# Values > 5-10 suggest problematic multicollinearity among the predictor variables.
-kable(multicollinearity(lm.main)[1:5], booktabs = TRUE) %>%
+  kable(digits = 2, booktabs = TRUE, caption = "<span style='color:black; font-weight:bold;'>SVM Model Overview</span>") %>%
   kable_styling()
-```
 
-## Visualisation
 
-```{r, out.width="100%", fig.show='hold'}
+
+
+####plotting
 
 # plot log-price and scores + superhost
 p.lm_uncontrolled <- ggplot(data = d.airbnb_listings_feat, mapping = aes(review_scores_rating, log(price), color = host_is_superhost), ylim = 8) +

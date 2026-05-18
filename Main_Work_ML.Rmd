@@ -1635,6 +1635,12 @@ kable(results.df_exp,
   row_spec(0, bold = TRUE)
 ```
 
+```{r}
+plot(nn.naive)
+plot(nn.expanded)
+```
+
+
 ## Interpretation ANN
 
 Our initial Neural Network predicted price using only review metrics,

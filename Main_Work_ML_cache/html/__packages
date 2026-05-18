@@ -17,6 +17,7 @@ pROC
 Metrics
 performance
 broom
+kableExtra
 patchwork
 knitr
 naniar
@@ -24,4 +25,3 @@ visdat
 neuralnet
 leaflet
 leaflet.extras
-kableExtra

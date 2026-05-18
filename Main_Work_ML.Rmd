@@ -75,6 +75,7 @@ ToDos backlog: - R-chunks sauber personen zuweisen
 
 
 OFFENE FRAGEN:
+
 - 3.6 brauchen wir den zweiten Plot?
 - 3.5 wie können wir die überlappungen lösen?
 - 3.10 brauchen wir das?

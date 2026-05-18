@@ -25,45 +25,29 @@ knitr::opts_chunk$set(echo = TRUE, cache = TRUE, comment = NA, warning = FALSE, 
 
 ```
 Tasks ab 18.05:
--   Formatting conventions übernehmen (jeder für sich)(*Pascal done*), (*Davide done*)
--   Variabel-"call" kontrollieren. (ALLE)
-
--   EDA/DQ/UTD aussortieren falls platzbedarf
--   beautifying HTML-Doc: (jeder seine Modelle, TIMON macht alles vor den Modellen. )
+-   Formatting conventions übernehmen (Timon)
+-   Variabel-"call" kontrollieren. (Timon)
+-   beautifying HTML-Doc: (jeder seine Modelle, TIMON macht alles vor den Modellen)
       - 2.0 Output --> drin lassen wenn ja verschönern. (TIMON)
-      - 3.4 Grafiken grösser machen (TIMON) *erledigt*
-      - 3.5 Grafiken grösser machen (TIMON) *erledigt*
-      - 3.8 Grafiken grösser machen / Titelproblem lösen. (TIMON) *erledigt*
-      - 3.10 Grafik kleiner machen (TIMON) *machen wir nicht mehr*
-      - 4 & 4.1 Grafiken kleiner machen (TIMON) **machen wir nicht mehr*
       - 4.2 NA-Check irgendwie noch was dazu schreiben (TIMON)
-      - 5.1 & 5.2 Outputs kabeln und verschönern (TIMON) *erledigt*
-      - 5.4 Korrelationsmatrix grösser machen. (TIMON) *erledigt*
-      - 5.8 Grafik grösser machen. (TIMON) *erledigt*
-      - 5.9 OUtput verschönern. (TIMON) *erledigt*
-      - Braucht es bei 6 für die eine Seite wirklich drei Kapitel oder kann man das in eines zusammenfassen? (TIMON) *erledigt*
-      - 7.2 Rmodel einblenden (kabel) allenfalls direkt mit VIF kombinineren. (TIMON) *erledigt*
       - 7.3 Grafiken Kleiner machen. 
-      pascal- 8.4 Grafik kleiner machen *erledigt*
       davide- 9.3 Modelouput schön machen, bzw den Output oben entfernen. 
       davide - 10.3 Train und Test irgedwo sauber verpacken. nicht einfach so einblenden. 
       davide- 10.3 Output verschönern kable statt cat
       davide- 10.3 machen diese 4 Visualisierungen wirklich Sinn? 
       davide- 10.3 einzelne kleine R-Outputs in eine Tabelle und zusammen darstellen. kable statt cat
       davide- 10.4.1 die einzelnen Outputs in eine Tablle bringen und zusammen darstellen
-      - 11.2 Confusion matrix schöner machen (TIMON) *erledigt*
       pascal- 12.3 Output schöner darstellen (kabel)
       pascal- 12 keine einzige Darstellung beim ANN! IMPORTANT
-
 
 ToDos backlog: - R-chunks sauber personen zuweisen
 
 -   Data Quality kontrollieren & übersetzen.\
-
+-   EDA/DQ/UTD aussortieren falls platzbedarf
 -   tuning wieder reaktivieren --\> done
 -   README finalisieren
 -   color fomatting kontrollieren. 
--   Ai-Kontrolle
+-   AI-Kontrolle
 
 
 OFFENE FRAGEN:

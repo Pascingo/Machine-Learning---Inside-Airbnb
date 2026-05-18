@@ -26,13 +26,13 @@ knitr::opts_chunk$set(echo = TRUE, cache = TRUE, comment = NA, warning = FALSE, 
 ```
 
 Tasks ab 17.05:
--   Lesson Learned Kapitel (Jeder selbst: unterkapitel pro person)(Pascal done)
--   Formatting conventions übernehmen (jeder für sich)(Pascal done)
+-   Lesson Learned Kapitel (Jeder selbst: unterkapitel pro person)(*Pascal done*) (*TIMON done*)
+-   Formatting conventions übernehmen (jeder für sich)(*Pascal done*)
 -   Kapitelstruktur überarbeiten - Davide, Pascal(done)
 -   Kontrollieren ob alle Modelle einen "Leader" haben (NAMEN aus Kapiteltitel löschen). PASCAL-->Done
 -   Variabel-"call" kontrollieren. (ALLE)
 
--   beautifying HTML-Doc:
+-   beautifying HTML-Doc: (jeder seine Modelle, TIMON macht alles vor den Modellen. )
       - 2.0 Output --> drin lassen wenn ja verschönern. (TIMON)
       - 3.4 Grafiken grösser machen (TIMON) *erledigt*
       - 3.5 Grafiken grösser machen (TIMON) *erledigt*
@@ -58,7 +58,7 @@ Tasks ab 17.05:
       - 12.3 Output schöner darstellen (kabel)
       - 12 keine einzige Darstellung beim ANN?
       
-      (jeder seine Modelle, TIMON macht alles vor den Modellen. )
+
 
 
 
@@ -1878,3 +1878,11 @@ Working on this project was a huge reality check in the best way possible. In ou
 Since we split up the workload, I didn't code every single model myself. Instead, my role for the LM, GLM-Binomial, GAM, and SVM models was to check and review the work of my team members. This turned out to be a super valuable learning experience on its own. Reading through their code allowed me to see exactly how other people translate what we learned in class into practice. Seeing their different approaches to problem-solving and troubleshooting bugs really helped expand my own coding mindset.
 
 Finally, figuring out how to collaborate effectively on code was a massive win for us. We used GitHub with RStudio for the first time, and it honestly made a world of difference. We finally found a setup that actually works for coding together as a group, which saved us a lot of headaches and is definitely a workflow I’ll be taking into future projects.
+
+### Timon
+I was already familiar with RStudio from my bachelor’s program, and I’d had very positive experiences with it so far and I feel very comfortable using it. Up until now, however, I’ve mainly worked with simple linear models and generalized linear models. Everything else was new to me. In this project, I focused primarily on support vector machines, and I’m very impressed by the concept because it’s both very simple and yet involves a tremendous amount of complexity. Working with this model in particular was a key learning experience for me. 
+
+Another key learning was the SCRUM-like structuring of the work process. Within the document, we work with a list of tasks to be completed by the next meeting and a backlog of tasks that we can’t tackle right now but know are coming up. This worked very well for us. It provided a sense of accountability to ensure all tasks were completed effectively. 
+
+Finally, working with GitHub on this scale was also fairly new to me. We used the integration with RStudio for the first time, and I’m personally thrilled by how simple it is. We had almost no issues with incorrect versions, even though we weren’t working with separate branches. I think, however, that splitting up the models really helped us in that regard. 
+

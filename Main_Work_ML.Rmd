@@ -1539,8 +1539,26 @@ min_price <- min(d.ann_naive$price)
 max_price <- max(d.ann_naive$price)
 real_prices_naive <- predictions_h3_naive$net.result * (max_price - min_price) + min_price
 
-print("Predicted Prices (Naive Model): Regular Host vs. Superhost")
-print(real_prices_naive)
+#print("Predicted Prices (Naive Model): Regular Host vs. Superhost")
+#print(real_prices_naive)
+
+# Create a clean dataframe for the table
+results.ann_basic <- data.frame(
+  "Host_Type" = c("Regular Host (0)", "Superhost (1)"),
+  "Predicted_Price_CHF" = round(as.numeric(real_prices_naive), 2)
+)
+
+# Output as a professional HTML table using kable and kableExtra
+kable(results.ann_basic, 
+      col.names = c("Host Status", "Predicted Price (CHF)"),
+      caption = "Predicted Prices: Regular Host vs. Superhost (Naive Model)",
+      align = 'lc') %>%
+  kable_styling(bootstrap_options = c("striped", "hover", "condensed"), 
+                full_width = FALSE, 
+                position = "center") %>%
+  row_spec(0, bold = TRUE)
+
+
 ```
 
 ```{r, Expanded ANN, Lead Pascal, out.width="80%"}
@@ -1598,8 +1616,23 @@ max_price_exp <- max(d_model_ready$price)
 
 real_prices_expanded <- predictions_h3_exp$net.result * (max_price_exp - min_price_exp) + min_price_exp
 
-print("Predicted Prices (Expanded Model): Regular Host vs. Superhost")
-print(real_prices_expanded)
+#print("Predicted Prices (Expanded Model): Regular Host vs. Superhost")
+#print(real_prices_expanded)
+
+results.df_exp <- data.frame(
+  "Host_Type" = c("Regular Host (0)", "Superhost (1)"),
+  "Predicted_Price_CHF" = round(as.numeric(real_prices_expanded), 2)
+)
+
+# Output as a professional HTML table using kable and kableExtra
+kable(results.df_exp, 
+      col.names = c("Host Status", "Predicted Price (CHF)"),
+      caption = "Predicted Prices: Regular Host vs. Superhost (Expanded Model)",
+      align = 'lc') %>%
+  kable_styling(bootstrap_options = c("striped", "hover", "condensed"), 
+                full_width = FALSE, 
+                position = "center") %>%
+  row_spec(0, bold = TRUE)
 ```
 
 ## Interpretation ANN

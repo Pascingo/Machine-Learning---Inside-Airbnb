@@ -1740,7 +1740,8 @@ Five limitations apply to this entire study, not just to individual models:
 
 **Vaud-specific.** The dataset covers one Swiss canton at one point in time. The price levels, location dynamics (lakeshore premium, alpine resorts), and host behaviours are specific to this market. The methodology transfers; the exact coefficients do not. Applying the same models to Geneva or Bern would require refitting on local data.
 
-# Use of GenAI
+# Appendix
+## Use of GenAI
 
 Throughout this machine learning project, we leveraged various
 Generative AI tools specifically ChatGPT, Gemini, and Claude to support
@@ -1758,7 +1759,6 @@ Finally, these tools provided essential linguistic support. We actively
 used GenAI to translate our documentation and findings into professional
 English, ensuring a high-quality final report.
 
-# Appendix
 ## Lessons learned
 ### Pascal
 Working on this project was a huge reality check in the best way possible. In our classes, we are used to getting "perfect" datasets that are practically made for the specific algorithms we are learning. But working with our actual `d.airbnb_listings_feat` dataset showed me how much effort actually goes into data cleaning and prepping before you can even start modeling. I personally focused on building the GLM-Poisson and ANN models, and trying to get them to perform well on real, messy data required a lot more critical thinking and trial-and-error than our standard assignments.

@@ -43,7 +43,7 @@ Tasks ab 18.05:
 davide- 9.3 Modelouput schön machen, bzw den Output oben entfernen. --> **Check ich nicht ganz - timon gefragt**
 davide - 10.3 Train und Test irgedwo sauber verpacken. nicht einfach so einblenden. *erledigt Davide - kable gemacht* --> passt so? 
 davide- 10.3 Output verschönern kable statt cat *erledigt von Timon* --\> bitte kontrollieren ob das so passt oder ob was fehlt. 
-davide- 10.3 machen diese 4 Visualisierungen wirklich Sinn? -\> Lat/Long sieht aus wie LSD-Fiebertraum das ist halt der Kanton Vaude. **dort zu wohnen ist ein Fiebertraum i guess. **
+davide- 10.3 machen diese 4 Visualisierungen wirklich Sinn? -\> Lat/Long sieht aus wie LSD-Fiebertraum das ist halt der Kanton Vaude. **dort zu wohnen ist ein Fiebertraum i guess. kein plan ob und wie wir das darstellen wollen. ich mach mal ein Vorschlag.**
 davide- 10.3 einzelne kleine R-Outputs in eine Tabelle und zusammen darstellen. kable statt cat *einen Teil erledigt von Timon* 
 davide- 10.3.1 die einzelnen Outputs in eine Tablle bringen und zusammen darstellen  *erledigt Davide*
 pascal- 12.3 Output schöner darstellen (kabel) done 
@@ -1398,23 +1398,37 @@ tidy(gam.main) %>%
 
 ## Visualisation
 
-The partial effect plots are the main reason to choose a GAM. Each
-smooth term is shown on its own, with the shaded area representing the
-95% confidence band. We also fit an LM on the exact same data and
-predictors as a fair benchmark — the only difference is the absence of
-smooth terms.
+The partial effect plots are the main reason to choose a GAM. Each smooth term is shown on its own, with the shaded area representing the 95% confidence band. We also fit an LM on the exact same data and predictors as a fair benchmark — the only difference is the absence of smooth terms.
+
+The three 1D smooth terms are shown below. The 2D spatial spline s(longitude, latitude) is more meaningful as a geographic surface than as an abstract contour plot. We visualise it later in the interactive map. Its EDF (≈ 25) still appears in the summary table below.
 
 ```{r gam_partial_effects, Lead Davide, out.width="80%"}
-plot(gam.main, pages = 1, shade = TRUE,
-     col = "firebrick1", shade.col = "lightblue", seWithMean = TRUE)
+# Partial effect plots for the 1D smooth terms.
+# The 2D spatial spline s(longitude, latitude) is shown in the interactive map below.
+par(mfrow = c(1, 3), mar = c(4, 4, 2, 1))
+plot(gam.main, select = 1, shade = TRUE,
+     col = "deepskyblue", shade.col = "lightblue",
+     seWithMean = TRUE, ylab = "Effect on log(price)")
+plot(gam.main, select = 2, shade = TRUE,
+     col = "deepskyblue", shade.col = "lightblue",
+     seWithMean = TRUE, ylab = "Effect on log(price)")
+plot(gam.main, select = 3, shade = TRUE,
+     col = "deepskyblue", shade.col = "lightblue",
+     seWithMean = TRUE, ylab = "Effect on log(price)")
+par(mfrow = c(1, 1))
 
+# EDF table for ALL smooth terms (incl. the 2D spatial spline)
 d.table <- as.data.frame(summary(gam.main)$s.table) %>% round(3)
-kable(d.table, booktabs = TRUE, caption = "Smooth Terms: Estimated Degrees of Freedom (EDF)") %>%
+kable(d.table, booktabs = TRUE,
+      caption = "Smooth Terms: Estimated Degrees of Freedom (EDF)") %>%
   kable_styling() %>%
-  footnote(general= paste0("R-squared: ", round(summary(gam.main)$r.sq,  3), "\n",
-           "Deviance explained: ", round(summary(gam.main)$dev.expl, 3), "\n"),
+  footnote(general = paste0("R-squared: ", round(summary(gam.main)$r.sq, 3),
+                            ", Deviance explained: ", round(summary(gam.main)$dev.expl, 3)),
            general_title = "")
 ```
+
+
+
 
 ```{r gam_lm_benchmark, Lead Davide, out.width="80%"}
 # Fair LM benchmark (same target, same training data)

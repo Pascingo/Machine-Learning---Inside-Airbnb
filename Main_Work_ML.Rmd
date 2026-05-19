@@ -40,11 +40,13 @@ Tasks ab 18.05:
 - 2.0 Output --> drin lassen wenn ja verschönern. (TIMON) *erledigt* 
 - 4.2 NA-Check irgendwie noch was dazu schreiben (TIMON) 
 - 7.3 Grafiken Kleiner machen. *erledigt* 
-davide- 9.3 Modelouput schön machen, bzw den Output oben entfernen. 
-davide - 10.3 Train und Test irgedwo sauber verpacken. nicht einfach so einblenden. davide- 10.3 Output verschönern kable statt cat *erledigt von Timon* --\> bitte kontrollieren ob das so passt oder ob was fehlt. 
-davide- 10.3 machen diese 4 Visualisierungen wirklich Sinn? -\> Lat/Long sieht aus wie LSD-Fiebertraum 
+davide- 9.3 Modelouput schön machen, bzw den Output oben entfernen. --> **Check ich nicht ganz - timon gefragt**
+davide - 10.3 Train und Test irgedwo sauber verpacken. nicht einfach so einblenden. *erledigt Davide - kable gemacht* --> passt so? 
+davide- 10.3 Output verschönern kable statt cat *erledigt von Timon* --\> bitte kontrollieren ob das so passt oder ob was fehlt. 
+davide- 10.3 machen diese 4 Visualisierungen wirklich Sinn? -\> Lat/Long sieht aus wie LSD-Fiebertraum das ist halt der Kanton Vaude. **dort zu wohnen ist ein Fiebertraum i guess. **
 davide- 10.3 einzelne kleine R-Outputs in eine Tabelle und zusammen darstellen. kable statt cat *einen Teil erledigt von Timon* 
-davide- 10.4.1 die einzelnen Outputs in eine Tablle bringen und zusammen darstellen pascal- 12.3 Output schöner darstellen (kabel) done 
+davide- 10.3.1 die einzelnen Outputs in eine Tablle bringen und zusammen darstellen  *erledigt Davide*
+pascal- 12.3 Output schöner darstellen (kabel) done 
 pascal- 12 keine einzige Darstellung beim ANN! IMPORTANT (Kable erstellt, keine Ahnung wegen Plot, AI gibt auch keine Auskunft)
 
 ToDos backlog: - R-chunks sauber personen zuweisen
@@ -58,19 +60,34 @@ ToDos backlog: - R-chunks sauber personen zuweisen
 
 OFFENE FRAGEN:
 
--   3.6 brauchen wir den zweiten Plot?
+-   3.6 brauchen wir den zweiten Plot? --> Davide: nöö, wir gehen fast nie auf die Region ein tbh. 
 
--   3.5 wie können wir die überlappungen lösen?
+-   3.5 wie können wir die überlappungen lösen? --> Davide:
+A. Löschen
+B. in den Appendix runter
+C. auf zwei reduzieren 2/2 Plots total statt 5 aufs mal...
 
--   3.10 brauchen wir das?
+-   3.7 fett unnütz mit den 40 betten und 14 WCs. couldnt care less und man sieht den einen Ausreisser nichtmal auf dem Plot 
+Davide: 
+löschen...
+
+-   3.10 brauchen wir das? Davide: jup, find ich easy aber auch Appendix tauglich.
 
 -   4 & 4.1 zeigen die nicht das gleiche?
+Davide: 
+Empfehlung nur ein 4er Kapitel machen namens DataQuality und keine Subchapters wie 4.1, 4.2, 4.X
+und ja es zeigt das gleiche (einmal count und einmal %)
 
 -   5.4 kann man nicht die Tabelle weglassen und die relevanten Werte
     einfach nennen im Text? so iet es ein Bisschen doppelt.
+Davide: bin ich einverstanden. 
 
--   generell Grafiken auf eine Grösse fixieren --\> Darstellung ist auf
-    100%, Darstellung kann mehr als 1 Plot haben.
+-   generell Grafiken auf eine Grösse fixieren Darstellung ist auf 100%, Darstellung kann mehr als 1 Plot haben.
+Davide: ich glaub das hat sich bereits geklärt mit width.out = 80% in jedem R chunk
+
+
+
+************
 
 Infos zu bedenken: ABGABEDATUM: 12 Juni
 

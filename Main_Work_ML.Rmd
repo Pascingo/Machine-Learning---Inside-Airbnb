@@ -33,8 +33,8 @@ caption {
     }
 ```
 Tasks ab 18.05:
--   Formatting conventions übernehmen (Timon)
--   Variabel-"call" kontrollieren. (Timon)
+-   Formatting conventions übernehmen (Timon) *erledigt*
+-   Variabel-"call" kontrollieren. (Timon) *erledigt*
 -   beautifying HTML-Doc: (jeder seine Modelle, TIMON macht alles vor den Modellen)
       - 2.0 Output --> drin lassen wenn ja verschönern. (TIMON) *erledigt*
       - 4.2 NA-Check irgendwie noch was dazu schreiben (TIMON)
@@ -837,11 +837,10 @@ With this initial model, we aim to examine the first hypothesis if host-centered
 
 For this, we use the *review_scores_rating*. We also include the factor
 *host_is_superhost* to distinguish between the two groups. We measure
-willingness to pay here using the effective price of the rental
+willingness to pay here using the *price* of the rental
 property. Additionally, we introduce two control variables. First, the
-size of the rental property, as this obviously influences the rental
-price, and second, the type of room. This also significantly influences
-the price.
+size of the rental property with the help of *accommodates*, as this obviously influences the rental
+price, and second, *room_type*. The latter we include since we can assume that a hotel room has different services than a room of a private lessor and that the venues need to priced differently. 
 
 A linear model allows us to analyze multiple variables and their effect
 on a dependent variable. It is important that the dependent variable be
@@ -910,9 +909,9 @@ p.lm_controlled <-ggplot(d.airbnb_listings_feat,
 
 ## Interpretation
 
-The model shows that both the hosts’ rating and their Superhost status
-have a significant influence. The rating has a positive effect of
-*`r round(lm.main$coefficients[2], digits = 3)`*. In contrast, Superhost
+The model shows that both the hosts’ rating and their superhost status
+have a significant influence. The *review_scores_rating* has a positive effect of
+*`r round(lm.main$coefficients[2], digits = 3)`*. In contrast, *is_superhost*
 status has a negative effect of
 *`r round(lm.main$coefficients[3], digits = 3)`*. The assumption that
 tenants are willing to pay more when renting from a Superhost therefore
@@ -929,7 +928,7 @@ Through this analysis we can also answer the first hypothesis. Host centered Var
 
 ## Limitations
 A linear model often comes with certain limitations, as the degree of complexity is limited. We can only observe linear effects. We can assume that capacity is not a linear effect, since the price of a location can vary depending on whether it accommodates 3 or 4 people, whereas the effect of one fewer person is less significant if the location accommodates 15 or 16 people. A GAM model could reveal such effects. 
-Another limitation is the absence of the “location” variable. While we could include latitude and longitude, these variables alone do not have a significant impact on price. For example, we would need the distance to the nearest city center to measure this accurately. 
+Another limitation is the absence of a “location” variable. While we could include latitude and longitude, these variables alone do not have a significant impact on price. For example, we would need the distance to the nearest city center to measure this accurately. 
 
 *General limitations that apply to every model in this study are summarised in chapter 14.*
 
@@ -1378,7 +1377,7 @@ The GAM is the strongest model in this study, but two GAM-specific points are wo
 
 ## Theory
 A Support Vector Machine separates classes by drawing the widest possible margin between them. We use a radial kernel. This allows us to define the hyperplane more precisely. As a result, with SVM we do not obtain a coefficient that can be interpreted, but rather a model that enables us to predict which group an observation will fall into. 
-In the following model, we apply exactly that. We look at the traffic light groups defined in the GAM and try to predict, using the available variables, which group a location will fall into. By splitting the data into a training and test dataset, we enable ourselves to test the model, with the drawback that we lose a portion of the training data. 
+In the following model, we apply exactly that. We look at the traffic light groups defined in the `GAM.main` and try to predict, using the available variables, which group a location will fall into. By splitting the data into a training and test dataset, we enable ourselves to test the model, with the drawback that we lose a portion of the training data. 
 
 With the SVM, we are not testing any of the hypotheses, but rather the second research question: to what extent can we predict whether the prices of a rental property are justified? The GAM generates a fair market price for each rental property. The SVM, on the other hand, examines whether the current rental prices are justified. 
 

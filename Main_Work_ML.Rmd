@@ -24,13 +24,21 @@ editor_options:
 knitr::opts_chunk$set(echo = TRUE, cache = TRUE, comment = NA, warning = FALSE, message=FALSE)
 
 ```
+
+```{css, echo = FALSE}
+caption {
+      color: black;
+      font-weight: bold;
+      font-size: 1.0em;
+    }
+```
 Tasks ab 18.05:
 -   Formatting conventions übernehmen (Timon)
 -   Variabel-"call" kontrollieren. (Timon)
 -   beautifying HTML-Doc: (jeder seine Modelle, TIMON macht alles vor den Modellen)
-      - 2.0 Output --> drin lassen wenn ja verschönern. (TIMON)
+      - 2.0 Output --> drin lassen wenn ja verschönern. (TIMON) *erledigt*
       - 4.2 NA-Check irgendwie noch was dazu schreiben (TIMON)
-      - 7.3 Grafiken Kleiner machen. 
+      - 7.3 Grafiken Kleiner machen. *erledigt*
       davide- 9.3 Modelouput schön machen, bzw den Output oben entfernen. 
       davide - 10.3 Train und Test irgedwo sauber verpacken. nicht einfach so einblenden. 
       davide- 10.3 Output verschönern kable statt cat
@@ -172,7 +180,7 @@ the size of the rental property.
 # Data Preparation
 
 
-In a first step we need to load the relevant packages. following that we load all the datasets that are relevant to us. 
+In a first step we need to load the relevant packages. Following that we load all the datasets that are relevant to us. 
 
 
 ```{r Libraries, results = "hide", echo=TRUE, warning=FALSE}
@@ -562,7 +570,8 @@ na_summary <- d.airbnb_listings_feat %>%
   as.data.frame() %>%
   rename(Missing_Values = V1)
 
-kable(na_summary, caption = "Count of Missing Values per Variable")
+kable(na_summary, caption = "Count of Missing Values per Variable", booktabs = TRUE) %>%
+  kable_styling()
 ```
 
 # Exploratory Data Analysis
@@ -853,7 +862,7 @@ lm.main <- lm(log(price) ~
               data = d.airbnb_listings_feat)
 
 tidy(lm.main) %>%
-  kable(digits = 2, booktabs = TRUE, caption = "<span style='color:black; font-weight:bold;'>SVM Model Overview</span>") %>%
+  kable(digits = 2, booktabs = TRUE, caption = "SVM Model Overview") %>%
   kable_styling()
 
 
@@ -1455,7 +1464,7 @@ svm.conf_matrix <- table(Predicted = svm.test_pred, Actual = d.svm_test$traffic_
 svm_accuracy <- sum(diag(svm.conf_matrix)) / sum(svm.conf_matrix)
 
 
-kable(svm.conf_matrix, booktabs = TRUE, escape = FALSE, caption = "<span style='color:black; font-weight:bold;'>SVM Confusion Matrix</span>", align = "lccc") %>%
+kable(svm.conf_matrix, booktabs = TRUE, escape = FALSE, caption = "SVM Confusion Matrix", align = "lccc") %>%
   kable_styling(bootstrap_options = c("bordered")) %>%
   column_spec(2, background = c("deepskyblue", "maroon1", "maroon1")) %>%
   column_spec(3, background = c("maroon1", "deepskyblue", "maroon1")) %>%

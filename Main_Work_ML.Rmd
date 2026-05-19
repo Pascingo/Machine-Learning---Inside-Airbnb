@@ -37,7 +37,7 @@ Tasks ab 18.05:
 -   Variabel-"call" kontrollieren. (Timon) *erledigt*
 -   beautifying HTML-Doc: (jeder seine Modelle, TIMON macht alles vor den Modellen)
       - 2.0 Output --> drin lassen wenn ja verschönern. (TIMON) *erledigt*
-      - 4.2 NA-Check irgendwie noch was dazu schreiben (TIMON)
+      - 4.2 NA-Check irgendwie noch was dazu schreiben (TIMON) *?relevant?*
       - 7.3 Grafiken Kleiner machen. *erledigt*
       davide- 9.3 Modelouput schön machen, bzw den Output oben entfernen. 
       davide - 10.3 Train und Test irgedwo sauber verpacken. nicht einfach so einblenden. 
@@ -65,7 +65,8 @@ OFFENE FRAGEN:
 - 3.5 wie können wir die überlappungen lösen?
 - 3.10 brauchen wir das?
 - 4 & 4.1 zeigen die nicht das gleiche?
-- 5.4 kann man nicht die Tabelle weglassen und die relevanten Werte einfach nennen im Text? so iet es ein Bisschen doppelt. 
+- 5.4 kann man nicht die Tabelle weglassen und die relevanten Werte einfach nennen im Text? so iet es ein Bisschen doppelt.
+- 4.2 sind das wirklich die Wichtigen Variablen? ist dieses Kapitel relevant? wir schauen uns ja die ganzen NA's oben scho an. 
 
 
 

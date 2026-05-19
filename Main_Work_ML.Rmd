@@ -1209,8 +1209,6 @@ glm.binomial <- glm(price_high ~ host_is_superhost +
                                  review_scores_rating,
                     data   = d.airbnb_listings_feat,
                     family = binomial(link = "logit"))
-
-summary(glm.binomial)
 ```
 
 ```{r glm_binomial_results, Lead Davide, out.width="80%"}
@@ -1349,7 +1347,12 @@ train.idx <- sample(seq_len(n), size = floor(0.8 * n))
 d.train <- d.airbnb_listings_feat_gam[ train.idx, ]
 d.test  <- d.airbnb_listings_feat_gam[-train.idx, ]
 
-cat("Train:", nrow(d.train), " | Test:", nrow(d.test), "\n")
+tibble(
+  Set = c("Training (80%)", "Test (20%)"),
+  Observations = c(nrow(d.train), nrow(d.test))
+) %>%
+  kable(booktabs = TRUE, caption = "Dataset Split") %>%
+  kable_styling()
 ```
 
 We model `log(price)` rather than the raw price. The distribution is
@@ -1371,10 +1374,8 @@ gam.main <- gam(log(price) ~
                 method = "REML",
                 data   = d.train)
 
-summary(gam.main)
-
-tidy(gam.main)%>%
-kable(booktabs = TRUE, caption = "Summary of GAM-Model") %>%
+tidy(gam.main) %>%
+  kable(booktabs = TRUE, digits = 3, caption = "GAM: Parametric Coefficients") %>%
   kable_styling()
 ```
 
@@ -1405,9 +1406,15 @@ lm.gam_comparison <- lm(log(price) ~ accommodates + review_scores_rating +
                           room_type + host_is_superhost + bathrooms,
                         data = d.train)
 
-cat("LM  R²:", round(summary(lm.gam_comparison)$r.squared, 3), "\n")
-cat("GAM R²:", round(summary(gam.main)$r.sq, 3), "\n")
-AIC(lm.gam_comparison, gam.main)
+aic_vals <- AIC(lm.gam_comparison, gam.main)
+tibble(
+  Model = c("LM", "GAM"),
+  `R²` = c(round(summary(lm.gam_comparison)$r.squared, 3),
+           round(summary(gam.main)$r.sq, 3)),
+  AIC = round(aic_vals$AIC, 1)
+) %>%
+  kable(booktabs = TRUE, caption = "Model Comparison: LM vs GAM (same data, same target)") %>%
+  kable_styling()
 ```
 
 ### Traffic Light Map
@@ -1444,9 +1451,17 @@ d.test$pct_diff       <- (d.test$price  - d.test$fitted_price)  / d.test$fitted_
 d.train$traffic_light <- make.traffic_light(d.train$price, d.train$fitted_price)
 d.test$traffic_light  <- make.traffic_light(d.test$price,  d.test$fitted_price)
 
-# Sanity check: distribution should look similar across train and test
-cat("\nTrain:\n"); print(prop.table(table(d.train$traffic_light)))
-cat("\nTest:\n");  print(prop.table(table(d.test$traffic_light)))
+data.frame(
+  Set = c("Training", "Test"),
+  Underpriced = c(round(mean(d.train$traffic_light == "Underpriced") * 100, 1),
+                  round(mean(d.test$traffic_light  == "Underpriced") * 100, 1)),
+  Fair        = c(round(mean(d.train$traffic_light == "Fair Price")  * 100, 1),
+                  round(mean(d.test$traffic_light  == "Fair Price")  * 100, 1)),
+  Overpriced  = c(round(mean(d.train$traffic_light == "Overpriced")  * 100, 1),
+                  round(mean(d.test$traffic_light  == "Overpriced")  * 100, 1))
+) %>%
+  kable(booktabs = TRUE, caption = "Traffic Light Distribution (%): Train vs Test") %>%
+  kable_styling()
 ```
 
 ### Interactive Map of Vaud

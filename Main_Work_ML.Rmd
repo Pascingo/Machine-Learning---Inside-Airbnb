@@ -41,9 +41,10 @@ Tasks ab 18.05:
       - 7.3 Grafiken Kleiner machen. *erledigt*
       davide- 9.3 Modelouput schön machen, bzw den Output oben entfernen. 
       davide - 10.3 Train und Test irgedwo sauber verpacken. nicht einfach so einblenden. 
-      davide- 10.3 Output verschönern kable statt cat
+      davide- 10.3 Output verschönern kable statt cat *erledigt von Timon* 
+                                                      --> bitte kontrollieren ob das so passt oder ob was fehlt. 
       davide- 10.3 machen diese 4 Visualisierungen wirklich Sinn? -> Lat/Long sieht aus wie LSD-Fiebertraum
-      davide- 10.3 einzelne kleine R-Outputs in eine Tabelle und zusammen darstellen. kable statt cat
+      davide- 10.3 einzelne kleine R-Outputs in eine Tabelle und zusammen darstellen. kable statt cat *einen Teil erledigt von Timon*
       davide- 10.4.1 die einzelnen Outputs in eine Tablle bringen und zusammen darstellen
       pascal- 12.3 Output schöner darstellen (kabel) done
       pascal- 12 keine einzige Darstellung beim ANN! IMPORTANT (Kable erstellt, keine Ahnung wegen Plot, AI gibt auch keine Auskunft)
@@ -1245,6 +1246,10 @@ gam.main <- gam(log(price) ~
                 data   = d.train)
 
 summary(gam.main)
+
+tidy(gam.main)%>%
+kable(booktabs = TRUE, caption = "Summary of GAM-Model") %>%
+  kable_styling()
 ```
 
 ## Visualisation
@@ -1256,10 +1261,14 @@ plot(gam.main, pages = 1, shade = TRUE,
      col = "firebrick1", shade.col = "lightblue", seWithMean = TRUE)
 
 d.table <- as.data.frame(summary(gam.main)$s.table) %>% round(3)
-kable(d.table, caption = "Smooth Terms: Estimated Degrees of Freedom (EDF)")
+kable(d.table, booktabs = TRUE, caption = "Smooth Terms: Estimated Degrees of Freedom (EDF)") %>%
+  kable_styling() %>%
+  footnote(general= paste0("R-squared: ", round(summary(gam.main)$r.sq,  3), "\n",
+           "Deviance explained: ", round(summary(gam.main)$dev.expl, 3), "\n"),
+           general_title = "")
 
-cat("R-squared:         ", round(summary(gam.main)$r.sq,  3), "\n")
-cat("Deviance explained:", round(summary(gam.main)$dev.expl, 3), "\n")
+#cat("R-squared:         ", round(summary(gam.main)$r.sq,  3), "\n")
+#cat("Deviance explained:", round(summary(gam.main)$dev.expl, 3), "\n")
 ```
 
 ```{r gam_lm_benchmark, Lead Davide, out.width="80%"}
@@ -1377,7 +1386,7 @@ The GAM is the strongest model in this study, but two GAM-specific points are wo
 
 ## Theory
 A Support Vector Machine separates classes by drawing the widest possible margin between them. We use a radial kernel. This allows us to define the hyperplane more precisely. As a result, with SVM we do not obtain a coefficient that can be interpreted, but rather a model that enables us to predict which group an observation will fall into. 
-In the following model, we apply exactly that. We look at the traffic light groups defined in the `GAM.main` and try to predict, using the available variables, which group a location will fall into. By splitting the data into a training and test dataset, we enable ourselves to test the model, with the drawback that we lose a portion of the training data. 
+In the following model, we apply exactly that. We look at the traffic light groups defined in the GAM-chapter and try to predict, using the available variables, which group a location will fall into. By splitting the data into a training and test dataset, we enable ourselves to test the model, with the drawback that we lose a portion of the training data. 
 
 With the SVM, we are not testing any of the hypotheses, but rather the second research question: to what extent can we predict whether the prices of a rental property are justified? The GAM generates a fair market price for each rental property. The SVM, on the other hand, examines whether the current rental prices are justified. 
 

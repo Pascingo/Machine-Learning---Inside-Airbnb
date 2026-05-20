@@ -32,28 +32,12 @@ caption {
       font-size: 1.0em;
     }
 ```
-<<<<<<< HEAD
-Tasks ab 18.05:
--   Formatting conventions übernehmen (Timon) *erledigt*
--   Variabel-"call" kontrollieren. (Timon) *erledigt*
--   beautifying HTML-Doc: (jeder seine Modelle, TIMON macht alles vor den Modellen)
-      - 2.0 Output --> drin lassen wenn ja verschönern. (TIMON) *erledigt*
-      - 4.2 NA-Check irgendwie noch was dazu schreiben (TIMON) *?relevant?*
-      - 7.3 Grafiken Kleiner machen. *erledigt*
-      davide- 9.3 Modelouput schön machen, bzw den Output oben entfernen. 
-      davide - 10.3 Train und Test irgedwo sauber verpacken. nicht einfach so einblenden. 
-      davide- 10.3 Output verschönern kable statt cat *erledigt von Timon* 
-                                                      --> bitte kontrollieren ob das so passt oder ob was fehlt. 
-      davide- 10.3 machen diese 4 Visualisierungen wirklich Sinn? -> Lat/Long sieht aus wie LSD-Fiebertraum
-      davide- 10.3 einzelne kleine R-Outputs in eine Tabelle und zusammen darstellen. kable statt cat *einen Teil erledigt von Timon*
-      davide- 10.4.1 die einzelnen Outputs in eine Tablle bringen und zusammen darstellen
-      pascal- 12.3 Output schöner darstellen (kabel) done
-      pascal- 12 keine einzige Darstellung beim ANN! IMPORTANT (Kable erstellt, keine Ahnung wegen Plot, AI gibt auch keine Auskunft)
-=======
+
 
 Tasks ab 18.05: 
 - Formatting conventions übernehmen (Timon) *erledigt* 
 - Variabel-"call" kontrollieren. (Timon) *erledigt* 
+
 - beautifying HTML-Doc: (jeder seine Modelle, TIMON macht alles vor den Modellen) 
 - 2.0 Output --> drin lassen wenn ja verschönern. (TIMON) *erledigt* 
 - 4.2 NA-Check irgendwie noch was dazu schreiben (TIMON) 
@@ -66,7 +50,13 @@ davide- 10.3 einzelne kleine R-Outputs in eine Tabelle und zusammen darstellen. 
 davide- 10.3.1 die einzelnen Outputs in eine Tablle bringen und zusammen darstellen  *erledigt Davide*
 pascal- 12.3 Output schöner darstellen (kabel) done 
 pascal- 12 keine einzige Darstellung beim ANN! IMPORTANT (Kable erstellt, keine Ahnung wegen Plot, AI gibt auch keine Auskunft)
->>>>>>> refs/remotes/origin/main
+
+Tasks Timon
+  - 10.3 kombinieren der beiden Tabellen als eine Tabelle mit den Datasetgrössen als Fussnote
+  - 10.3 kleiner Text zu der Model-Comparison?
+  - 
+
+
 
 ToDos backlog: - R-chunks sauber personen zuweisen
 
@@ -79,14 +69,6 @@ ToDos backlog: - R-chunks sauber personen zuweisen
 
 OFFENE FRAGEN:
 
-<<<<<<< HEAD
-- 3.6 brauchen wir den zweiten Plot?
-- 3.5 wie können wir die überlappungen lösen?
-- 3.10 brauchen wir das?
-- 4 & 4.1 zeigen die nicht das gleiche?
-- 5.4 kann man nicht die Tabelle weglassen und die relevanten Werte einfach nennen im Text? so iet es ein Bisschen doppelt.
-- 4.2 sind das wirklich die Wichtigen Variablen? ist dieses Kapitel relevant? wir schauen uns ja die ganzen NA's oben scho an. 
-=======
 -   3.6 brauchen wir den zweiten Plot? --> Davide: nöö, wir gehen fast nie auf die Region ein tbh. 
 
 -   3.5 wie können wir die überlappungen lösen? --> Davide:
@@ -111,11 +93,7 @@ Davide: bin ich einverstanden.
 
 -   generell Grafiken auf eine Grösse fixieren Darstellung ist auf 100%, Darstellung kann mehr als 1 Plot haben.
 Davide: ich glaub das hat sich bereits geklärt mit width.out = 80% in jedem R chunk
->>>>>>> refs/remotes/origin/main
 
-
-
-************
 
 Infos zu bedenken: ABGABEDATUM: 12 Juni
 
@@ -1070,7 +1048,7 @@ to the nearest city center to measure this accurately.
 *General limitations that apply to every model in this study are
 summarised in chapter 14.*
 
-# GLM Poisson
+# Generalized linear Model — Poisson
 
 ## Theory
 
@@ -1223,7 +1201,7 @@ a Negative Binomial model as an alternative method to handle
 overdispersion while retaining standard likelihood metrics for easier
 comparison.
 
-# GLM Binomial
+# Generalized linear model — Binomial
 
 ## Theory
 
@@ -1345,7 +1323,7 @@ work.
 -   **The cutoff moves with the market**. The median is just our
     sample's median. If the market shifts, so does it.
 
-# GAM
+# Generalized additive model
 
 ## Theory
 
@@ -1617,7 +1595,7 @@ points are worth keeping in mind:
     proximity to the lake cause higher prices, or just correlate with
     better properties?) it isn't.
 
-# SVM
+# Support vector machine
 
 ## Theory
 
@@ -1757,7 +1735,7 @@ location data. We suspect that at the very least, the distance to the
 nearest city center would have a significant impact on the accuracy of
 the estimates.
 
-# ANN
+# Artificial neural network
 
 ## Theory
 

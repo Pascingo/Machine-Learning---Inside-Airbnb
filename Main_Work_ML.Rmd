@@ -52,7 +52,8 @@ pascal- 12.3 Output schöner darstellen (kabel) done
 pascal- 12 keine einzige Darstellung beim ANN! IMPORTANT (Kable erstellt, keine Ahnung wegen Plot, AI gibt auch keine Auskunft)
 
 Tasks Timon
-  - 10.3 kombinieren der beiden Tabellen als eine Tabelle mit den Datasetgrössen als Fussnote
+  - 10.2 kombinieren der beiden Tabellen als eine Tabelle mit den Datasetgrössen als Fussnote
+        --> zur kontrolle an DAVIDE. danach die Tabelle oben löschen. 
   - 10.3 kleiner Text zu der Model-Comparison?
   - 
 
@@ -1399,7 +1400,10 @@ gam.main <- gam(log(price) ~
 
 tidy(gam.main) %>%
   kable(booktabs = TRUE, digits = 3, caption = "GAM: Parametric Coefficients") %>%
-  kable_styling()
+  kable_styling() %>%
+  footnote(general = paste0("Training data (80%): ", nrow(d.train), "\n", 
+                            "Test data (20%): ", nrow(d.test) ), 
+                            general_title = "Dataset split")
 ```
 
 ## Visualisation

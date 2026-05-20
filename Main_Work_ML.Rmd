@@ -40,7 +40,7 @@ Tasks ab 18.05:
 
 - beautifying HTML-Doc: (jeder seine Modelle, TIMON macht alles vor den Modellen) 
 - 2.0 Output --> drin lassen wenn ja verschönern. (TIMON) *erledigt* 
-- 4.2 NA-Check irgendwie noch was dazu schreiben (TIMON) 
+- 4.2 NA-Check irgendwie noch was dazu schreiben (TIMON) *erledigt*
 - 7.3 Grafiken Kleiner machen. *erledigt* 
 davide- 9.3 Modelouput schön machen, bzw den Output oben entfernen. --> **Check ich nicht ganz - timon gefragt**
 davide - 10.3 Train und Test irgedwo sauber verpacken. nicht einfach so einblenden. *erledigt Davide - kable gemacht* --> passt so? 
@@ -73,7 +73,7 @@ ToDos backlog: - R-chunks sauber personen zuweisen
 OFFENE FRAGEN:
 
 -   3.6 brauchen wir den zweiten Plot? --> Davide: nöö, wir gehen fast nie auf die Region ein tbh. 
-
+    *Timon hat diesen zweiten Plot durch einen der Roomtypes ersetzt*
 -   3.5 wie können wir die überlappungen lösen? --> Davide:
 A. Löschen
 B. in den Appendix runter
@@ -82,6 +82,7 @@ C. auf zwei reduzieren 2/2 Plots total statt 5 aufs mal...
 -   3.7 fett unnütz mit den 40 betten und 14 WCs. couldnt care less und man sieht den einen Ausreisser nichtmal auf dem Plot 
 Davide: 
 löschen...
+Timon: nicht löschen, wir sollen uns alle Variablen anschauen. Andere Lösung suchen. 
 
 -   3.10 brauchen wir das? Davide: jup, find ich easy aber auch Appendix tauglich.
 
@@ -89,6 +90,7 @@ löschen...
 Davide: 
 Empfehlung nur ein 4er Kapitel machen namens DataQuality und keine Subchapters wie 4.1, 4.2, 4.X
 und ja es zeigt das gleiche (einmal count und einmal %)
+    *wurde von TIMON so erledigt* es wurden sowohl die zweite Grafik und die Tabelle entfernt und die Texte so angepasst, dass die Infomrationen immernoch vorhanden sind. 
 
 -   5.4 kann man nicht die Tabelle weglassen und die relevanten Werte
     einfach nennen im Text? so iet es ein Bisschen doppelt.
@@ -583,48 +585,12 @@ the models that need a rating, rather than imputing.
 gg_miss_var(d.airbnb_listings_feat)
 ```
 
-## Missing Value Patterns
-
-```{r, out.width="80%"}
-# Calculate percentage of missing values per column
-missing_data <- d.airbnb_listings_feat %>%
-  summarise(across(everything(), ~ mean(is.na(.)) * 100)) %>%
-  pivot_longer(everything(), names_to = "Variable", values_to = "Missing_Percentage") %>%
-  filter(Missing_Percentage > 0) %>%
-  arrange(desc(Missing_Percentage))
-
-# Plot missing values
-p.missing_values <- ggplot(missing_data, aes(x = reorder(Variable, Missing_Percentage), y = Missing_Percentage)) +
-  geom_bar(stat = "identity", fill = "deepskyblue") +
-  coord_flip() +
-  labs(title = "Percentage of Missing Values per Variable",
-       x = "Variables",
-       y = "% Missing")
-p.missing_values
-```
-
-The plot below summarises the share of missing values per variable.
-Anything above \~10% gets explicit handling further down the pipeline.
-
-## NA Check on Key Variables
+The plot above summarises the share of missing values per variable.
+Anything above 10% gets explicit handling further down the pipeline.
 
 A quick count of NAs on the variables we use most often in the models
-below. `lm()` and `svm()` silently drop rows with missing values, which
-can quietly shrink the training set — this check makes sure we know
-exactly how much.
-
-```{r, out.width="80%"}
-# Count the number of NAs for each key column in your dataset
-na_summary <- d.airbnb_listings_feat %>%
-  select(price, log_price, accommodates, number_of_reviews, host_is_superhost) %>%
-  summarise(across(everything(), ~ sum(is.na(.)))) %>%
-  t() %>% # Transpose for better readability
-  as.data.frame() %>%
-  rename(Missing_Values = V1)
-
-kable(na_summary, caption = "Count of Missing Values per Variable", booktabs = TRUE) %>%
-  kable_styling()
-```
+below. `lm.main` and `svm.main` silently drop rows with missing values, which
+can quietly shrink the training set. Therefore we have to have an explicit look at the Variables *price*, *log_price*, *accomodates*, *number_of_reviews* and *host_is_superhost*. out of the plot above we can extract that there are no missing values in those variables. 
 
 # Exploratory Data Analysis
 

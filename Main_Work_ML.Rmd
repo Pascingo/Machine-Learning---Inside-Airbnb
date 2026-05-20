@@ -1052,8 +1052,9 @@ combined_models %>%
         booktabs = TRUE, 
         caption = paste0("Comparing Models (Dispersion Ratio: ", round(dispersion_ratio, 2), ")")) %>%
   kable_styling(font_size = 8, latex_options = c("scale_down", "hold_position")) %>%
-  collapse_rows(columns = 1, valign = "top")
-
+  collapse_rows(columns = 1, valign = "top") %>%
+  group_rows("Model A", 1, 8) %>%
+  group_rows("Model B", 9, 16)
 ```
 
 ## Crossvalidation

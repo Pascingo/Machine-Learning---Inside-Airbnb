@@ -1018,8 +1018,6 @@ use a quasi-poisson model that can handle this kind of data much better.
 First we fit a normal poisson-family, then check for overdispersion, and
 if necessary we use a quasi-poisson-family.
 
-## Link to Hypothesis
-
 This is the only model in our set that targets occupancy rather than
 price. Both hypotheses are in scope — host-centered indicators (H1) and
 structural indicators (H2) can both drive how often a listing gets
@@ -1704,8 +1702,6 @@ powerful but opaque. We use the ANN here as a flexibility check: if the
 much more interpretable GAM already captures most of the signal, the ANN
 should not gain much from being more flexible. If it does, we are
 leaving structure on the table.
-
-## Link to Hypothesis
 
 We use the ANN to revisit H1 from a different angle. The Naive ANN tests
 whether host-centered variables alone (*review score*, *review count*,

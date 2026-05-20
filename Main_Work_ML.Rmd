@@ -55,7 +55,8 @@ Tasks Timon
   - 10.2 kombinieren der beiden Tabellen als eine Tabelle mit den Datasetgrössen als Fussnote
         --> zur kontrolle an DAVIDE. danach die Tabelle oben löschen. 
   - 10.3 kleiner Text zu der Model-Comparison?
-  - 
+  - 12.3 zwei barplots statt den Tabellen eingefügt. diese kann man dann allenfalls nebeneinander nehmen um darzustellen. ist ein bisschen besser als Tabellen. 
+        --> Kontrolle PASCAL, dann Tabellen löschen. 
 
 
 
@@ -1763,7 +1764,7 @@ stronger test than just plotting raw medians.
 
 ## Model
 
-```{r, Basic ANN Lead Pascal, out.width="80%"}
+```{r Basic ANN Lead Pascal, out.width="80%"}
 # Selecting basic variables. We omit missing values for this simplified approach.
 d.ann_naive <- d.airbnb_listings_feat %>%
   select(
@@ -1837,6 +1838,17 @@ kable(results.ann_basic,
                 position = "center") %>%
   row_spec(0, bold = TRUE)
 
+```
+```{r}
+print(ggplot(results.ann_basic, aes(Host_Type, Predicted_Price_CHF)) +
+  geom_col(fill = "deepskyblue", width = 0.5) + 
+  geom_text(aes(label = round(Predicted_Price_CHF, 1)),
+            vjust = -0.5) +
+  labs(
+    title = "ANN predicted prices by host type",
+    x = " ",
+    y = "Predicted Price (CHF)" ) 
+)
 
 ```
 
@@ -1912,6 +1924,20 @@ kable(results.df_exp,
                 full_width = FALSE, 
                 position = "center") %>%
   row_spec(0, bold = TRUE)
+
+```
+
+```{r}
+ggplot(results.df_exp, aes(Host_Type, Predicted_Price_CHF)) +
+  geom_col(fill = "deepskyblue", width = 0.5) + 
+  geom_text(aes(label = round(Predicted_Price_CHF, 1)),
+            vjust = -0.5) +
+  labs(
+    title = "ANN predicted prices by host type",
+    x = " ",
+    y = "Predicted Price (CHF)" ) 
+  
+
 ```
 
 ```{r}

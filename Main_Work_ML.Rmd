@@ -74,6 +74,7 @@ OFFENE FRAGEN:
 
 -   3.6 brauchen wir den zweiten Plot? --> Davide: nöö, wir gehen fast nie auf die Region ein tbh. 
     *Timon hat diesen zweiten Plot durch einen der Roomtypes ersetzt*
+    *habe gerade noch gesehen, dass wir diesen Plot aber auchnoch bei 3.4 drin haben*
 -   3.5 wie können wir die überlappungen lösen? --> Davide:
 A. Löschen
 B. in den Appendix runter

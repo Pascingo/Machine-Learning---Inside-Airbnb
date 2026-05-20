@@ -1839,18 +1839,6 @@ kable(results.ann_basic,
   row_spec(0, bold = TRUE)
 
 ```
-```{r}
-print(ggplot(results.ann_basic, aes(Host_Type, Predicted_Price_CHF)) +
-  geom_col(fill = "deepskyblue", width = 0.5) + 
-  geom_text(aes(label = round(Predicted_Price_CHF, 1)),
-            vjust = -0.5) +
-  labs(
-    title = "ANN predicted prices by host type",
-    x = " ",
-    y = "Predicted Price (CHF)" ) 
-)
-
-```
 
 ```{r, Expanded ANN, Lead Pascal, out.width="80%"}
 
@@ -1928,16 +1916,27 @@ kable(results.df_exp,
 ```
 
 ```{r}
-ggplot(results.df_exp, aes(Host_Type, Predicted_Price_CHF)) +
+p.ANN_basic <- ggplot(results.ann_basic, aes(Host_Type, Predicted_Price_CHF)) +
   geom_col(fill = "deepskyblue", width = 0.5) + 
-  geom_text(aes(label = round(Predicted_Price_CHF, 1)),
-            vjust = -0.5) +
+  geom_text(aes(label = round(Predicted_Price_CHF, 2)),
+            vjust = 2) +
   labs(
     title = "ANN predicted prices by host type",
+    subtitle = "Naive Model", 
+    x = " ",
+    y = "Predicted Price (CHF)" ) 
+
+p.ANN_complex <- ggplot(results.df_exp, aes(Host_Type, Predicted_Price_CHF)) +
+  geom_col(fill = "deepskyblue", width = 0.5) + 
+  geom_text(aes(label = round(Predicted_Price_CHF, 2)),
+            vjust = 2) +
+  labs(
+    title = "ANN predicted prices by host type",
+    subtitle = "Complex model", 
     x = " ",
     y = "Predicted Price (CHF)" ) 
   
-
+p.ANN_basic | p.ANN_complex
 ```
 
 ```{r}

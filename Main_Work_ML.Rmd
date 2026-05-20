@@ -90,7 +90,7 @@ Timon: nicht löschen, wir sollen uns alle Variablen anschauen. Andere Lösung s
 Davide: 
 Empfehlung nur ein 4er Kapitel machen namens DataQuality und keine Subchapters wie 4.1, 4.2, 4.X
 und ja es zeigt das gleiche (einmal count und einmal %)
-    *wurde von TIMON so erledigt* es wurden sowohl die zweite Grafik und die Tabelle entfernt und die Texte so angepasst, dass die Infomrationen immernoch vorhanden sind. 
+    *wurde von TIMON so erledigt es wurden sowohl die zweite Grafik und die Tabelle entfernt und die Texte so angepasst, dass die Infomrationen immernoch vorhanden sind.*
 
 -   5.4 kann man nicht die Tabelle weglassen und die relevanten Werte
     einfach nennen im Text? so iet es ein Bisschen doppelt.
@@ -676,18 +676,6 @@ variables relate to each other. This helps us identify multicollinearity
 (when two predictors provide the same information) and strong price
 drivers.
 
-```{r correlation matrix, out.width="80%"}
-# Select relevant numerical variables (drop NAs just for the correlation calculation)
-cor_data <- d.airbnb_listings_feat %>%
-  select(log_price, accommodates, number_of_reviews) %>%
-  drop_na()
-
-# Calculate the correlation matrix
-cor_matrix <- cor(cor_data)
-
-# Render a nice table for your RMarkdown document
-kable(round(cor_matrix, 2), caption = "Correlation Matrix of Key Numerical Drivers")
-```
 
 ```{r correlation_heatmap, out.width="80%", fig.show='hold'}
 # Select all numerical variables, drop binaries we already analysed separately

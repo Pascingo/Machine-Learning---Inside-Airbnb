@@ -1177,8 +1177,6 @@ don't confuse host effects with listing characteristics.
 
 ## Model
 
-Feature Engeneering
-
 ```{r glm_binomial_extended, Lead Davide, out.width="80%"}
 # Predict the probability that a listing is priced above the market median
 # We control for the most obvious price drivers so the host coefficients can be read cleanly

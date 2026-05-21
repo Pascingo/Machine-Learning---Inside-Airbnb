@@ -2104,7 +2104,7 @@ much effort actually goes into data cleaning and prepping before you can
 even start modeling. I personally focused on building the GLM-Poisson
 and ANN models, and trying to get them to perform well on real, messy
 data required a lot more critical thinking and trial-and-error than our
-standard assignments.
+standard assignments in class.
 
 Since we split up the workload, I didn't code every single model myself.
 Instead, my role for the LM, GLM-Binomial, GAM, and SVM models was to

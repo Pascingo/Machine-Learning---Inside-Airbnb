@@ -42,8 +42,9 @@ ToDos backlog:
 
 TIMON:
 -   Cap UTD: Properties and Roomtype: Room Type mehrfach drin, löschen. *done*
--   Finalkontrolle Farbe
+-   Finalkontrolle Farbe *done*
 -   NA-Plot brucht noch einen Titel + saubere x-Achsenbeschriftung
+-   8.2 Model A in Model poisson oder GLM poisson anpassen. 
 
 DAVIDE:
 -   GAM hat viele Outputs hardcoded in Interpretation, mit `` coden?

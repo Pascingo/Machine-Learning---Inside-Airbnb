@@ -43,7 +43,7 @@ ToDos backlog:
 TIMON:
 -   Cap UTD: Properties and Roomtype: Room Type mehrfach drin, löschen. *done*
 -   Finalkontrolle Farbe *done*
--   NA-Plot brucht noch einen Titel + saubere x-Achsenbeschriftung
+-   NA-Plot brucht noch einen Titel + saubere x-Achsenbeschriftung *done*
 -   8.2 Model A in Model poisson oder GLM poisson anpassen. 
 
 DAVIDE:
@@ -495,7 +495,8 @@ artificially shrink variance. We therefore drop these observations from
 the models that need a rating, rather than imputing.
 
 ```{r,  out.width="80%"}
-gg_miss_var(d.airbnb_listings_feat)
+gg_miss_var(d.airbnb_listings_feat) +
+  labs(title = "Count of NA per Variable", y = " ") 
 ```
 
 The plot above summarises the share of missing values per variable.

@@ -82,7 +82,7 @@ to the Canton of Vaud to capture regional economic effects.
 
 Several questions can be derived from the business case. These questions
 are intended to help us examine pricing dynamics and facilitate the
-development of a pricing strategy for Airbnb.
+development of a pricing strategy for Airbnb-Hosts.
 
 -   RQ1 - First, **we need to determine which factors influence guests’
     willingness to pay**. Furthermore, the nature of this influence is,
@@ -196,7 +196,7 @@ will use to run all subsequent models.
 Subsequently, we calculated several additional features to include them
 as permanent columns in the dataset, ensuring they do not have to be
 recomputed for each analysis. These include: the log-transformed
-price—as price data is typically heavily right-skewed—the price per
+price, as price data is typically heavily right-skewed and thus not suitable for Gaussian Models, the price per
 guest (total price divided by the number of guests accommodated), a
 boolean indicator for high demand, and a binary variable identifying
 whether the price exceeds the median.
@@ -218,19 +218,19 @@ structured e.g. with distributions, variable types, and edge cases.
 Airbnb already knows this data well, so we keep the commentary short and
 focus on what actually matters for the models that follow.
 
-During our exploratory data analysis, we identified one 'Private room'
+During our exploratory data analysis, we identified one *Private room*
 listing with an unrealistically high price of 2'147'483'647 CHF. We
 excluded this single observation from our dataset as it is an extreme
 outlier that does not reflect the true market conditions and would
 negatively skew our predictive models.
 
 ```{r}
-# This keeps everything except the row that is a Private room and costs more than 5000
+# This keeps everything except the row that is a Private room and costs more than 100000
 d.airbnb_listings_feat <- d.airbnb_listings_feat %>%
   filter(!(room_type == "Private room" & price > 100000))
 ```
 
-in addition to the one outlier we wanted to remove one NA specifically
+in addition to the one outlier we wanted to remove one NA specifically, as this should be a Boolean.
 
 ```{r filter NA in ProfilePic}
 d.airbnb_listings_feat <- d.airbnb_listings_feat %>%
@@ -363,12 +363,12 @@ p.verified <- ggplot(d.airbnb_listings_feat %>% filter(!is.na(host_identity_veri
 ```
 
 Hosts in Vaud are highly responsive and reliable: most reply within an
-hour, response and acceptance rates pile up at 100%, and nearly everyone
+hour, response and acceptance rates add up at 100%, and nearly everyone
 has a profile picture and verified identity. The downside for modelling:
 these variables show very little variation, so they probably won't carry
 much weight as predictors.
 
-## Property and Room Type
+## Property Types
 
 ```{r, fig.show='hold', out.width="80%"}
 p.prop <- d.airbnb_listings_feat %>%
@@ -385,7 +385,7 @@ p.prop
 
 Entire rental units dominate the property mix, followed by private rooms
 in rental units. Specialty types like chalets and villas are present but
-rare. In Addition we can see that most Venues are entire units. The Variables seem to be congruent. 
+rare and thus not represented in the plot. 
 
 ## Furnishing
 
@@ -407,7 +407,7 @@ p.baths | p.beds
 
 Bathroom and bed counts cluster at the low end as expected. The bed
 distribution has a few extreme outliers (40+ beds), which could be large
-hostels or dormitories. We checked a handful manually but didn't verify
+hostels or dormitories. We checked a few manually but didn't verify
 each one, so they remain in the data as potential noise.
 
 ## Utilisation
@@ -460,8 +460,8 @@ p.demand | p.price_high
 High demand is heavily imbalanced: very few listings cross our
 threshold. Accuracy would be a misleading metric for this target, so for
 classification on it we'd lean on F1 and precision-recall instead. High
-price is balanced by design — we split at the median, so both classes
-have equal weight. The GLM Binomial uses this target.
+price is balanced by design, we split at the median, so both classes
+have equal weight. The GLM with Family = Binomial uses this target.
 
 ## Verifications
 
@@ -477,7 +477,7 @@ p.verifications <- d.airbnb_listings_feat %>%
 p.verifications
 ```
 
-Most hosts verify themselves with email plus phone — that's the platform
+Most hosts verify themselves with email plus phone, that's the platform
 baseline. A smaller group adds a work email, which often signals
 professional or commercial hosts. Profiles with one or zero
 verifications are very rare.
@@ -518,7 +518,7 @@ important numeric variables.
 ```{r, out.width="80%"}
 # Basic summary statistics for key numerical variables
 summary_stats <- d.airbnb_listings_feat %>%
-  select(price, log_price, accommodates, number_of_reviews) %>%
+  select(price, accommodates, number_of_reviews) %>%
   summary()
 
 
@@ -557,7 +557,7 @@ kable(room_type_analysis, booktabs = TRUE) %>%
 
 Entire homes and apartments make up roughly three quarters of the
 market. Hotel rooms have the highest median at 264.5 CHF, shared rooms
-the lowest at 47 CHF. The same pattern we already saw in the log-price
+the lowest at 47 CHF. The same pattern we already saw in the 
 boxplots above.
 
 ## Detailed property_type Analysis
@@ -693,7 +693,7 @@ ggplot(data = d.airbnb_listings_feat, aes(x = longitude, y = latitude)) +
   theme_minimal()
 ```
 
-Hot spots cluster along Lake Geneva and around Lausanne, with rural and
+Hotspots cluster along Lake Geneva and around Lausanne, with rural and
 alpine areas trailing off. This is exactly the surface the GAM picks up
 later with its 2D spline and the reason we use raw coordinates rather
 than a postcode dummy.
@@ -795,15 +795,14 @@ affects one but not the other. The GLM Binomial reduces the price
 question to a yes/no decision (above or below median), which makes the
 host effect cleaner to read.
 
-The GAM is the strongest single model in this study. It captures the
-non-linear effects we already saw in the EDA and adds a 2D spatial term
+The GAM captures the non-linear effects we already saw in the EDA and adds a 2D spatial term
 that no other model has. The SVM then operationalises the GAM into a
 working tool, given a listing and a chosen price, it returns
 Underpriced, Fair, or Overpriced.
 
 The ANN doesn't add new information so much as it checks our
 assumptions. If a flexible neural network barely beats the GAM, the GAM
-is already capturing most of the available signal — and we can trust the
+is already capturing most of the available signal and we can trust the
 interpretable model over the black box.
 
 The GAM, SVM and ANN are evaluated on held-out test data. The split is
@@ -958,7 +957,7 @@ puzzle the other models will surface.
 
 ## Model
 
-In this chapter we code  Generalized Linear Models. One using Poisson-Distribution, then we check vor Overdispersion, and if necessary we use a Generalized Linear Model using Quasi-Poisson-Distribution. 
+In this subchapter we code  Generalized Linear Models. One using Poisson-Distribution, then we check vor Overdispersion, and if necessary we use a Generalized Linear Model using Quasi-Poisson-Distribution. 
 
 ```{r, GLM Poisson Lead Pascal, out.width="80%"}
 glm.poisson <- glm(
@@ -1079,7 +1078,7 @@ which suggests that we have a stable model without overfitting.
 A primary limitation of this model is the potential for reverse
 causality, as higher occupancy naturally generates more reviews, making
 it easier to maintain high ratings and Superhost status. Additionally,
-the deletion of 714 observations due to missingness could introduce
+the deletion of 714 observations due to missingness (na.omit) could introduce
 survivorship bias if these removed data points represent poorly managed
 or unsuccessful listings. Furthermore, our feature set omits critical
 demand drivers like precise neighborhood desirability, seasonality, and
@@ -1231,8 +1230,8 @@ work.
 
 ## Limitations
 
--   **Median split is rough**. A listing one franc above the median
-    counts the same as one 500 francs above. The LM and GAM handle this
+-   **Median split is rough**. A listing one dollar above the median
+    counts the same as one 500 dollar above. The LM and GAM handle this
     gradient much better.
 -   **No location**. We left location out to keep the focus on host
     variables, but in Vaud, location is a major price driver. Some of
@@ -1248,7 +1247,7 @@ work.
 A standard linear model assumes that every predictor moves the price at
 a constant rate. For Airbnb data that's almost never true. A Generalized
 Additive Model (GAM) replaces the fixed coefficients with smooth
-functions that the model learns from the data — each predictor gets its
+functions that the model learns from the data, each predictor gets its
 own curve instead of a single slope. The result stays more interpretable
 than a Random Forest or Neural Network: every smooth term can be plotted
 and read like a coefficient.
@@ -1295,12 +1294,14 @@ train.idx <- sample(seq_len(n), size = floor(0.8 * n))
 d.train <- d.airbnb_listings_feat_gam[train.idx, ]
 d.test <- d.airbnb_listings_feat_gam[-train.idx, ]
 
+qq.gam(gam.main)
+
 ```
 
 After the split, we model `log_price` rather than the raw price. The distribution is heavily right-skewed (see Chapter EDA). Coefficients on the log scale read multiplicatively: β corresponds to roughly `$(exp(β) − 1) × 100%$` price change. We use `method = "REML"` because it gives more reliable
 confidence intervals than the default.
 
-The parametric coefficients sit on the log scale: a coefficient *β* translates to roughly (exp(*β*) − 1) × 100% price change. `room_type` and `bathrooms` are significant. `host_is_superhost` is essentially zero.
+`room_type` and `bathrooms` are significant. `host_is_superhost` is essentially zero.
 
 ```{r gam_fit, Lead Davide, out.width="80%"}
 gam.main <- gam(
@@ -1377,8 +1378,8 @@ kable(d.table,
 
 To know whether the smooth terms actually buy us something, we fit a linear
 model on the exact same data and predictors. The only difference is the
-absence of smooths. R² and AIC together tell us whether the GAM's added
-flexibility is worth the additional degrees of freedom.
+absence of smoothing terms. R² and AIC together tell us whether the GAM's added
+flexibility is worth the additional degrees of freedom. As the GAM has an higher R-Squared and lower AIC, we can say, that it is indeed worth the additional degrees of freedom.
 
 ```{r gam_lm_benchmark, Lead Davide, out.width="80%"}
 # Fair LM benchmark (same target, same training data)
@@ -1405,7 +1406,7 @@ tibble(
 ### Traffic Light Map
 
 The GAM predicts an expected price for every listing. Comparing actual
-to expected gives hosts a quick verdict — `Underpriced`, `Fair Price`,
+to expected gives hosts a quick verdict: `Underpriced`, `Fair Price`,
 or `Overpriced`. We set the threshold at ±15%, anchored in the residual
 standard deviation on the log scale (exp(σ) − 1 ≈ 15%); a stricter or
 looser band would shift the proportions accordingly.
@@ -1725,12 +1726,9 @@ An Artificial Neural Network learns flexible, non-linear relationships
 by chaining together layers of weighted nodes. Unlike the LM or GAM, it
 does not produce readable coefficients, it learns a mapping from inputs
 to output and treats the rest as internal weights. That makes it
-powerful but opaque. We use the ANN here as a flexibility check: if the
-much more interpretable GAM already captures most of the signal, the ANN
-should not gain much from being more flexible. If it does, we are
-leaving structure on the table.
-
-
+powerful but a blackbox. We use the ANN here as a flexibility check: if the
+easier interpretable GAM already captures most of the signal, the ANN
+should not gain much from being more flexible. If it does, we are not counting in an important factor.
 
 ## Model
 
@@ -1738,8 +1736,7 @@ We use the ANN to revisit H1 from a different angle. The Naive ANN tests
 whether host-centered variables alone (*review score*, *review count*,
 *Superhost status*, *capacity*) can predict price. The Expanded ANN adds
 *room* and *property type* as controls. Comparing the two shows whether
-any apparent Superhost effect survives once we compare like, with like a
-stronger test than just plotting raw medians.
+any apparent Superhost effect survives.
 
 ```{r Basic ANN Lead Pascal, out.width="80%"}
 # Selecting basic variables. We omit missing values for this simplified approach.
@@ -1904,7 +1901,7 @@ p.ANN_basic | p.ANN_complex
 
 Our initial Neural Network predicted price using only review metrics,
 listing capacity, and Superhost status. Surprisingly, it priced
-Superhosts lower (132 CHF) than regular hosts (160 CHF). This was a
+Superhosts lower (**`r results.ann_basic$Predicted_Price_CHF[2]` CHF**) than regular hosts (**`r results.ann_basic$Predicted_Price_CHF[1]` CHF**). This was a
 clear case of omitted variable bias: Superhosts often use competitive
 pricing to maintain the high occupancy required for the badge, while
 expensive luxury rentals are usually managed by agencies that don't hold
@@ -1913,14 +1910,14 @@ Superhost status.
 We corrected this in a second model by adding room and property types,
 using One-Hot Encoding to convert these categories into numerical
 inputs. Once we controlled for these structural factors to compare
-similar listings, the price gap practically vanished (482.64 CHF for
-Superhosts vs. 483.29 CHF for regular hosts). This refutes our initial
+similar listings, the price gap practically vanished (**`r results.df_exp$Predicted_Price_CHF[2]` CHF** for
+Superhosts vs. **`r results.df_exp$Predicted_Price_CHF[1]` CHF** for regular hosts). This refutes our initial
 hypothesis: when comparing apples to apples, Superhost status alone does
 not significantly increase a guest's willingness to pay. Superhosts
 often achieve their high status through competitive pricing strategies
 designed to maximize occupancy rather than nightly margins. Ultimately,
 a guest's willingness to pay is dictated almost entirely by physical
-listing attributes like accommodates, room_type, and property_type.
+listing attributes like *accommodates*, *room_type*, and *property_type*.
 Therefore, we advise hosts to anchor their pricing strictly to their
 property's structural features, leveraging their Superhost badge purely
 as a marketing tool to capture market share and drive booking volume.
@@ -1932,7 +1929,7 @@ box" nature of Artificial Neural Networks, which drastically reduces the
 interpretability of individual price drivers compared to transparent
 linear models. Because neural networks require mathematical
 normalization, calculating the exact monetary impact of isolated
-variables like review_scores_rating is complex and requires continuous
+variables like *review_scores_rating* is complex and requires continuous
 reverse-scaling. Furthermore, while we corrected for some omitted
 variable bias by using One-Hot Encoding for property categories, the
 model still lacks precise geospatial data, meaning the massive price
@@ -1993,8 +1990,8 @@ achieve at a competitive price point.
 
 A second contrast worth highlighting is the Naive ANN versus the
 Expanded ANN. The naive version, trained only on host variables,
-predicts a *lower* price for Superhosts (132 vs 160 CHF). Once room and
-property type are added, the gap collapses to less than a franc. This
+predicts a *lower* price for Superhosts (**`r results.ann_basic$Predicted_Price_CHF[2]` CHF** vs. **`r results.ann_basic$Predicted_Price_CHF[1]` CHF**). Once room and
+property type are added, the gap collapses to less than a dollar. This
 isn't really a disagreement between models but a useful warning against drawing conclusions
 from raw price comparisons.
 
@@ -2081,9 +2078,7 @@ resorts), and host behaviours are specific to this market. The
 methodology transfers; the exact coefficients do not. Applying the same
 models to Geneva or Bern would require refitting on local data.
 
-# Appendix
-
-## Use of GenAI
+# Use of GenAI
 
 Throughout this machine learning project, we leveraged various
 Generative AI tools specifically ChatGPT, Gemini, and Claude to support
@@ -2101,9 +2096,9 @@ Finally, these tools provided essential linguistic support. We actively
 used GenAI to translate our documentation and findings into professional
 English, ensuring a high-quality final report.
 
-## Lessons learned
+# Lessons learned
 
-### Pascal
+## Pascal
 
 Working on this project was a huge reality check in the best way
 possible. In our classes, we are used to getting "perfect" datasets that
@@ -2131,7 +2126,7 @@ actually works for coding together as a group, which saved us a lot of
 headaches and is definitely a workflow I’ll be taking into future
 projects.
 
-### Timon
+## Timon
 
 I was already familiar with RStudio from my bachelor’s program, and I’d
 had very positive experiences with it so far and I feel very comfortable
@@ -2155,7 +2150,7 @@ versions, even though we weren’t working with separate branches. I
 think, however, that splitting up the models really helped us in that
 regard.
 
-### Davide
+## Davide
 
 Coming into this project, my comfort zone was firmly in theory. I knew
 what a GLM was on paper, but actually building one that holds up against
@@ -2173,7 +2168,7 @@ geography was genuinely a moment where the theory clicked into practice.
 Another lesson, less technical but probably the most useful one, was
 around our several iterations and the extra miles we took. I rewrote
 most of my texts at least three times. Each round made them shorter,
-clearer, and less AI-flavoured. I went into this project assuming the
+clearer, and less **AI-flavoured**. I went into this project assuming the
 modelling would be the hard part. By the end, communicating the results
 clearly turned out to be just as much work.
 

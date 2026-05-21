@@ -57,6 +57,7 @@ Tasks Timon
   
   - 12.3 zwei barplots statt den Tabellen eingefügt. diese kann man dann allenfalls nebeneinander nehmen um darzustellen. ist ein bisschen besser als Tabellen. 
         --> **Kontrolle PASCAL, dann Tabellen löschen.** --> erledigt
+        --> TIMON: Tabellen gelöscht
 
 
 
@@ -79,12 +80,14 @@ OFFENE FRAGEN:
 A. Löschen
 B. in den Appendix runter
 C. auf zwei reduzieren 2/2 Plots total statt 5 aufs mal...
+        --> Timon: wir hätten den Platz würde ich sagen. 
 
 -   3.7 fett unnütz mit den 40 betten und 14 WCs. couldnt care less und man sieht den einen Ausreisser nichtmal auf dem Plot 
 Davide: 
 löschen...
 Timon: nicht löschen, wir sollen uns alle Variablen anschauen. Andere Lösung suchen.
 Pascal: Habe noch Version mit Boxplot eingebaut. Da Daten extrem rechtsschief sind, kanns klappen.
+Timon: ich finde die Variante mit dem Boxplot sehr sauber. wenn wir die noch schön formatieren finde ich das die beste Lösung. 
 
 -   3.10 brauchen wir das? Davide: jup, find ich easy aber auch Appendix tauglich.
 
@@ -440,7 +443,10 @@ p.verified <- ggplot(d.airbnb_listings_feat %>% filter(!is.na(host_identity_veri
   geom_bar(fill = "deepskyblue") +
   labs(title = "Identity Verified", x = "t = True, f = False", y = "Count")
 
-p.resp_time | p.resp_rate | p.acc_rate | p.pic | p.verified
+(p.resp_time | p.resp_rate | p.acc_rate ) / 
+  plot_spacer() /
+  (p.pic | p.verified)
+
 ```
 
 Hosts in Vaud are highly responsive and reliable: most reply within an
@@ -1207,7 +1213,7 @@ don't confuse host effects with listing characteristics.
 
 ## Model
 
-```{r glm_binomial_extended, Lead Davide, out.width="80%"}
+```{r glm_binomial_results, Lead Davide, out.width="80%"}
 # Predict the probability that a listing is priced above the market median
 # We control for the most obvious price drivers so the host coefficients can be read cleanly
 glm.binomial <- glm(
@@ -1218,9 +1224,8 @@ glm.binomial <- glm(
   data = d.airbnb_listings_feat,
   family = binomial(link = "logit")
 )
-```
 
-```{r glm_binomial_results, Lead Davide, out.width="80%"}
+
 # Convert log-odds into odds ratios with 95% confidence intervals for easier reading
 d.results_glm_binomial <- tidy(glm.binomial, conf.int = TRUE) %>%
   mutate(
@@ -1231,9 +1236,9 @@ d.results_glm_binomial <- tidy(glm.binomial, conf.int = TRUE) %>%
   ) %>%
   select(term, estimate, odds_ratio, or_lower, or_upper, p.value)
 
-kable(d.results_glm_binomial,
-  caption = "GLM Binomial: Odds Ratios with 95% Confidence Intervals"
-)
+kable(d.results_glm_binomial, 
+      caption = "GLM Binomial: Odds Ratios with 95% Confidence Intervals") %>%
+  kable_styling()
 ```
 
 ## Visualisation
@@ -1839,18 +1844,7 @@ results.ann_basic <- data.frame(
   "Predicted_Price_CHF" = round(as.numeric(real_prices_naive), 2)
 )
 
-# Output as a professional HTML table using kable and kableExtra
-kable(results.ann_basic,
-  col.names = c("Host Status", "Predicted Price (CHF)"),
-  caption = "Predicted Prices: Regular Host vs. Superhost (Naive Model)",
-  align = "lc"
-) %>%
-  kable_styling(
-    bootstrap_options = c("striped", "hover", "condensed"),
-    full_width = FALSE,
-    position = "center"
-  ) %>%
-  row_spec(0, bold = TRUE)
+
 ```
 
 ```{r, Expanded ANN, Lead Pascal, out.width="80%"}
@@ -1915,18 +1909,6 @@ results.df_exp <- data.frame(
   "Predicted_Price_CHF" = round(as.numeric(real_prices_expanded), 2)
 )
 
-# Output as a professional HTML table using kable and kableExtra
-kable(results.df_exp,
-  col.names = c("Host Status", "Predicted Price (CHF)"),
-  caption = "Predicted Prices: Regular Host vs. Superhost (Expanded Model)",
-  align = "lc"
-) %>%
-  kable_styling(
-    bootstrap_options = c("striped", "hover", "condensed"),
-    full_width = FALSE,
-    position = "center"
-  ) %>%
-  row_spec(0, bold = TRUE)
 ```
 
 ```{r}

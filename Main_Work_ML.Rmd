@@ -35,7 +35,7 @@ caption {
 
 ToDos backlog: 
 
--   AI-Kontrolle/ -   tuning wieder reaktivieren --\> done
+-   AI-Kontrolle /s tuning wieder reaktivieren
 
 
 

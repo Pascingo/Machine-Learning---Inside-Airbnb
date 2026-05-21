@@ -21,8 +21,7 @@ editor_options:
 ---
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE, cache = TRUE, comment = NA, warning = FALSE, message=FALSE)
-
+knitr::opts_chunk$set(echo = TRUE, cache = TRUE, comment = NA, warning = FALSE, message = FALSE)
 ```
 
 ```{css, echo = FALSE}
@@ -249,27 +248,27 @@ d.listings_clean <- d.airbnb_listings %>%
     property_type = as.factor(property_type),
     host_response_rate = as.numeric(sub("%", "", host_response_rate)),
     host_acceptance_rate = as.numeric(sub("%", "", host_acceptance_rate)),
-    host_is_superhost = ifelse(host_is_superhost==1, TRUE, FALSE)
+    host_is_superhost = ifelse(host_is_superhost == 1, TRUE, FALSE)
   ) %>%
   filter(!is.na(price), price > 0)
 
 
-
-
 d.listings_clean <- d.listings_clean %>%
-  select(-id, -host_id, -host_listings_count, -host_total_listings_count, -listing_url, -scrape_id, -last_scraped,
-         -source, -name, -description, -maximum_nights, -first_review, -last_review, -calculated_host_listings_count, -host_since, -availability_365, -estimated_revenue_l365d, 
-         -neighborhood_overview, -picture_url, -host_url, -host_name, -host_location,
-         -host_about, -host_thumbnail_url, -host_picture_url, -host_neighbourhood,
-         -neighbourhood, -neighbourhood_cleansed, -bathrooms_text, -amenities, 
-         -minimum_minimum_nights, -maximum_minimum_nights, -minimum_maximum_nights,
-         -maximum_maximum_nights, -minimum_nights_avg_ntm, -maximum_nights_avg_ntm,
-         -calendar_updated, -has_availability, -availability_30, -availability_60,
-         -availability_90, -calendar_last_scraped, -number_of_reviews_ltm, -number_of_reviews_l30d,
-         -availability_eoy, -number_of_reviews_ly, -review_scores_accuracy, -review_scores_cleanliness,
-         -review_scores_checkin, -review_scores_communication, -review_scores_location,
-         -license, -instant_bookable, -calculated_host_listings_count_entire_homes, -calculated_host_listings_count_private_rooms,
-         -calculated_host_listings_count_shared_rooms, -reviews_per_month, -bedrooms, -review_scores_value)
+  select(
+    -id, -host_id, -host_listings_count, -host_total_listings_count, -listing_url, -scrape_id, -last_scraped,
+    -source, -name, -description, -maximum_nights, -first_review, -last_review, -calculated_host_listings_count, -host_since, -availability_365, -estimated_revenue_l365d,
+    -neighborhood_overview, -picture_url, -host_url, -host_name, -host_location,
+    -host_about, -host_thumbnail_url, -host_picture_url, -host_neighbourhood,
+    -neighbourhood, -neighbourhood_cleansed, -bathrooms_text, -amenities,
+    -minimum_minimum_nights, -maximum_minimum_nights, -minimum_maximum_nights,
+    -maximum_maximum_nights, -minimum_nights_avg_ntm, -maximum_nights_avg_ntm,
+    -calendar_updated, -has_availability, -availability_30, -availability_60,
+    -availability_90, -calendar_last_scraped, -number_of_reviews_ltm, -number_of_reviews_l30d,
+    -availability_eoy, -number_of_reviews_ly, -review_scores_accuracy, -review_scores_cleanliness,
+    -review_scores_checkin, -review_scores_communication, -review_scores_location,
+    -license, -instant_bookable, -calculated_host_listings_count_entire_homes, -calculated_host_listings_count_private_rooms,
+    -calculated_host_listings_count_shared_rooms, -reviews_per_month, -bedrooms, -review_scores_value
+  )
 ```
 
 According to the requirements for this paper, the dataset is limited to
@@ -292,7 +291,7 @@ d.airbnb_listings_feat <- d.listings_clean %>%
     log_price = log(price),
     price_per_guest = price / pmax(accommodates, 1),
     high_demand = ifelse(estimated_occupancy_l365d > 200, 1, 0),
-    price_high = as.integer(price > median(price, na.rm =TRUE))
+    price_high = as.integer(price > median(price, na.rm = TRUE))
   )
 ```
 
@@ -387,18 +386,22 @@ p.logprice_room <- ggplot(d.airbnb_listings_feat, aes(x = room_type, y = log_pri
   labs(title = "Log Price by Room Type", x = "Room Type", y = "Log Price") +
   theme(axis.text.x = element_text(angle = 45, hjust = 1))
 
-d.top_neighborhoods <- d.airbnb_listings_feat %>% 
-  count(neighbourhood_group_cleansed, sort = TRUE) %>% 
-  top_n(10, n) %>% 
+d.top_neighborhoods <- d.airbnb_listings_feat %>%
+  count(neighbourhood_group_cleansed, sort = TRUE) %>%
+  top_n(10, n) %>%
   pull(neighbourhood_group_cleansed)
 
-p.logprice_neighbourhood <- ggplot(d.airbnb_listings_feat %>% filter(neighbourhood_group_cleansed %in% d.top_neighborhoods), 
-       aes(x = reorder(neighbourhood_group_cleansed, log_price, FUN = median), y = log_price)) +
+p.logprice_neighbourhood <- ggplot(
+  d.airbnb_listings_feat %>% filter(neighbourhood_group_cleansed %in% d.top_neighborhoods),
+  aes(x = reorder(neighbourhood_group_cleansed, log_price, FUN = median), y = log_price)
+) +
   geom_boxplot(fill = "deepskyblue", alpha = 0.7) +
   coord_flip() +
-  labs(title = "Log Price by Top 10 Neighbourhood Groups", 
-       x = "Neighbourhood Group", 
-       y = "Log Price")
+  labs(
+    title = "Log Price by Top 10 Neighbourhood Groups",
+    x = "Neighbourhood Group",
+    y = "Log Price"
+  )
 
 p.logprice_room | p.logprice_neighbourhood
 ```
@@ -438,7 +441,6 @@ p.verified <- ggplot(d.airbnb_listings_feat %>% filter(!is.na(host_identity_veri
   labs(title = "Identity Verified", x = "t = True, f = False", y = "Count")
 
 p.resp_time | p.resp_rate | p.acc_rate | p.pic | p.verified
-
 ```
 
 Hosts in Vaud are highly responsive and reliable: most reply within an
@@ -450,7 +452,6 @@ much weight as predictors.
 ## Property and Room Type
 
 ```{r, fig.show='hold', out.width="80%"}
-
 p.prop <- d.airbnb_listings_feat %>%
   count(property_type) %>%
   top_n(10, n) %>%
@@ -488,8 +489,6 @@ p.beds <- ggplot(d.airbnb_listings_feat, aes(x = beds)) +
   labs(title = "Number of Beds", x = "Beds", y = "Count")
 
 p.baths | p.beds
-
-
 ```
 
 ```{r}
@@ -548,7 +547,6 @@ running close to full capacity year-round.
 ## Feature Engineered Data
 
 ```{r, fig.show='hold', out.width="80%"}
-
 # High Demand (Binary)
 p.demand <- ggplot(d.airbnb_listings_feat, aes(x = as.factor(high_demand))) +
   geom_bar(fill = "deepskyblue") +
@@ -656,7 +654,7 @@ room_type_analysis <- d.airbnb_listings_feat %>%
   ) %>%
   arrange(desc(Total_Listings)) # Sorts by the most common room type
 
-kable(room_type_analysis, booktabs = TRUE)  %>%
+kable(room_type_analysis, booktabs = TRUE) %>%
   kable_styling()
 ```
 
@@ -715,10 +713,14 @@ cor_long <- as.data.frame(cor_matrix_full) %>%
 ggplot(cor_long, aes(x = Var1, y = Var2, fill = Correlation)) +
   geom_tile(color = "white") +
   geom_text(aes(label = round(Correlation, 2)), size = 2.8) +
-  scale_fill_gradient2(low = "maroon4", mid = "deepskyblue", high = "gold",
-                       midpoint = 0, limits = c(-1, 1)) +
-  labs(title = "Correlation Heatmap of Numerical Variables",
-       x = NULL, y = NULL) +
+  scale_fill_gradient2(
+    low = "maroon4", mid = "deepskyblue", high = "gold",
+    midpoint = 0, limits = c(-1, 1)
+  ) +
+  labs(
+    title = "Correlation Heatmap of Numerical Variables",
+    x = NULL, y = NULL
+  ) +
   theme(axis.text.x = element_text(angle = 45, hjust = 1))
 ```
 
@@ -740,9 +742,11 @@ ggplot(d.airbnb_listings_feat, aes(x = accommodates, y = log_price)) +
   geom_jitter(alpha = 0.3, width = 0.2, color = "deepskyblue") +
   geom_smooth(method = "lm", color = "firebrick1", se = TRUE) +
   scale_x_continuous(breaks = seq(1, max(d.airbnb_listings_feat$accommodates, na.rm = TRUE), 2)) +
-  labs(title = "Log Price vs. Accommodates",
-       x = "Number of Guests",
-       y = "Log Price")
+  labs(
+    title = "Log Price vs. Accommodates",
+    x = "Number of Guests",
+    y = "Log Price"
+  )
 ```
 
 **Capacity is the strongest single predictor in the dataset**, and the
@@ -758,14 +762,17 @@ to the price.
 d.airbnb_listings_feat %>%
   filter(!is.na(review_scores_rating)) %>%
   mutate(rating_group = cut(review_scores_rating,
-                            breaks = c(0, 3, 4, 4.5, 4.8, 5),
-                            labels = c("≤3", "3–4", "4–4.5", "4.5–4.8", "4.8–5"),
-                            include.lowest = TRUE)) %>%
+    breaks = c(0, 3, 4, 4.5, 4.8, 5),
+    labels = c("≤3", "3–4", "4–4.5", "4.5–4.8", "4.8–5"),
+    include.lowest = TRUE
+  )) %>%
   ggplot(aes(x = rating_group, y = log_price, fill = rating_group)) +
   geom_boxplot(alpha = 0.7, show.legend = FALSE, fill = "deepskyblue") +
-  labs(title = "Log Price by Review Score Group",
-       x = "Review Score Rating",
-       y = "Log Price")
+  labs(
+    title = "Log Price by Review Score Group",
+    x = "Review Score Rating",
+    y = "Log Price"
+  )
 ```
 
 Medians across rating groups are surprisingly close. Higher-rated
@@ -802,14 +809,18 @@ We calculated price per guest as a feature then visualized them.
 p_ppg <- ggplot(d.airbnb_listings_feat, aes(x = price_per_guest)) +
   geom_histogram(bins = 50, fill = "deepskyblue", color = "white", alpha = 0.7) +
   scale_x_log10() +
-  labs(title = "Price per Guest (Log Scale)",
-       x = "Price per Guest (CHF)", y = "Count")
+  labs(
+    title = "Price per Guest (Log Scale)",
+    x = "Price per Guest (CHF)", y = "Count"
+  )
 
 p_ppg_room <- ggplot(d.airbnb_listings_feat, aes(x = room_type, y = price_per_guest, fill = room_type)) +
   geom_boxplot(alpha = 0.7, show.legend = FALSE, fill = "deepskyblue") +
   scale_y_log10() +
-  labs(title = "Price per Guest by Room Type",
-       x = "Room Type", y = "Price per Guest (Log)") +
+  labs(
+    title = "Price per Guest by Room Type",
+    x = "Room Type", y = "Price per Guest (Log)"
+  ) +
   theme(axis.text.x = element_text(angle = 45, hjust = 1))
 
 p_ppg + p_ppg_room
@@ -930,15 +941,16 @@ case with price variables, this variable is logarithmized.
 ## Model
 
 ```{r lm lead Timon, out.width="80%", fig.show='hold'}
-
 # We use log(price) to account for the right-skewed distribution of Airbnb prices.
-lm.main <- lm(log(price) ~ 
-                review_scores_rating + 
-                as.factor(host_is_superhost) +
-                host_has_profile_pic + 
-                accommodates + 
-                as.factor(room_type), 
-              data = d.airbnb_listings_feat)
+lm.main <- lm(
+  log(price) ~
+    review_scores_rating +
+    as.factor(host_is_superhost) +
+    host_has_profile_pic +
+    accommodates +
+    as.factor(room_type),
+  data = d.airbnb_listings_feat
+)
 
 tidy(lm.main) %>%
   kable(digits = 2, booktabs = TRUE, caption = "SVM Model Overview") %>%
@@ -949,17 +961,19 @@ p.lm_uncontrolled <- ggplot(data = d.airbnb_listings_feat, mapping = aes(review_
   geom_point(alpha = 0.4, color = "deepskyblue") +
   geom_smooth(method = "lm") +
   scale_color_manual(values = c("FALSE" = "gold2", "TRUE" = "firebrick1")) +
-    labs(title = "Uncontrolled LM",
-       x = "Review Scores Rating",
-       y = "Log(Price)")+
-  theme(legend.position = "none" )+
-  ylim(3,8)
+  labs(
+    title = "Uncontrolled LM",
+    x = "Review Scores Rating",
+    y = "Log(Price)"
+  ) +
+  theme(legend.position = "none") +
+  ylim(3, 8)
 
-# creating grid for hypothetical data holding 'room_type' and 'accommodates' constant 
+# creating grid for hypothetical data holding 'room_type' and 'accommodates' constant
 d.lm_predict <- expand.grid(
   review_scores_rating = seq(3, 5, length.out = 100),
   host_is_superhost = c("TRUE", "FALSE"),
-  room_type = "Entire home/apt",   # Fixed reference category
+  room_type = "Entire home/apt", # Fixed reference category
   host_has_profile_pic = c("t", "f"),
   accommodates = mean(d.airbnb_listings_feat$accommodates, na.rm = TRUE) # Fixed at mean value
 )
@@ -968,18 +982,22 @@ d.lm_predict <- expand.grid(
 d.lm_predict$pred <- predict(lm.main, newdata = d.lm_predict)
 
 # Plotting the actual data points alongside our model's predicted regression lines
-p.lm_controlled <-ggplot(d.airbnb_listings_feat, 
-       aes(review_scores_rating, log(price), color = host_is_superhost, )) +
+p.lm_controlled <- ggplot(
+  d.airbnb_listings_feat,
+  aes(review_scores_rating, log(price), color = host_is_superhost, )
+) +
   geom_point(alpha = 0.3, color = "deepskyblue") +
   geom_line(data = d.lm_predict, aes(y = pred)) +
   scale_color_manual(values = c("FALSE" = "gold2", "TRUE" = "firebrick1")) +
-  labs(title = "Controlled LM",
-       x = "Review Scores Rating",
-       y = "Log(Price)") +
-    ylim(3,8)
-  
+  labs(
+    title = "Controlled LM",
+    x = "Review Scores Rating",
+    y = "Log(Price)"
+  ) +
+  ylim(3, 8)
+
 (p.lm_uncontrolled | p.lm_controlled) +
-  plot_layout(widths = c(10,10))
+  plot_layout(widths = c(10, 10))
 ```
 
 ## Interpretation
@@ -1042,18 +1060,21 @@ puzzle the other models will surface.
 ## Model
 
 ```{r, GLM Poisson Lead Pascal, out.width="80%"}
-
-glm.poisson <- glm(estimated_occupancy_l365d ~ price + host_is_superhost + 
-                     review_scores_rating + accommodates + room_type, 
-                   data = d.airbnb_listings_feat, 
-                   family = "poisson")
+glm.poisson <- glm(
+  estimated_occupancy_l365d ~ price + host_is_superhost +
+    review_scores_rating + accommodates + room_type,
+  data = d.airbnb_listings_feat,
+  family = "poisson"
+)
 # Dispersion check
 dispersion_ratio <- glm.poisson$deviance / glm.poisson$df.residual
 
-glm.quasipoisson <- glm(estimated_occupancy_l365d ~ price + host_is_superhost + 
-                          review_scores_rating + accommodates + room_type, 
-                        data = d.airbnb_listings_feat, 
-                        family = "quasipoisson")
+glm.quasipoisson <- glm(
+  estimated_occupancy_l365d ~ price + host_is_superhost +
+    review_scores_rating + accommodates + room_type,
+  data = d.airbnb_listings_feat,
+  family = "quasipoisson"
+)
 
 tidy.poisson <- tidy(glm.poisson) %>% mutate(Model = "Poisson")
 tidy.quasi <- tidy(glm.quasipoisson) %>% mutate(Model = "Quasi-Poisson")
@@ -1062,10 +1083,11 @@ combined_models <- bind_rows(tidy.poisson, tidy.quasi) %>%
   select(Model, term, estimate, std.error, statistic, p.value)
 
 combined_models %>%
-  kable( 
-        digits = 3, 
-        booktabs = TRUE, 
-        caption = paste0("Comparing Models (Dispersion Ratio: ", round(dispersion_ratio, 2), ")")) %>%
+  kable(
+    digits = 3,
+    booktabs = TRUE,
+    caption = paste0("Comparing Models (Dispersion Ratio: ", round(dispersion_ratio, 2), ")")
+  ) %>%
   kable_styling(font_size = 8, latex_options = c("scale_down", "hold_position")) %>%
   collapse_rows(columns = 1, valign = "top") %>%
   group_rows("Model A", 1, 8) %>%
@@ -1080,40 +1102,44 @@ set.seed(1)
 cv.mse.poisson <- c()
 cv.mse.quasipoisson <- c()
 
-for(i in 1:200){
-  #dataprep
+for (i in 1:200) {
+  # dataprep
   n <- nrow(d.airbnb_listings_feat)
   cv.ind_permuted <- sample(1:n, replace = FALSE)
-  d.airbnb_listings_feat_permuted <- d.airbnb_listings_feat[cv.ind_permuted,]
-  
-  #create folds
+  d.airbnb_listings_feat_permuted <- d.airbnb_listings_feat[cv.ind_permuted, ]
+
+  # create folds
   cv.folds <- cut(1:n, breaks = 3, labels = FALSE)
   cv.ind_test <- which(cv.folds == 1)
-  
+
   d.cv_test <- d.airbnb_listings_feat_permuted[cv.ind_test, ]
   d.cv_train <- d.airbnb_listings_feat_permuted[-cv.ind_test, ]
-  
-  #train model poisson
-  cv.glm_poisson_train <- glm(formula = formula(glm.poisson), 
-                          data = d.cv_train)
+
+  # train model poisson
+  cv.glm_poisson_train <- glm(
+    formula = formula(glm.poisson),
+    data = d.cv_train
+  )
   cv.glm_poisson_predict <- predict(cv.glm_poisson_train, newdata = d.cv_test)
-  
-  cv.mse.poisson[i] <- mean((d.cv_test$estimated_occupancy_l365d - cv.glm_poisson_predict)^2, 
-                           na.rm = TRUE)
-  
-  
-  #train model quasipoisson
-  cv.glm_quasipoisson_train <- glm(formula = formula(glm.quasipoisson), 
-                          data = d.cv_train)
+
+  cv.mse.poisson[i] <- mean((d.cv_test$estimated_occupancy_l365d - cv.glm_poisson_predict)^2,
+    na.rm = TRUE
+  )
+
+
+  # train model quasipoisson
+  cv.glm_quasipoisson_train <- glm(
+    formula = formula(glm.quasipoisson),
+    data = d.cv_train
+  )
   cv.glm_quasipoisson_predict <- predict(cv.glm_quasipoisson_train, newdata = d.cv_test)
-  
-  cv.mse.quasipoisson[i] <- mean((d.cv_test$estimated_occupancy_l365d - cv.glm_quasipoisson_predict)^2, 
-                           na.rm = TRUE)
-  
+
+  cv.mse.quasipoisson[i] <- mean((d.cv_test$estimated_occupancy_l365d - cv.glm_quasipoisson_predict)^2,
+    na.rm = TRUE
+  )
 }
 
-boxplot(cv.mse.poisson, cv.mse.quasipoisson, names = c("Poisson-Model","Quasipoisson-Model"), col = "deepskyblue")
-
+boxplot(cv.mse.poisson, cv.mse.quasipoisson, names = c("Poisson-Model", "Quasipoisson-Model"), col = "deepskyblue")
 ```
 
 ## Interpretations
@@ -1184,12 +1210,14 @@ don't confuse host effects with listing characteristics.
 ```{r glm_binomial_extended, Lead Davide, out.width="80%"}
 # Predict the probability that a listing is priced above the market median
 # We control for the most obvious price drivers so the host coefficients can be read cleanly
-glm.binomial <- glm(price_high ~ host_is_superhost + 
-                                 accommodates + 
-                                 room_type + 
-                                 review_scores_rating,
-                    data   = d.airbnb_listings_feat,
-                    family = binomial(link = "logit"))
+glm.binomial <- glm(
+  price_high ~ host_is_superhost +
+    accommodates +
+    room_type +
+    review_scores_rating,
+  data = d.airbnb_listings_feat,
+  family = binomial(link = "logit")
+)
 ```
 
 ```{r glm_binomial_results, Lead Davide, out.width="80%"}
@@ -1203,8 +1231,9 @@ d.results_glm_binomial <- tidy(glm.binomial, conf.int = TRUE) %>%
   ) %>%
   select(term, estimate, odds_ratio, or_lower, or_upper, p.value)
 
-kable(d.results_glm_binomial, 
-      caption = "GLM Binomial: Odds Ratios with 95% Confidence Intervals")
+kable(d.results_glm_binomial,
+  caption = "GLM Binomial: Odds Ratios with 95% Confidence Intervals"
+)
 ```
 
 ## Visualisation
@@ -1225,24 +1254,32 @@ d.glm_predict <- expand.grid(
 
 # Predict on the link scale to also get standard errors, then transform back
 glm.pred <- predict(glm.binomial, newdata = d.glm_predict, type = "link", se.fit = TRUE)
-d.glm_predict$prob       <- plogis(glm.pred$fit)
+d.glm_predict$prob <- plogis(glm.pred$fit)
 d.glm_predict$prob_lower <- plogis(glm.pred$fit - 1.96 * glm.pred$se.fit)
 d.glm_predict$prob_upper <- plogis(glm.pred$fit + 1.96 * glm.pred$se.fit)
 
-p.glm_binomial <- ggplot(d.glm_predict, aes(x = accommodates, y = prob, 
-                                            color = host_is_superhost, fill = host_is_superhost)) +
+p.glm_binomial <- ggplot(d.glm_predict, aes(
+  x = accommodates, y = prob,
+  color = host_is_superhost, fill = host_is_superhost
+)) +
   geom_ribbon(aes(ymin = prob_lower, ymax = prob_upper), alpha = 0.2, color = NA) +
   geom_line(size = 1.2) +
   scale_x_continuous(breaks = 1:10) +
-  scale_color_manual(values = c("gold", "firebrick1"),
-                     labels = c("Regular Host", "Superhost")) +
-  scale_fill_manual(values = c("gold", "firebrick1"),
-                    labels = c("Regular Host", "Superhost")) +
-  labs(title    = "Probability of Charging an Above-Median Price",
-       subtitle = "By guest capacity and Superhost status (entire home, average rating)",
-       x        = "Accommodates (Guests)",
-       y        = "Predicted Probability",
-       color    = NULL, fill = NULL) +
+  scale_color_manual(
+    values = c("gold", "firebrick1"),
+    labels = c("Regular Host", "Superhost")
+  ) +
+  scale_fill_manual(
+    values = c("gold", "firebrick1"),
+    labels = c("Regular Host", "Superhost")
+  ) +
+  labs(
+    title = "Probability of Charging an Above-Median Price",
+    subtitle = "By guest capacity and Superhost status (entire home, average rating)",
+    x = "Accommodates (Guests)",
+    y = "Predicted Probability",
+    color = NULL, fill = NULL
+  ) +
   theme(legend.position = "top")
 
 p.glm_binomial
@@ -1314,9 +1351,11 @@ The GAM speaks mainly to **H2** through the spatial spline
 ```{r gam_data_split, Lead Davide, out.width="80%"}
 # Data preparation: keep only variables used in the GAM, drop rows with NAs
 d.airbnb_listings_feat_gam <- d.airbnb_listings_feat %>%
-  select(price, accommodates, review_scores_rating,
-         number_of_reviews, longitude, latitude,
-         room_type, host_is_superhost, bathrooms) %>%
+  select(
+    price, accommodates, review_scores_rating,
+    number_of_reviews, longitude, latitude,
+    room_type, host_is_superhost, bathrooms
+  ) %>%
   na.omit()
 
 # Train/test split BEFORE fitting the model.
@@ -1325,8 +1364,8 @@ set.seed(42)
 n <- nrow(d.airbnb_listings_feat_gam)
 train.idx <- sample(seq_len(n), size = floor(0.8 * n))
 
-d.train <- d.airbnb_listings_feat_gam[ train.idx, ]
-d.test  <- d.airbnb_listings_feat_gam[-train.idx, ]
+d.train <- d.airbnb_listings_feat_gam[train.idx, ]
+d.test <- d.airbnb_listings_feat_gam[-train.idx, ]
 
 tibble(
   Set = c("Training (80%)", "Test (20%)"),
@@ -1343,24 +1382,30 @@ price change. We use `method = "REML"` because it gives more reliable
 confidence intervals than the default.
 
 ```{r gam_fit, Lead Davide, out.width="80%"}
-gam.main <- gam(log(price) ~
-                  s(accommodates) +
-                  s(review_scores_rating) +
-                  s(log1p(number_of_reviews)) +
-                  s(longitude, latitude) +
-                  room_type +
-                  host_is_superhost +
-                  bathrooms,
-                family = gaussian(),
-                method = "REML",
-                data   = d.train)
+gam.main <- gam(
+  log(price) ~
+    s(accommodates) +
+    s(review_scores_rating) +
+    s(log1p(number_of_reviews)) +
+    s(longitude, latitude) +
+    room_type +
+    host_is_superhost +
+    bathrooms,
+  family = gaussian(),
+  method = "REML",
+  data = d.train
+)
 
 tidy(gam.main) %>%
   kable(booktabs = TRUE, digits = 3, caption = "GAM: Parametric Coefficients") %>%
   kable_styling() %>%
-  footnote(general = paste0("Training data (80%): ", nrow(d.train), "\n", 
-                            "Test data (20%): ", nrow(d.test) ), 
-                            general_title = "Dataset split")
+  footnote(
+    general = paste0(
+      "Training data (80%): ", nrow(d.train), "\n",
+      "Test data (20%): ", nrow(d.test)
+    ),
+    general_title = "Dataset split"
+  )
 ```
 
 ## Visualisation
@@ -1373,25 +1418,37 @@ The three 1D smooth terms are shown below. The 2D spatial spline s(longitude, la
 # Partial effect plots for the 1D smooth terms.
 # The 2D spatial spline s(longitude, latitude) is shown in the interactive map below.
 par(mfrow = c(1, 3), mar = c(4, 4, 2, 1))
-plot(gam.main, select = 1, shade = TRUE,
-     col = "deepskyblue", shade.col = "lightblue",
-     seWithMean = TRUE, ylab = "Effect on log(price)")
-plot(gam.main, select = 2, shade = TRUE,
-     col = "deepskyblue", shade.col = "lightblue",
-     seWithMean = TRUE, ylab = "Effect on log(price)")
-plot(gam.main, select = 3, shade = TRUE,
-     col = "deepskyblue", shade.col = "lightblue",
-     seWithMean = TRUE, ylab = "Effect on log(price)")
+plot(gam.main,
+  select = 1, shade = TRUE,
+  col = "deepskyblue", shade.col = "lightblue",
+  seWithMean = TRUE, ylab = "Effect on log(price)"
+)
+plot(gam.main,
+  select = 2, shade = TRUE,
+  col = "deepskyblue", shade.col = "lightblue",
+  seWithMean = TRUE, ylab = "Effect on log(price)"
+)
+plot(gam.main,
+  select = 3, shade = TRUE,
+  col = "deepskyblue", shade.col = "lightblue",
+  seWithMean = TRUE, ylab = "Effect on log(price)"
+)
 par(mfrow = c(1, 1))
 
 # EDF table for ALL smooth terms (incl. the 2D spatial spline)
 d.table <- as.data.frame(summary(gam.main)$s.table) %>% round(3)
-kable(d.table, booktabs = TRUE,
-      caption = "Smooth Terms: Estimated Degrees of Freedom (EDF)") %>%
+kable(d.table,
+  booktabs = TRUE,
+  caption = "Smooth Terms: Estimated Degrees of Freedom (EDF)"
+) %>%
   kable_styling() %>%
-  footnote(general = paste0("R-squared: ", round(summary(gam.main)$r.sq, 3),
-                            ", Deviance explained: ", round(summary(gam.main)$dev.expl, 3)),
-           general_title = "")
+  footnote(
+    general = paste0(
+      "R-squared: ", round(summary(gam.main)$r.sq, 3),
+      ", Deviance explained: ", round(summary(gam.main)$dev.expl, 3)
+    ),
+    general_title = ""
+  )
 ```
 
 
@@ -1399,16 +1456,20 @@ kable(d.table, booktabs = TRUE,
 
 ```{r gam_lm_benchmark, Lead Davide, out.width="80%"}
 # Fair LM benchmark (same target, same training data)
-lm.gam_comparison <- lm(log(price) ~ accommodates + review_scores_rating +
-                          log1p(number_of_reviews) + longitude + latitude +
-                          room_type + host_is_superhost + bathrooms,
-                        data = d.train)
+lm.gam_comparison <- lm(
+  log(price) ~ accommodates + review_scores_rating +
+    log1p(number_of_reviews) + longitude + latitude +
+    room_type + host_is_superhost + bathrooms,
+  data = d.train
+)
 
 aic_vals <- AIC(lm.gam_comparison, gam.main)
 tibble(
   Model = c("LM", "GAM"),
-  `R²` = c(round(summary(lm.gam_comparison)$r.squared, 3),
-           round(summary(gam.main)$r.sq, 3)),
+  `R²` = c(
+    round(summary(lm.gam_comparison)$r.squared, 3),
+    round(summary(gam.main)$r.sq, 3)
+  ),
   AIC = round(aic_vals$AIC, 1)
 ) %>%
   kable(booktabs = TRUE, caption = "Model Comparison: LM vs GAM (same data, same target)") %>%
@@ -1426,37 +1487,43 @@ looser band would shift the proportions accordingly.
 ```{r traffic_light_labels, out.width="80%"}
 # Predictions on log scale
 d.train$fitted_logprice <- as.numeric(predict(gam.main, newdata = d.train))
-d.test$fitted_logprice  <- as.numeric(predict(gam.main, newdata = d.test))
+d.test$fitted_logprice <- as.numeric(predict(gam.main, newdata = d.test))
 
 # Smearing correction (Duan 1983) for back-transforming log predictions
-sigma2   <- summary(gam.main)$scale
+sigma2 <- summary(gam.main)$scale
 smearing <- exp(sigma2 / 2)
 d.train$fitted_price <- exp(d.train$fitted_logprice) * smearing
-d.test$fitted_price  <- exp(d.test$fitted_logprice)  * smearing
+d.test$fitted_price <- exp(d.test$fitted_logprice) * smearing
 
 # Apply traffic-light rule consistently to train and test
 make.traffic_light <- function(price, fitted, threshold = 15) {
   pct <- (as.numeric(price) - as.numeric(fitted)) / as.numeric(fitted) * 100
   case_when(
     pct <= -threshold ~ "Underpriced",
-    pct >=  threshold ~ "Overpriced",
-    TRUE              ~ "Fair Price"
+    pct >= threshold ~ "Overpriced",
+    TRUE ~ "Fair Price"
   ) %>% as.factor()
 }
 
-d.train$pct_diff      <- (d.train$price - d.train$fitted_price) / d.train$fitted_price * 100
-d.test$pct_diff       <- (d.test$price  - d.test$fitted_price)  / d.test$fitted_price  * 100
+d.train$pct_diff <- (d.train$price - d.train$fitted_price) / d.train$fitted_price * 100
+d.test$pct_diff <- (d.test$price - d.test$fitted_price) / d.test$fitted_price * 100
 d.train$traffic_light <- make.traffic_light(d.train$price, d.train$fitted_price)
-d.test$traffic_light  <- make.traffic_light(d.test$price,  d.test$fitted_price)
+d.test$traffic_light <- make.traffic_light(d.test$price, d.test$fitted_price)
 
 data.frame(
   Set = c("Training", "Test"),
-  Underpriced = c(round(mean(d.train$traffic_light == "Underpriced") * 100, 1),
-                  round(mean(d.test$traffic_light  == "Underpriced") * 100, 1)),
-  Fair        = c(round(mean(d.train$traffic_light == "Fair Price")  * 100, 1),
-                  round(mean(d.test$traffic_light  == "Fair Price")  * 100, 1)),
-  Overpriced  = c(round(mean(d.train$traffic_light == "Overpriced")  * 100, 1),
-                  round(mean(d.test$traffic_light  == "Overpriced")  * 100, 1))
+  Underpriced = c(
+    round(mean(d.train$traffic_light == "Underpriced") * 100, 1),
+    round(mean(d.test$traffic_light == "Underpriced") * 100, 1)
+  ),
+  Fair = c(
+    round(mean(d.train$traffic_light == "Fair Price") * 100, 1),
+    round(mean(d.test$traffic_light == "Fair Price") * 100, 1)
+  ),
+  Overpriced = c(
+    round(mean(d.train$traffic_light == "Overpriced") * 100, 1),
+    round(mean(d.test$traffic_light == "Overpriced") * 100, 1)
+  )
 ) %>%
   kable(booktabs = TRUE, caption = "Traffic Light Distribution (%): Train vs Test") %>%
   kable_styling()
@@ -1470,9 +1537,11 @@ GAM-recommended price, and the percentage deviation when clicked.
 
 ```{r gam_leaflet_map, out.width="80%"}
 d.map <- bind_rows(d.train, d.test)
-color_map <- c("Underpriced" = "#EF9F27",
-               "Fair Price"  = "#1D9E75",
-               "Overpriced"  = "#D85A30")
+color_map <- c(
+  "Underpriced" = "#EF9F27",
+  "Fair Price" = "#1D9E75",
+  "Overpriced" = "#D85A30"
+)
 d.map$marker_color <- color_map[as.character(d.map$traffic_light)]
 
 leaflet() %>%
@@ -1483,7 +1552,7 @@ leaflet() %>%
     lng = ~longitude, lat = ~latitude,
     radius = 4, fillColor = ~marker_color,
     fillOpacity = 0.85, stroke = FALSE,
-    popup = ~paste0(
+    popup = ~ paste0(
       "<b>Host Verdict:</b> ", traffic_light, "<br>",
       "<b>Actual Price:</b> CHF ", round(price), "<br>",
       "<b>GAM Recommended:</b> CHF ", round(fitted_price), "<br>",
@@ -1581,25 +1650,24 @@ examines whether the current rental prices are justified.
 ## Model
 
 ```{r SVM, Lead Timon, out.width="80%"}
-
-# Setting a seed ensures reproducibility. 
-set.seed(42) 
+# Setting a seed ensures reproducibility.
+set.seed(42)
 
 # Define the relevant columns for the SVM model.
-# We include 'price' because the use case requires evaluating if a 
+# We include 'price' because the use case requires evaluating if a
 # *given* price for a specific set of features is Overpriced, Fair, or Underpriced.
-svm.coloums <- c("traffic_light", "price", "accommodates", "review_scores_rating", 
-                 "number_of_reviews", "room_type", "host_is_superhost")
+svm.coloums <- c(
+  "traffic_light", "price", "accommodates", "review_scores_rating",
+  "number_of_reviews", "room_type", "host_is_superhost"
+)
 
 # Creating the 80% Training and 20% Test datasets
 d.svm_train <- d.train[, svm.coloums]
-d.svm_test  <- d.test[, svm.coloums]
-
-
+d.svm_test <- d.test[, svm.coloums]
 ```
 
 ```{r tuning model for optimal cost, out.width="80%"}
-# We use 10-fold cross-validation to find the optimal 'cost' and 'gamma' parameters 
+# We use 10-fold cross-validation to find the optimal 'cost' and 'gamma' parameters
 # for the radial basis function (RBF) kernel.
 
 # tuned_svm <- tune(
@@ -1614,41 +1682,31 @@ d.svm_test  <- d.test[, svm.coloums]
 # )
 
 # Extracting the best parameters found during cross-validation
-#svm_model_cost <- as.numeric(tuned_svm$best.parameters["cost"])
-#svm_model_gamma <- as.numeric(tuned_svm$best.parameters["gamma"])
+# svm_model_cost <- as.numeric(tuned_svm$best.parameters["cost"])
+# svm_model_gamma <- as.numeric(tuned_svm$best.parameters["gamma"])
 
-###einschub!!!!!!
+### einschub!!!!!!
 svm_model_cost <- 256
 svm_model_gamma <- 0.625
 
 
-
-
-
-
-
-
-
-
-
-
-#displaying Parameters for visual confirmation
-#cat("Optimal Cost:", svm_model_cost, "\n")
-#cat("Optimal Gamma:", svm_model_gamma, "\n")
-#cat("Best Cross-Validation Performance (Error Rate):", round(tuned_svm$best.performance, 4), "\n")
-
+# displaying Parameters for visual confirmation
+# cat("Optimal Cost:", svm_model_cost, "\n")
+# cat("Optimal Gamma:", svm_model_gamma, "\n")
+# cat("Best Cross-Validation Performance (Error Rate):", round(tuned_svm$best.performance, 4), "\n")
 ```
 
 ```{r TIMON, out.width="80%"}
 # --- Final SVM Model & Evaluation ---
 
 # Training the final Support Vector Machine using the optimized parameters
-svm.main <- svm(traffic_light ~ ., 
-                data = d.svm_train, 
-                kernel = "radial", 
-                cost = svm_model_cost, 
-                gamma = svm_model_gamma, 
-                scale = TRUE) # Scaling to treat all features equally
+svm.main <- svm(traffic_light ~ .,
+  data = d.svm_train,
+  kernel = "radial",
+  cost = svm_model_cost,
+  gamma = svm_model_gamma,
+  scale = TRUE
+) # Scaling to treat all features equally
 
 # Predicting the traffic light categories on test-data
 svm.test_pred <- predict(svm.main, d.svm_test)
@@ -1665,8 +1723,7 @@ kable(svm.conf_matrix, booktabs = TRUE, escape = FALSE, caption = "SVM Confusion
   column_spec(2, background = c("deepskyblue", "maroon1", "maroon1")) %>%
   column_spec(3, background = c("maroon1", "deepskyblue", "maroon1")) %>%
   column_spec(4, background = c("maroon1", "maroon1", "deepskyblue")) %>%
-  footnote(general = paste0("SVM Test Accuracy: ", round(svm_accuracy * 100, 2), "% \n", "Training set size: ", nrow(d.svm_train), "\n Test set size: " , nrow(d.svm_test)), general_title = "Information:")
-             
+  footnote(general = paste0("SVM Test Accuracy: ", round(svm_accuracy * 100, 2), "% \n", "Training set size: ", nrow(d.svm_train), "\n Test set size: ", nrow(d.svm_test)), general_title = "Information:")
 ```
 
 ## Interpretion SVM
@@ -1722,18 +1779,18 @@ stronger test than just plotting raw medians.
 # Selecting basic variables. We omit missing values for this simplified approach.
 d.ann_naive <- d.airbnb_listings_feat %>%
   select(
-    price,                  
-    review_scores_rating,   
-    number_of_reviews,      
-    host_is_superhost,      
-    accommodates            
+    price,
+    review_scores_rating,
+    number_of_reviews,
+    host_is_superhost,
+    accommodates
   ) %>%
-  na.omit() 
+  na.omit()
 
 # Neural Networks perform best (and converge faster) when all input features are scaled to a similar range, typically [0, 1].
 
 normalize <- function(x) {
-  return ((x - min(x)) / (max(x) - min(x)))
+  return((x - min(x)) / (max(x) - min(x)))
 }
 
 # Apply min-max normalization to all columns
@@ -1741,13 +1798,13 @@ d.ann_naive_scaled <- as.data.frame(lapply(d.ann_naive, normalize))
 
 # Train the basic Neural Network
 # We use 1 hidden layer with 3 neurons. linear.output = TRUE is used for regression (predicting a continuous price).
-set.seed(42) 
+set.seed(42)
 nn.naive <- neuralnet(
   price ~ review_scores_rating + number_of_reviews + host_is_superhost + accommodates,
   data = d.ann_naive_scaled,
   hidden = 3,
   linear.output = TRUE,
-  stepmax = 1e6         
+  stepmax = 1e6
 )
 
 plot(nn.naive)
@@ -1773,8 +1830,8 @@ min_price <- min(d.ann_naive$price)
 max_price <- max(d.ann_naive$price)
 real_prices_naive <- predictions_h3_naive$net.result * (max_price - min_price) + min_price
 
-#print("Predicted Prices (Naive Model): Regular Host vs. Superhost")
-#print(real_prices_naive)
+# print("Predicted Prices (Naive Model): Regular Host vs. Superhost")
+# print(real_prices_naive)
 
 # Create a clean dataframe for the table
 results.ann_basic <- data.frame(
@@ -1783,29 +1840,30 @@ results.ann_basic <- data.frame(
 )
 
 # Output as a professional HTML table using kable and kableExtra
-kable(results.ann_basic, 
-      col.names = c("Host Status", "Predicted Price (CHF)"),
-      caption = "Predicted Prices: Regular Host vs. Superhost (Naive Model)",
-      align = 'lc') %>%
-  kable_styling(bootstrap_options = c("striped", "hover", "condensed"), 
-                full_width = FALSE, 
-                position = "center") %>%
+kable(results.ann_basic,
+  col.names = c("Host Status", "Predicted Price (CHF)"),
+  caption = "Predicted Prices: Regular Host vs. Superhost (Naive Model)",
+  align = "lc"
+) %>%
+  kable_styling(
+    bootstrap_options = c("striped", "hover", "condensed"),
+    full_width = FALSE,
+    position = "center"
+  ) %>%
   row_spec(0, bold = TRUE)
-
 ```
 
 ```{r, Expanded ANN, Lead Pascal, out.width="80%"}
-
 # Data Preparation & Dimensionality Reduction
 d_model_ready <- d.airbnb_listings_feat %>%
   select(
-    price,                  
-    review_scores_rating,   
-    number_of_reviews,      
-    host_is_superhost,      
+    price,
+    review_scores_rating,
+    number_of_reviews,
+    host_is_superhost,
     accommodates,
-    property_type,          
-    room_type               
+    property_type,
+    room_type
   ) %>%
   na.omit() %>%
   # put rare property types into an "Other" category to keep the variable tidy
@@ -1819,13 +1877,13 @@ colnames(d_dummies) <- make.names(colnames(d_dummies))
 
 d_scaled <- as.data.frame(lapply(d_dummies, normalize))
 
-set.seed(42) 
+set.seed(42)
 nn.expanded <- neuralnet(
-  price ~ ., 
+  price ~ .,
   data = d_scaled,
   hidden = 3,
-  linear.output = TRUE, 
-  stepmax = 1e6         
+  linear.output = TRUE,
+  stepmax = 1e6
 )
 
 plot(nn.expanded)
@@ -1837,7 +1895,7 @@ test_data_h3_exp <- as.data.frame(lapply(d_scaled, mean))
 test_data_h3_exp <- rbind(test_data_h3_exp, test_data_h3_exp)
 
 # Isolate the Superhost effect: Row 1 = Regular Host, Row 2 = Superhost
-test_data_h3_exp$host_is_superhostFALSE <- c(1, 0) 
+test_data_h3_exp$host_is_superhostFALSE <- c(1, 0)
 test_data_h3_exp$host_is_superhostTRUE <- c(0, 1)
 
 # Predict prices (excluding the 'price' column from the input)
@@ -1849,8 +1907,8 @@ max_price_exp <- max(d_model_ready$price)
 
 real_prices_expanded <- predictions_h3_exp$net.result * (max_price_exp - min_price_exp) + min_price_exp
 
-#print("Predicted Prices (Expanded Model): Regular Host vs. Superhost")
-#print(real_prices_expanded)
+# print("Predicted Prices (Expanded Model): Regular Host vs. Superhost")
+# print(real_prices_expanded)
 
 results.df_exp <- data.frame(
   "Host_Type" = c("Regular Host (0)", "Superhost (1)"),
@@ -1858,38 +1916,44 @@ results.df_exp <- data.frame(
 )
 
 # Output as a professional HTML table using kable and kableExtra
-kable(results.df_exp, 
-      col.names = c("Host Status", "Predicted Price (CHF)"),
-      caption = "Predicted Prices: Regular Host vs. Superhost (Expanded Model)",
-      align = 'lc') %>%
-  kable_styling(bootstrap_options = c("striped", "hover", "condensed"), 
-                full_width = FALSE, 
-                position = "center") %>%
+kable(results.df_exp,
+  col.names = c("Host Status", "Predicted Price (CHF)"),
+  caption = "Predicted Prices: Regular Host vs. Superhost (Expanded Model)",
+  align = "lc"
+) %>%
+  kable_styling(
+    bootstrap_options = c("striped", "hover", "condensed"),
+    full_width = FALSE,
+    position = "center"
+  ) %>%
   row_spec(0, bold = TRUE)
-
 ```
 
 ```{r}
 p.ANN_basic <- ggplot(results.ann_basic, aes(Host_Type, Predicted_Price_CHF)) +
-  geom_col(fill = "deepskyblue", width = 0.5) + 
+  geom_col(fill = "deepskyblue", width = 0.5) +
   geom_text(aes(label = round(Predicted_Price_CHF, 2)),
-            vjust = 2) +
+    vjust = 2
+  ) +
   labs(
     title = "ANN predicted prices by host type",
-    subtitle = "Naive Model", 
+    subtitle = "Naive Model",
     x = " ",
-    y = "Predicted Price (CHF)" ) 
+    y = "Predicted Price (CHF)"
+  )
 
 p.ANN_complex <- ggplot(results.df_exp, aes(Host_Type, Predicted_Price_CHF)) +
-  geom_col(fill = "deepskyblue", width = 0.5) + 
+  geom_col(fill = "deepskyblue", width = 0.5) +
   geom_text(aes(label = round(Predicted_Price_CHF, 2)),
-            vjust = 2) +
+    vjust = 2
+  ) +
   labs(
     title = "ANN predicted prices by host type",
-    subtitle = "Complex model", 
+    subtitle = "Complex model",
     x = " ",
-    y = "Predicted Price (CHF)" ) 
-  
+    y = "Predicted Price (CHF)"
+  )
+
 p.ANN_basic | p.ANN_complex
 ```
 

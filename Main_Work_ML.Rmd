@@ -490,6 +490,23 @@ p.baths | p.beds
 
 ```
 
+```{r}
+p.baths <- ggplot(d.airbnb_listings_feat, aes(x = bathrooms)) +
+  geom_boxplot(fill = "deepskyblue", color = "black") +
+  scale_x_continuous(breaks = seq(0, max(d.airbnb_listings_feat$bathrooms, na.rm = TRUE), by = 1)) +
+  labs(title = "Number of Bathrooms", x = "Bathrooms") +
+  theme(axis.text.y = element_blank(), axis.ticks.y = element_blank())
+
+p.beds <- ggplot(d.airbnb_listings_feat, aes(x = beds)) +
+  geom_boxplot(fill = "deepskyblue", color = "black") +
+  scale_x_continuous(breaks = seq(0, max(d.airbnb_listings_feat$beds, na.rm = TRUE), by = 2)) +
+  labs(title = "Number of Beds", x = "Beds") +
+  theme(axis.text.y = element_blank(), axis.ticks.y = element_blank())
+
+p.baths | p.beds
+```
+
+
 Bathroom and bed counts cluster at the low end as expected. The bed
 distribution has a few extreme outliers (40+ beds), which could be large
 hostels or dormitories. We checked a handful manually but didn't verify

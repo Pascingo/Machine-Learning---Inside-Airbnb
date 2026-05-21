@@ -47,8 +47,11 @@ TIMON:
 -   8.2 Model A in Model poisson oder GLM poisson anpassen. *done*
 
 DAVIDE:
--   GAM hat viele Outputs hardcoded in Interpretation, mit `` coden?
+-   GAM hat viele Outputs hardcoded in Interpretation, mit `` coden
+*=> erledigt*
 -   GAM Text zu Visualisierungen und Kables 
+*=> erledigt*
+
 
 PASCAL:
 -   README finalisieren
@@ -1178,18 +1181,40 @@ p.glm_binomial <- ggplot(d.glm_predict, aes(
 p.glm_binomial
 ```
 
+```{r interpretation_glm_binomial_vars, include=FALSE}
+res <- d.results_glm_binomial
+
+# Superhost
+or_sh        <- res$odds_ratio[res$term == "host_is_superhostTRUE"]
+sh_lower     <- res$or_lower[res$term   == "host_is_superhostTRUE"]
+sh_upper     <- res$or_upper[res$term   == "host_is_superhostTRUE"]
+sh_pval      <- res$p.value[res$term    == "host_is_superhostTRUE"]
+sh_pct_lower <- round((1 - or_sh) * 100, 0)
+
+# Accommodates
+or_acc       <- res$odds_ratio[res$term == "accommodates"]
+
+# Review rating
+or_rev       <- res$odds_ratio[res$term == "review_scores_rating"]
+rev_pct_up   <- round((or_rev - 1) * 100, 0)
+
+# Hotel room CI
+hotel_lower  <- res$or_lower[res$term == "room_typeHotel room"]
+hotel_upper  <- res$or_upper[res$term == "room_typeHotel room"]
+```
+
+
+
 ## Interpretation GLM Binomial
 
-After controlling for size, room type and rating, Superhosts have 31%
-lower odds of charging an above-median price (OR = 0.69, CI [0.57,
-0.84], p = 0.0002).
+After controlling for size, room type and rating, Superhosts have `r sh_pct_lower`% lower odds of charging an above-median price (OR = `r or_sh`, CI [`r sh_lower`, `r sh_upper`], p = `r sh_pval`).
 
 The control variables behave as expected: each additional guest nearly
-doubles the odds of being in the upper price half (OR = 1.83), private
-and shared rooms are far less likely to land above the median, and an
-one-point increase in rating raises the odds by about 62%. The
+doubles the odds of being in the upper price half (OR = `r or_acc`), private
+and shared rooms are far less likely to land above the median, and a
+one-point increase in rating raises the odds by about `r rev_pct_up`%. The
 hotel-room coefficient is significant but its wide confidence interval
-(1.26 to 40.6) reflects how few hotel listings are in the dataset.
+(`r hotel_lower` to `r hotel_upper`) reflects how few hotel listings are in the dataset.
 
 This is the opposite of what H1 would predict. Superhost status does not
 raise willingness to pay, it correlates with charging less. Combined
@@ -1241,6 +1266,11 @@ The GAM speaks mainly to **H2** through the spatial spline
 
 ## Model
 
+We start by reducing the dataset to the columns the GAM needs and dropping
+incomplete rows. The split happens *before* any model is fitted. The same
+training set will be reused by the SVM to label its traffic-light targets,
+which prevents information from the GAM leaking into the SVM's evaluation.
+
 ```{r gam_data_split, Lead Davide, out.width="80%"}
 # Data preparation: keep only variables used in the GAM, drop rows with NAs
 d.airbnb_listings_feat_gam <- d.airbnb_listings_feat %>%
@@ -1262,11 +1292,10 @@ d.test <- d.airbnb_listings_feat_gam[-train.idx, ]
 
 ```
 
-We model `log(price)` rather than the raw price. The distribution is
-heavily right-skewed (see Chapter EDA). Coefficients on the log scale
-read multiplicatively: β corresponds to roughly `$(exp(β) − 1) × 100%$`
-price change. We use `method = "REML"` because it gives more reliable
+After the split, we model `log(price)` rather than the raw price. The distribution is heavily right-skewed (see Chapter EDA). Coefficients on the log scale read multiplicatively: β corresponds to roughly `$(exp(β) − 1) × 100%$` price change. We use `method = "REML"` because it gives more reliable
 confidence intervals than the default.
+
+The parametric coefficients sit on the log scale: a coefficient *β* translates to roughly (exp(*β*) − 1) × 100% price change. `room_type` and `bathrooms` are significant. `host_is_superhost` is essentially zero.
 
 ```{r gam_fit, Lead Davide, out.width="80%"}
 gam.main <- gam(
@@ -1299,7 +1328,10 @@ tidy(gam.main) %>%
 
 The partial effect plots are the main reason to choose a GAM. Each smooth term is shown on its own, with the shaded area representing the 95% confidence band. We also fit an LM on the exact same data and predictors as a fair benchmark, the only difference is the absence of smooth terms.
 
-The three 1D smooth terms are shown below. The 2D spatial spline s(longitude, latitude) is more meaningful as a geographic surface than as an abstract contour plot. We visualise it later in the interactive map. Its EDF (≈ 25) still appears in the summary table below.
+The three 1D smooth terms are shown below. The 2D spatial spline
+`s(longitude, latitude)` is more meaningful as a geographic surface than as
+an abstract contour plot. We visualise it later in the interactive map. Its
+EDF still appears in the summary table beside the plots.
 
 ```{r gam_partial_effects, Lead Davide, out.width="80%"}
 # Partial effect plots for the 1D smooth terms.
@@ -1338,8 +1370,10 @@ kable(d.table,
   )
 ```
 
-
-
+To know whether the smooth terms actually buy us something, we fit a linear
+model on the exact same data and predictors. The only difference is the
+absence of smooths. R² and AIC together tell us whether the GAM's added
+flexibility is worth the additional degrees of freedom.
 
 ```{r gam_lm_benchmark, Lead Davide, out.width="80%"}
 # Fair LM benchmark (same target, same training data)
@@ -1416,11 +1450,12 @@ data.frame(
   kable_styling()
 ```
 
+The split is stable across train and test. If it weren't, we'd worry about
+overfitting. The notable share of "Underpriced" listings is the most actionable finding, which indicates that many hosts are pricing below what the GAM considers the market value.
+
 ### Interactive Map of Vaud
 
-The map below plots every listing in the dataset, coloured by its
-traffic-light verdict. Each point shows the actual price, the
-GAM-recommended price, and the percentage deviation when clicked.
+The map below plots every listing in the dataset, coloured by its traffic-light verdict. Click any point to see the actual price, the GAM-recommended price, and the percentage deviation. The clusters of orange "underpriced" points along Lake Geneva and around Lausanne hint at where the recommendation tool would have the biggest immediate impact.
 
 ```{r gam_leaflet_map, out.width="80%"}
 d.map <- bind_rows(d.train, d.test)
@@ -1457,45 +1492,80 @@ leaflet() %>%
 # Note: d.train and d.test are passed on to the SVM block.
 ```
 
+
+```{r interpretation_gam_vars, include=FALSE}
+# Model performance
+gam_dev_expl <- round(summary(gam.main)$dev.expl * 100, 1)
+gam_r2       <- round(summary(gam.main)$r.sq, 3)
+gam_n        <- summary(gam.main)$n
+
+# LM benchmark
+lm_r2        <- round(summary(lm.gam_comparison)$r.squared, 3)
+
+# AIC comparison
+aic_vals     <- AIC(lm.gam_comparison, gam.main)
+aic_lm       <- round(aic_vals$AIC[1], 0)
+aic_gam      <- round(aic_vals$AIC[2], 0)
+
+# Parametric coefficients (robust to spaces in names)
+cf           <- coef(gam.main)
+hotel_mult   <- round(exp(cf[grep("Hotel",        names(cf))]), 1)
+private_pct  <- round((1 - exp(cf[grep("Private", names(cf))])) * 100, 0)
+shared_pct   <- round((1 - exp(cf[grep("Shared",  names(cf))])) * 100, 0)
+bath_pct     <- round((exp(cf["bathrooms"]) - 1) * 100, 0)
+
+# Smooth terms EDF
+edf          <- summary(gam.main)$s.table
+edf_acc      <- round(edf[grep("accommodates",       rownames(edf)), "edf"], 2)
+edf_rev      <- round(edf[grep("review_scores",      rownames(edf)), "edf"], 2)
+edf_nrev     <- round(edf[grep("number_of_reviews",  rownames(edf)), "edf"], 2)
+edf_loc      <- round(edf[grep("longitude",          rownames(edf)), "edf"], 2)
+
+# Traffic light distribution (from training set)
+tl_train     <- prop.table(table(d.train$traffic_light)) * 100
+tl_under     <- round(tl_train["Underpriced"], 0)
+tl_fair      <- round(tl_train["Fair Price"],  0)
+tl_over      <- round(tl_train["Overpriced"],  0)
+```
+
+
 ## Interpretation GAM
 
-The GAM explains 66.4% of the deviance (R² = 0.658) on 2,527 training
-listings. That's a clear gain over the LM benchmark (R² = 0.607), and
-the AIC drops from 2,599 to 2,279 — the smooth terms earn their
-additional degrees of freedom.
+The GAM explains `r gam_dev_expl`% of the deviance (R² = `r gam_r2`) on `r format(gam_n, big.mark = ",")` training
+listings. That's a clear gain over the LM benchmark (R² = `r lm_r2`), and
+the AIC drops from `r format(aic_lm, big.mark = ",")` to `r format(aic_gam, big.mark = ",")`.  The smooth terms earn their additional degrees of freedom.
 
 **Parametric terms**. Room type is the strongest categorical driver:
-hotel rooms charge roughly 1.9× more than entire homes, private rooms
-30% less, shared rooms 55% less. The hotel-room result rests on few
-listings, so we don't over-read it. Each additional bathroom adds about
-25% to the price — the strongest structural driver besides room type and
-capacity. *host_is_superhost* is essentially zero and not significant,
+hotel rooms charge roughly `r hotel_mult`× more than entire homes, private rooms
+`r private_pct`% less, shared rooms `r shared_pct`% less. The hotel-room result rests on
+few listings, so we don't over-read it. Each additional bathroom adds about
+`r bath_pct`% to the price — the strongest structural driver besides room type
+and capacity. *host_is_superhost* is essentially zero and not significant,
 matching what the GLM Binomial and Neural Network show.
 
-**Smooth terms**. All four are highly significant (p \< 0.001) with EDF
+**Smooth terms**. All four are highly significant (p < 0.001) with EDF
 well above 1, confirming the non-linearity:
 
--   `s(accommodates)` (EDF = 4.58): steep rise from 1 to \~6 guests,
-    then flattens — diminishing returns as expected.
--   `s(review_scores_rating)` (EDF = 3.00): real but modest, with a wide
-    confidence band.
--   `s(log1p(number_of_reviews))` (EDF = 2.63): slight downward trend —
-    listings with more reviews tend to be priced lower.
--   `s(longitude, latitude)` (EDF = 24.93): by far the most flexible
-    term. High-price clusters along Lake Geneva and around Lausanne,
-    sharp drops in rural and alpine areas. The strongest empirical
-    support for H2.
+- `s(accommodates)` (EDF = `r edf_acc`): steep rise from 1 to ~6 guests, then
+  flattens — diminishing returns as expected.
+- `s(review_scores_rating)` (EDF = `r edf_rev`): real but modest, with a wide
+  confidence band.
+- `s(log1p(number_of_reviews))` (EDF = `r edf_nrev`): slight downward trend —
+  listings with more reviews tend to be priced lower.
+- `s(longitude, latitude)` (EDF = `r edf_loc`): by far the most flexible
+  term. High-price clusters along Lake Geneva and around Lausanne,
+  sharp drops in rural and alpine areas. The strongest empirical support
+  for H2.
 
 **Traffic light distribution**. Consistent across train and test (Fair ≈
-33%, Underpriced ≈ 41%, Overpriced ≈ 25%). The overweight of underpriced
+`r tl_fair`%, Underpriced ≈ `r tl_under`%, Overpriced ≈ `r tl_over`%). The overweight of underpriced
 listings suggests that a notable share of hosts is leaving money on the
 table.
 
 **Take-aways for the pricing tool**. Structural features (room type,
 bathrooms, capacity) explain most of what hosts can directly influence.
-Location matters non-linearly — coordinates clearly beat postcode
-dummies. The Superhost badge is an occupancy strategy, not a pricing
-one.
+Location matters non-linearly — coordinates clearly beat postcode dummies.
+The Superhost badge is an occupancy strategy, not a pricing one.
 
 ## Limitations
 

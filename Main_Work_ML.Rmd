@@ -12,7 +12,7 @@ output:
     toc_float: true
     number_sections: true
     theme: cosmo
-    fontsize: 10pt
+    fontsize: 11pt
     geometry: margin=1.5cm
     linestretch: 1.0
 editor_options: 
@@ -35,15 +35,26 @@ caption {
 
 ToDos backlog: 
 
--   Data Quality kontrollieren & übersetzen.\
--   EDA/DQ/UTD aussortieren falls platzbedarf
--   tuning wieder reaktivieren --\> done
--   README finalisieren
--   color fomatting kontrollieren.
--   AI-Kontrolle
+-   AI-Kontrolle/ -   tuning wieder reaktivieren --\> done
+
+
+
+
+TIMON:
+-   Cap UTD: Properties and Roomtype: Room Type mehrfach drin, löschen.
+-   Finalkontrolle Farbe
+
+
+DAVIDE:
 -   GAM hat viele Outputs hardcoded in Interpretation, mit `` coden?
 -   GAM Text zu Visualisierungen und Kables 
--   Cap UTD: Properties and Roomtype: Room Type mehrfach drin, löschen.
+
+PASCAL:
+-   README finalisieren
+
+
+
+
 
 # Introduction
 

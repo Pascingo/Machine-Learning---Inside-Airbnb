@@ -61,7 +61,7 @@ Tasks Timon
 
 
 
-ToDos backlog: - R-chunks sauber personen zuweisen
+ToDos backlog: 
 
 -   Data Quality kontrollieren & übersetzen.\
 -   EDA/DQ/UTD aussortieren falls platzbedarf
@@ -69,6 +69,7 @@ ToDos backlog: - R-chunks sauber personen zuweisen
 -   README finalisieren
 -   color fomatting kontrollieren.
 -   AI-Kontrolle
+-   GAM hat viele Outputs hardcoded in Interpretation, mit `` coden?
 
 OFFENE FRAGEN:
 
@@ -83,7 +84,8 @@ C. auf zwei reduzieren 2/2 Plots total statt 5 aufs mal...
 -   3.7 fett unnütz mit den 40 betten und 14 WCs. couldnt care less und man sieht den einen Ausreisser nichtmal auf dem Plot 
 Davide: 
 löschen...
-Timon: nicht löschen, wir sollen uns alle Variablen anschauen. Andere Lösung suchen. 
+Timon: nicht löschen, wir sollen uns alle Variablen anschauen. Andere Lösung suchen.
+Pascal: Habe noch Version mit Boxplot eingebaut. Da Daten extrem rechtsschief sind, kanns klappen.
 
 -   3.10 brauchen wir das? Davide: jup, find ich easy aber auch Appendix tauglich.
 

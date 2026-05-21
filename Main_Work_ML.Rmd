@@ -80,12 +80,14 @@ OFFENE FRAGEN:
 A. Löschen
 B. in den Appendix runter
 C. auf zwei reduzieren 2/2 Plots total statt 5 aufs mal...
+        --> Timon: wir hätten den Platz würde ich sagen. 
 
 -   3.7 fett unnütz mit den 40 betten und 14 WCs. couldnt care less und man sieht den einen Ausreisser nichtmal auf dem Plot 
 Davide: 
 löschen...
 Timon: nicht löschen, wir sollen uns alle Variablen anschauen. Andere Lösung suchen.
 Pascal: Habe noch Version mit Boxplot eingebaut. Da Daten extrem rechtsschief sind, kanns klappen.
+Timon: ich finde die Variante mit dem Boxplot sehr sauber. wenn wir die noch schön formatieren finde ich das die beste Lösung. 
 
 -   3.10 brauchen wir das? Davide: jup, find ich easy aber auch Appendix tauglich.
 

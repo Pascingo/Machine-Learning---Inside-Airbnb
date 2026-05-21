@@ -837,6 +837,8 @@ case with price variables, this variable is logarithmized.
 
 ## Model
 
+In this Chapter, we will calculate a linear model to be able to give an answer to the first Hypothesis. 
+
 ```{r lm lead Timon, out.width="80%", fig.show='hold'}
 # We use log(price) to account for the right-skewed distribution of Airbnb prices.
 lm.main <- lm(
@@ -991,7 +993,35 @@ combined_models %>%
   group_rows("GLM quasi-poisson", 9, 16)
 ```
 
-## Crossvalidation
+
+## Interpretations
+
+### Interpretation GLM-Poisson
+
+As expected, the GLM with a Poisson distribution produced
+overdispersion, since the variability in the Airbnb data was to be
+expected. The model calculated the standard errors too small, which is
+why all variables were highly significant in the first output. The
+dispersion was then calculated and found to be greater than 1,
+specifically `r round(dispersion_ratio, 2)`. A quasi-Poisson model was
+used as a solution, which adjusts the standard errors upward.
+
+### Interpretation GLM-Quasipoisson
+
+By utilizing a quasi-Poisson model, we successfully corrected for overdispersion in the data. This adjustment provides more realistic standard errors, ensuring a highly reliable evaluation of the actual drivers behind property occupancy. 
+
+Our analysis identifies several key factors influencing performance. **Price** has a highly significant negative impact; as expected, higher rates consistently lead to lower occupancy. Conversely, achieving **Superhost status** is a major advantage. It exerts a highly significant positive effect, multiplying a property's occupancy by approximately **2.6 times** compared to standard hosts. Additionally, both **guest reviews** and **property capacity** are strong, significant drivers of success—better ratings and the ability to accommodate more guests reliably translate into higher booking volumes.
+
+Finally, the **room type** plays a crucial role. When comparing setups against the baseline of renting an *Entire home/apt* **private rooms** experience significantly lower occupancy rates. However, for **shared rooms**, the data does not reveal a statistically significant difference in occupancy compared to booking an entire apartment.
+
+### Cross-validation
+
+To ensure that the higher number of variables does not cause
+overfitting, we use cross-validation. In this process, we repeatedly
+split the data into new subsets, which we use to retrain and re-evaluate
+the model. We then check to see if there are any significant
+fluctuations. If the model were overfitting, we would repeatedly observe
+random fluctuations. 
 
 ```{r cross-validation Datasets 10-fold (TIMON), out.width="80%"}
 set.seed(1)
@@ -1039,34 +1069,7 @@ for (i in 1:200) {
 boxplot(cv.mse.poisson, cv.mse.quasipoisson, names = c("Poisson-Model", "Quasipoisson-Model"), col = "deepskyblue")
 ```
 
-## Interpretations
-
-### Interpretation GLM-Poisson
-
-As expected, the GLM with a Poisson distribution produced
-overdispersion, since the variability in the Airbnb data was to be
-expected. The model calculated the standard errors too small, which is
-why all variables were highly significant in the first output. The
-dispersion was then calculated and found to be greater than 1,
-specifically `r round(dispersion_ratio, 2)`. A quasi-Poisson model was
-used as a solution, which adjusts the standard errors upward.
-
-### Interpretation GLM-Quasipoisson
-
-By utilizing a quasi-Poisson model, we successfully corrected for overdispersion in the data. This adjustment provides more realistic standard errors, ensuring a highly reliable evaluation of the actual drivers behind property occupancy. 
-
-Our analysis identifies several key factors influencing performance. **Price** has a highly significant negative impact; as expected, higher rates consistently lead to lower occupancy. Conversely, achieving **Superhost status** is a major advantage. It exerts a highly significant positive effect, multiplying a property's occupancy by approximately **2.6 times** compared to standard hosts. Additionally, both **guest reviews** and **property capacity** are strong, significant drivers of success—better ratings and the ability to accommodate more guests reliably translate into higher booking volumes.
-
-Finally, the **room type** plays a crucial role. When comparing setups against the baseline of renting an *Entire home/apt* **private rooms** experience significantly lower occupancy rates. However, for **shared rooms**, the data does not reveal a statistically significant difference in occupancy compared to booking an entire apartment.
-
-### Interpretation Cross-validation
-
-To ensure that the higher number of variables does not cause
-overfitting, we use cross-validation. In this process, we repeatedly
-split the data into new subsets, which we use to retrain and re-evaluate
-the model. We then check to see if there are any significant
-fluctuations. If the model were overfitting, we would repeatedly observe
-random fluctuations. In our case, however, we only get a single outlier,
+In our case, however, we only get a single outlier,
 which suggests that we have a stable model without overfitting.
 
 ## Limitations
@@ -1606,6 +1609,8 @@ examines whether the current rental prices are justified.
 
 ## Model
 
+In this Chapter, we create the relevant set of Variables for the `svm.main`. Then we tune the Model to figure out, what the correct values for gamma and cost are. 
+
 ```{r SVM, Lead Timon, out.width="80%"}
 # Setting a seed ensures reproducibility.
 set.seed(42)
@@ -1621,11 +1626,9 @@ svm.coloums <- c(
 # Creating the 80% Training and 20% Test datasets
 d.svm_train <- d.train[, svm.coloums]
 d.svm_test <- d.test[, svm.coloums]
-```
 
-```{r tuning model for optimal cost, out.width="80%"}
 # We use 10-fold cross-validation to find the optimal 'cost' and 'gamma' parameters
-# for the radial basis function (RBF) kernel.
+# for the radial kernel.
 
 # tuned_svm <- tune(
 #   svm,
@@ -1651,12 +1654,12 @@ svm_model_gamma <- 0.625
 # cat("Optimal Cost:", svm_model_cost, "\n")
 # cat("Optimal Gamma:", svm_model_gamma, "\n")
 # cat("Best Cross-Validation Performance (Error Rate):", round(tuned_svm$best.performance, 4), "\n")
-```
 
-```{r TIMON, out.width="80%"}
-# --- Final SVM Model & Evaluation ---
 
-# Training the final Support Vector Machine using the optimized parameters
+
+
+
+# Training the Support Vector Machine using the optimized parameters
 svm.main <- svm(traffic_light ~ .,
   data = d.svm_train,
   kernel = "radial",
@@ -1674,7 +1677,6 @@ svm.conf_matrix <- table(Predicted = svm.test_pred, Actual = d.svm_test$traffic_
 # Calculating overall Accuracy
 svm_accuracy <- sum(diag(svm.conf_matrix)) / sum(svm.conf_matrix)
 
-
 kable(svm.conf_matrix, booktabs = TRUE, escape = FALSE, caption = "SVM Confusion Matrix", align = "lccc") %>%
   kable_styling(bootstrap_options = c("bordered")) %>%
   column_spec(2, background = c("deepskyblue", "maroon1", "maroon1")) %>%
@@ -1683,12 +1685,15 @@ kable(svm.conf_matrix, booktabs = TRUE, escape = FALSE, caption = "SVM Confusion
   footnote(general = paste0("SVM Test Accuracy: ", round(svm_accuracy * 100, 2), "% \n", "Training set size: ", nrow(d.svm_train), "\n Test set size: ", nrow(d.svm_test)), general_title = "Information:")
 ```
 
+
 ## Interpretion SVM
 
 The tuned SVM with an RBF kernel reaches
 `r round(svm_accuracy * 100, 2)`% accuracy on the test set. This means
 the model clearly outperforms chance, which would be 33% for a
-three-class model. The main issues arise when classifying *Fair Price*.
+three-class model. 
+
+The main issues arise when classifying *Fair Price*.
 This makes sense, however, since this is the only class that is bounded
 both above and below and therefore does not exhibit the significant
 deviations that can be accounted for in the other two categories. For a

@@ -58,6 +58,7 @@ Tasks Timon
   
   - 12.3 zwei barplots statt den Tabellen eingefügt. diese kann man dann allenfalls nebeneinander nehmen um darzustellen. ist ein bisschen besser als Tabellen. 
         --> **Kontrolle PASCAL, dann Tabellen löschen.** --> erledigt
+        --> TIMON: Tabellen gelöscht
 
 
 
@@ -1784,15 +1785,6 @@ results.ann_basic <- data.frame(
   "Predicted_Price_CHF" = round(as.numeric(real_prices_naive), 2)
 )
 
-# Output as a professional HTML table using kable and kableExtra
-kable(results.ann_basic, 
-      col.names = c("Host Status", "Predicted Price (CHF)"),
-      caption = "Predicted Prices: Regular Host vs. Superhost (Naive Model)",
-      align = 'lc') %>%
-  kable_styling(bootstrap_options = c("striped", "hover", "condensed"), 
-                full_width = FALSE, 
-                position = "center") %>%
-  row_spec(0, bold = TRUE)
 
 ```
 
@@ -1858,16 +1850,6 @@ results.df_exp <- data.frame(
   "Host_Type" = c("Regular Host (0)", "Superhost (1)"),
   "Predicted_Price_CHF" = round(as.numeric(real_prices_expanded), 2)
 )
-
-# Output as a professional HTML table using kable and kableExtra
-kable(results.df_exp, 
-      col.names = c("Host Status", "Predicted Price (CHF)"),
-      caption = "Predicted Prices: Regular Host vs. Superhost (Expanded Model)",
-      align = 'lc') %>%
-  kable_styling(bootstrap_options = c("striped", "hover", "condensed"), 
-                full_width = FALSE, 
-                position = "center") %>%
-  row_spec(0, bold = TRUE)
 
 ```
 

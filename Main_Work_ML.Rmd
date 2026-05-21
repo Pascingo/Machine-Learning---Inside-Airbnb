@@ -31,35 +31,7 @@ caption {
       font-size: 1.0em;
     }
 ```
-
-
-Tasks ab 18.05: 
-- Formatting conventions übernehmen (Timon) *erledigt* 
-- Variabel-"call" kontrollieren. (Timon) *erledigt* 
-
-- beautifying HTML-Doc: (jeder seine Modelle, TIMON macht alles vor den Modellen) 
-- 2.0 Output --> drin lassen wenn ja verschönern. (TIMON) *erledigt* 
-- 4.2 NA-Check irgendwie noch was dazu schreiben (TIMON) *erledigt*
-- 7.3 Grafiken Kleiner machen. *erledigt* 
-davide- 9.3 Modelouput schön machen, bzw den Output oben entfernen. --> **Check ich nicht ganz - timon gefragt**
-davide - 10.3 Train und Test irgedwo sauber verpacken. nicht einfach so einblenden. *erledigt Davide - kable gemacht* --> passt so? 
-davide- 10.3 Output verschönern kable statt cat *erledigt von Timon* --\> bitte kontrollieren ob das so passt oder ob was fehlt. 
-davide- 10.3 machen diese 4 Visualisierungen wirklich Sinn? -\> Lat/Long sieht aus wie LSD-Fiebertraum das ist halt der Kanton Vaude. **dort zu wohnen ist ein Fiebertraum i guess. kein plan ob und wie wir das darstellen wollen. ich mach mal ein Vorschlag.**
-davide- 10.3 einzelne kleine R-Outputs in eine Tabelle und zusammen darstellen. kable statt cat *einen Teil erledigt von Timon* 
-davide- 10.3.1 die einzelnen Outputs in eine Tablle bringen und zusammen darstellen  *erledigt Davide*
-pascal- 12.3 Output schöner darstellen (kabel) done 
-pascal- 12 keine einzige Darstellung beim ANN! IMPORTANT (Kable erstellt, keine Ahnung wegen Plot, AI gibt auch keine Auskunft)
-
-Tasks Timon
-  - 10.2 kombinieren der beiden Tabellen als eine Tabelle mit den Datasetgrössen als Fussnote
-        --> **zur kontrolle an DAVIDE. danach die Tabelle oben löschen.**
-  - 10.3 kleiner Text zu der Model-Comparison? (DAVIDE?)
-  
-  - 12.3 zwei barplots statt den Tabellen eingefügt. diese kann man dann allenfalls nebeneinander nehmen um darzustellen. ist ein bisschen besser als Tabellen. 
-        --> **Kontrolle PASCAL, dann Tabellen löschen.** --> erledigt
-        --> TIMON: Tabellen gelöscht
-
-
+**ALS LETZES styler::style_file(DATEINAME) runnen in Konsole**
 
 ToDos backlog: 
 
@@ -70,82 +42,8 @@ ToDos backlog:
 -   color fomatting kontrollieren.
 -   AI-Kontrolle
 -   GAM hat viele Outputs hardcoded in Interpretation, mit `` coden?
-
-OFFENE FRAGEN:
-
--   3.6 brauchen wir den zweiten Plot? --> Davide: nöö, wir gehen fast nie auf die Region ein tbh. 
-    *Timon hat diesen zweiten Plot durch einen der Roomtypes ersetzt*
-    *habe gerade noch gesehen, dass wir diesen Plot aber auchnoch bei 3.4 drin haben*
--   3.5 wie können wir die überlappungen lösen? --> Davide:
-A. Löschen
-B. in den Appendix runter
-C. auf zwei reduzieren 2/2 Plots total statt 5 aufs mal...
-        --> Timon: wir hätten den Platz würde ich sagen. 
-
--   3.7 fett unnütz mit den 40 betten und 14 WCs. couldnt care less und man sieht den einen Ausreisser nichtmal auf dem Plot 
-Davide: 
-löschen...
-Timon: nicht löschen, wir sollen uns alle Variablen anschauen. Andere Lösung suchen.
-Pascal: Habe noch Version mit Boxplot eingebaut. Da Daten extrem rechtsschief sind, kanns klappen.
-Timon: ich finde die Variante mit dem Boxplot sehr sauber. wenn wir die noch schön formatieren finde ich das die beste Lösung. 
-
--   3.10 brauchen wir das? Davide: jup, find ich easy aber auch Appendix tauglich.
-
--   4 & 4.1 zeigen die nicht das gleiche?
-Davide: 
-Empfehlung nur ein 4er Kapitel machen namens DataQuality und keine Subchapters wie 4.1, 4.2, 4.X
-und ja es zeigt das gleiche (einmal count und einmal %)
-    *wurde von TIMON so erledigt es wurden sowohl die zweite Grafik und die Tabelle entfernt und die Texte so angepasst, dass die Infomrationen immernoch vorhanden sind.*
-
--   5.4 kann man nicht die Tabelle weglassen und die relevanten Werte
-    einfach nennen im Text? so iet es ein Bisschen doppelt.
-Davide: bin ich einverstanden. 
-    *tabelle bei der Korrelationsmatrix wurde entfernt von TIMON* commit number 43ce48b4cf25450e1a304adf3b8d38649147d1f7
-
--   generell Grafiken auf eine Grösse fixieren Darstellung ist auf 100%, Darstellung kann mehr als 1 Plot haben.
-Davide: ich glaub das hat sich bereits geklärt mit width.out = 80% in jedem R chunk
-      *yess*
-
-Infos zu bedenken: ABGABEDATUM: 12 Juni
-
-Kaitelstruktur: Theorie (Theorieteil, Businesscase und Link zu
-Hypothese) Model Optionales Interpretation (Bezug auf Businescase)
-Limitation (Abstriche am Businescase)
-
-Farbschema:
-
-Hauptfarbe: deepskyblue\
-schattigerung: lightblue Sekundärfarbe: maroon1 --\> wenn dunkler
-benötigt bis "maroon4" Drittfarbe: gold Akzentfarbe: firebrick1
-
-generell können auch dunklere Varianten der Farben verwendet werden.
-dies ist normalerweise dadurch möglich, dass man die zahl hinden bis 4
-erhöht. Dies gilt für alle Farben ausser deepskyblue
-
-**Note zu RQ und Hypos**
-
-Es sollte Möglich sein, die jeweiligen Modell in einer oder beiden
-Hypothesen zu verordnen. Sprich: ich untersuche mit meinem Modell H1 und
-finde dass mehr reviews den Preis steigen lassen blablabla. Zudem kann
-es in gewissen Modellen sinn machen, beide Hypothesen anzuschauen und zu
-beantworten. es kann aber auch sein, dass man zb H1 anschaut und mit
-Faktoren wie "accommodates" kontrolliert. dann habe ich zwar
-location-sided-Indicators, jedoch habe ich keinen Fokus auf die H2.\*\*
-
-Eine dritte Option ist, dass ich nicht eine der beiden Hypothesen
-untersuche, sondern die zweite Forshcungsfrage und versuche vorhersagen
-zu treffen. dies macht beispielsweise beim SVM sinn. da müsst ihr selbst
-enscheiden, welchen Fokus ihr setzen wollt
-
-Coding Conventions. • data sets are named with the prefix “d.” (e.g.,
-d.cats). • linear model objects are named with the prefix “lm.” (e.g.,
-lm.cats) • plots are named with the prefix "p."
-
-• within the text R-objects are written using code formatting (e.g.,
-lm.cats)
-
-• variable names are written using italic (e.g., Body.weight) • these
-conventions are arbitrary, but hopefully useful to the reader
+-   GAM Text zu Visualisierungen und Kables 
+-   Cap UTD: Properties and Roomtype: Room Type mehrfach drin, löschen.
 
 # Introduction
 
@@ -483,21 +381,7 @@ rare. In Addition we can see that most Venues are entire units. The Variables se
 
 ## Furnishing
 
-```{r, fig.show='hold', out.width="80%"}
-p.baths <- ggplot(d.airbnb_listings_feat, aes(x = bathrooms)) +
-  geom_histogram(binwidth = 0.5, fill = "deepskyblue", color = "white") +
-  scale_x_continuous(breaks = seq(0, max(d.airbnb_listings_feat$bathrooms, na.rm = TRUE), by = 1)) +
-  labs(title = "Number of Bathrooms", x = "Bathrooms", y = "Count")
-
-p.beds <- ggplot(d.airbnb_listings_feat, aes(x = beds)) +
-  geom_histogram(binwidth = 1, fill = "deepskyblue", color = "white") +
-  scale_x_continuous(breaks = seq(0, max(d.airbnb_listings_feat$beds, na.rm = TRUE), by = 2)) +
-  labs(title = "Number of Beds", x = "Beds", y = "Count")
-
-p.baths | p.beds
-```
-
-```{r}
+```{r, out.width= "80%"}
 p.baths <- ggplot(d.airbnb_listings_feat, aes(y = bathrooms)) +
   geom_boxplot(fill = "deepskyblue", color = "black") +
   scale_x_continuous(breaks = seq(0, max(d.airbnb_listings_feat$bathrooms, na.rm = TRUE), by = 1)) +
@@ -610,7 +494,6 @@ gg_miss_var(d.airbnb_listings_feat)
 ```
 
 The plot above summarises the share of missing values per variable.
-Anything above 10% gets explicit handling further down the pipeline.
 
 A quick count of NAs on the variables we use most often in the models
 below. `lm.main` and `svm.main` silently drop rows with missing values, which
@@ -1371,12 +1254,6 @@ train.idx <- sample(seq_len(n), size = floor(0.8 * n))
 d.train <- d.airbnb_listings_feat_gam[train.idx, ]
 d.test <- d.airbnb_listings_feat_gam[-train.idx, ]
 
-tibble(
-  Set = c("Training (80%)", "Test (20%)"),
-  Observations = c(nrow(d.train), nrow(d.test))
-) %>%
-  kable(booktabs = TRUE, caption = "Dataset Split") %>%
-  kable_styling()
 ```
 
 We model `log(price)` rather than the raw price. The distribution is

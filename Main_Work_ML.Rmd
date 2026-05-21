@@ -41,7 +41,7 @@ ToDos backlog:
 
 
 TIMON:
--   Cap UTD: Properties and Roomtype: Room Type mehrfach drin, löschen.
+-   Cap UTD: Properties and Roomtype: Room Type mehrfach drin, löschen. *done*
 -   Finalkontrolle Farbe
 
 
@@ -375,15 +375,8 @@ p.prop <- d.airbnb_listings_feat %>%
   coord_flip() +
   labs(title = "Top 10 Property Types", x = " ", y = "Count")
 
-p.neigh <- d.airbnb_listings_feat %>%
-  count(room_type) %>%
-  top_n(10, n) %>%
-  ggplot(aes(x = reorder(room_type, n), y = n)) +
-  geom_bar(stat = "identity", fill = "deepskyblue") +
-  coord_flip() +
-  labs(title = "Nr. of Rooms per Type ", x = " ", y = "Count")
 
-p.prop | p.neigh
+p.prop
 ```
 
 Entire rental units dominate the property mix, followed by private rooms

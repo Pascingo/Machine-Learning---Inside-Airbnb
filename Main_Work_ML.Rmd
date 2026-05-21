@@ -958,6 +958,8 @@ puzzle the other models will surface.
 
 ## Model
 
+In this chapter we code  Generalized Linear Models. One using Poisson-Distribution, then we check vor Overdispersion, and if necessary we use a Generalized Linear Model using Quasi-Poisson-Distribution. 
+
 ```{r, GLM Poisson Lead Pascal, out.width="80%"}
 glm.poisson <- glm(
   estimated_occupancy_l365d ~ price + host_is_superhost +
@@ -1728,14 +1730,16 @@ much more interpretable GAM already captures most of the signal, the ANN
 should not gain much from being more flexible. If it does, we are
 leaving structure on the table.
 
+
+
+## Model
+
 We use the ANN to revisit H1 from a different angle. The Naive ANN tests
 whether host-centered variables alone (*review score*, *review count*,
 *Superhost status*, *capacity*) can predict price. The Expanded ANN adds
 *room* and *property type* as controls. Comparing the two shows whether
 any apparent Superhost effect survives once we compare like, with like a
 stronger test than just plotting raw medians.
-
-## Model
 
 ```{r Basic ANN Lead Pascal, out.width="80%"}
 # Selecting basic variables. We omit missing values for this simplified approach.

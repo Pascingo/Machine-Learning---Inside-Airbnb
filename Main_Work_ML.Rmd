@@ -648,7 +648,7 @@ ggplot(d.airbnb_listings_feat, aes(x = accommodates, y = log_price)) +
 
 **Capacity is the strongest single predictor in the dataset**, and the
 relationship looks roughly linear on the log scale, which is exactly why
-we work with `log(price)` throughout the LM and GAM.
+we work with `log_price` throughout the LM and GAM.
 
 ## Log Price by Review Score Group
 
@@ -688,7 +688,7 @@ ggplot(data = d.airbnb_listings_feat, aes(x = longitude, y = latitude)) +
     title = "Airbnb Listings in Vaud by Log(Price)",
     x = "Longitude",
     y = "Latitude",
-    color = "Log(Price)"
+    color = "log_price"
   ) +
   theme_minimal()
 ```
@@ -842,7 +842,7 @@ In this Chapter, we will calculate a linear model to be able to give an answer t
 ```{r lm lead Timon, out.width="80%", fig.show='hold'}
 # We use log(price) to account for the right-skewed distribution of Airbnb prices.
 lm.main <- lm(
-  log(price) ~
+  log_price ~
     review_scores_rating +
     as.factor(host_is_superhost) +
     host_has_profile_pic +
@@ -856,7 +856,7 @@ tidy(lm.main) %>%
   kable_styling()
 
 # plot log-price and scores + superhost
-p.lm_uncontrolled <- ggplot(data = d.airbnb_listings_feat, mapping = aes(review_scores_rating, log(price), color = host_is_superhost), ylim = 8) +
+p.lm_uncontrolled <- ggplot(data = d.airbnb_listings_feat, mapping = aes(review_scores_rating, log_price, color = host_is_superhost), ylim = 8) +
   geom_point(alpha = 0.4, color = "deepskyblue") +
   geom_smooth(method = "lm") +
   scale_color_manual(values = c("FALSE" = "gold2", "TRUE" = "firebrick1")) +
@@ -883,7 +883,7 @@ d.lm_predict$pred <- predict(lm.main, newdata = d.lm_predict)
 # Plotting the actual data points alongside our model's predicted regression lines
 p.lm_controlled <- ggplot(
   d.airbnb_listings_feat,
-  aes(review_scores_rating, log(price), color = host_is_superhost, )
+  aes(review_scores_rating, log_price, color = host_is_superhost, )
 ) +
   geom_point(alpha = 0.3, color = "deepskyblue") +
   geom_line(data = d.lm_predict, aes(y = pred)) +
@@ -1280,7 +1280,7 @@ which prevents information from the GAM leaking into the SVM's evaluation.
 # Data preparation: keep only variables used in the GAM, drop rows with NAs
 d.airbnb_listings_feat_gam <- d.airbnb_listings_feat %>%
   select(
-    price, accommodates, review_scores_rating,
+    log_price, accommodates, review_scores_rating,
     number_of_reviews, longitude, latitude,
     room_type, host_is_superhost, bathrooms
   ) %>%
@@ -1297,14 +1297,14 @@ d.test <- d.airbnb_listings_feat_gam[-train.idx, ]
 
 ```
 
-After the split, we model `log(price)` rather than the raw price. The distribution is heavily right-skewed (see Chapter EDA). Coefficients on the log scale read multiplicatively: β corresponds to roughly `$(exp(β) − 1) × 100%$` price change. We use `method = "REML"` because it gives more reliable
+After the split, we model `log_price` rather than the raw price. The distribution is heavily right-skewed (see Chapter EDA). Coefficients on the log scale read multiplicatively: β corresponds to roughly `$(exp(β) − 1) × 100%$` price change. We use `method = "REML"` because it gives more reliable
 confidence intervals than the default.
 
 The parametric coefficients sit on the log scale: a coefficient *β* translates to roughly (exp(*β*) − 1) × 100% price change. `room_type` and `bathrooms` are significant. `host_is_superhost` is essentially zero.
 
 ```{r gam_fit, Lead Davide, out.width="80%"}
 gam.main <- gam(
-  log(price) ~
+  log_price ~
     s(accommodates) +
     s(review_scores_rating) +
     s(log1p(number_of_reviews)) +
@@ -1383,7 +1383,7 @@ flexibility is worth the additional degrees of freedom.
 ```{r gam_lm_benchmark, Lead Davide, out.width="80%"}
 # Fair LM benchmark (same target, same training data)
 lm.gam_comparison <- lm(
-  log(price) ~ accommodates + review_scores_rating +
+  log_price ~ accommodates + review_scores_rating +
     log1p(number_of_reviews) + longitude + latitude +
     room_type + host_is_superhost + bathrooms,
   data = d.train

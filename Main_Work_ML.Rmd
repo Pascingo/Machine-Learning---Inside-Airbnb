@@ -57,7 +57,7 @@ Tasks Timon
   - 10.3 kleiner Text zu der Model-Comparison? (DAVIDE?)
   
   - 12.3 zwei barplots statt den Tabellen eingefügt. diese kann man dann allenfalls nebeneinander nehmen um darzustellen. ist ein bisschen besser als Tabellen. 
-        --> **Kontrolle PASCAL, dann Tabellen löschen.** 
+        --> **Kontrolle PASCAL, dann Tabellen löschen.** --> erledigt
 
 
 
@@ -1887,14 +1887,6 @@ p.ANN_complex <- ggplot(results.df_exp, aes(Host_Type, Predicted_Price_CHF)) +
     y = "Predicted Price (CHF)" ) 
   
 p.ANN_basic | p.ANN_complex
-```
-
-```{r}
-plot(nn.naive)
-```
-
-```{r}
-plot(nn.expanded)
 ```
 
 ## Interpretation ANN

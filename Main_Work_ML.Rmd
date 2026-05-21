@@ -44,7 +44,7 @@ TIMON:
 -   Cap UTD: Properties and Roomtype: Room Type mehrfach drin, löschen. *done*
 -   Finalkontrolle Farbe *done*
 -   NA-Plot brucht noch einen Titel + saubere x-Achsenbeschriftung *done*
--   8.2 Model A in Model poisson oder GLM poisson anpassen. 
+-   8.2 Model A in Model poisson oder GLM poisson anpassen. *done*
 
 DAVIDE:
 -   GAM hat viele Outputs hardcoded in Interpretation, mit `` coden?
@@ -974,7 +974,7 @@ tidy.poisson <- tidy(glm.poisson) %>% mutate(Model = "Poisson")
 tidy.quasi <- tidy(glm.quasipoisson) %>% mutate(Model = "Quasi-Poisson")
 
 combined_models <- bind_rows(tidy.poisson, tidy.quasi) %>%
-  select(Model, term, estimate, std.error, statistic, p.value)
+  select(term, estimate, std.error, statistic, p.value)
 
 combined_models %>%
   kable(
@@ -984,8 +984,8 @@ combined_models %>%
   ) %>%
   kable_styling(font_size = 8, latex_options = c("scale_down", "hold_position")) %>%
   collapse_rows(columns = 1, valign = "top") %>%
-  group_rows("Model A", 1, 8) %>%
-  group_rows("Model B", 9, 16)
+  group_rows("GLM poisson", 1, 8) %>%
+  group_rows("GLM quasi-poisson", 9, 16)
 ```
 
 ## Crossvalidation

@@ -43,7 +43,7 @@ ToDos backlog:
 TIMON:
 -   Cap UTD: Properties and Roomtype: Room Type mehrfach drin, löschen. *done*
 -   Finalkontrolle Farbe
-
+-   NA-Plot brucht noch einen Titel + saubere x-Achsenbeschriftung
 
 DAVIDE:
 -   GAM hat viele Outputs hardcoded in Interpretation, mit `` coden?
@@ -606,7 +606,7 @@ ggplot(cor_long, aes(x = Var1, y = Var2, fill = Correlation)) +
   geom_tile(color = "white") +
   geom_text(aes(label = round(Correlation, 2)), size = 2.8) +
   scale_fill_gradient2(
-    low = "maroon4", mid = "deepskyblue", high = "gold",
+    low = "firebrick1", mid = "deepskyblue", high = "firebrick1",
     midpoint = 0, limits = c(-1, 1)
   ) +
   labs(

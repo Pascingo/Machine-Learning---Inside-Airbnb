@@ -440,7 +440,9 @@ p.verified <- ggplot(d.airbnb_listings_feat %>% filter(!is.na(host_identity_veri
   geom_bar(fill = "deepskyblue") +
   labs(title = "Identity Verified", x = "t = True, f = False", y = "Count")
 
-p.resp_time | p.resp_rate | p.acc_rate | p.pic | p.verified
+(p.resp_time | p.resp_rate | p.acc_rate ) / 
+  plot_spacer() /
+  (p.pic | p.verified)
 
 ```
 

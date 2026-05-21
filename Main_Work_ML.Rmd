@@ -1184,7 +1184,7 @@ don't confuse host effects with listing characteristics.
 
 ## Model
 
-```{r glm_binomial_extended, Lead Davide, out.width="80%"}
+```{r glm_binomial_results, Lead Davide, out.width="80%"}
 # Predict the probability that a listing is priced above the market median
 # We control for the most obvious price drivers so the host coefficients can be read cleanly
 glm.binomial <- glm(price_high ~ host_is_superhost + 
@@ -1193,9 +1193,8 @@ glm.binomial <- glm(price_high ~ host_is_superhost +
                                  review_scores_rating,
                     data   = d.airbnb_listings_feat,
                     family = binomial(link = "logit"))
-```
 
-```{r glm_binomial_results, Lead Davide, out.width="80%"}
+
 # Convert log-odds into odds ratios with 95% confidence intervals for easier reading
 d.results_glm_binomial <- tidy(glm.binomial, conf.int = TRUE) %>%
   mutate(
@@ -1207,7 +1206,8 @@ d.results_glm_binomial <- tidy(glm.binomial, conf.int = TRUE) %>%
   select(term, estimate, odds_ratio, or_lower, or_upper, p.value)
 
 kable(d.results_glm_binomial, 
-      caption = "GLM Binomial: Odds Ratios with 95% Confidence Intervals")
+      caption = "GLM Binomial: Odds Ratios with 95% Confidence Intervals") %>%
+  kable_styling()
 ```
 
 ## Visualisation

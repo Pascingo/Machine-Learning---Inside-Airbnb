@@ -1280,7 +1280,7 @@ which prevents information from the GAM leaking into the SVM's evaluation.
 # Data preparation: keep only variables used in the GAM, drop rows with NAs
 d.airbnb_listings_feat_gam <- d.airbnb_listings_feat %>%
   select(
-    log_price, accommodates, review_scores_rating,
+    price, accommodates, review_scores_rating,
     number_of_reviews, longitude, latitude,
     room_type, host_is_superhost, bathrooms
   ) %>%
@@ -1304,7 +1304,7 @@ The parametric coefficients sit on the log scale: a coefficient *β* translates 
 
 ```{r gam_fit, Lead Davide, out.width="80%"}
 gam.main <- gam(
-  log_price ~
+  log(price) ~
     s(accommodates) +
     s(review_scores_rating) +
     s(log1p(number_of_reviews)) +
@@ -1383,7 +1383,7 @@ flexibility is worth the additional degrees of freedom.
 ```{r gam_lm_benchmark, Lead Davide, out.width="80%"}
 # Fair LM benchmark (same target, same training data)
 lm.gam_comparison <- lm(
-  log_price ~ accommodates + review_scores_rating +
+  log(price) ~ accommodates + review_scores_rating +
     log1p(number_of_reviews) + longitude + latitude +
     room_type + host_is_superhost + bathrooms,
   data = d.train

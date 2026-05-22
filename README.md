@@ -11,7 +11,7 @@ The submitted .zip file contains all the necessary components required to run an
 - Main_Work_ML.rmd: The central R-Markdown document. It contains the complete, fully documented R code—covering everything from data cleaning and feature engineering to the training and evaluation of all machine learning models.
 - Main_Work_ML.html: The pre-rendered ("knitted") HTML version of the project. This document serves as an interactive report for business clients and stakeholders, allowing them to review the findings and visualizations without needing any programming knowledge.
 - Data_Vaud_all/: The data directory containing the primary source files:
--- listings-2.csv: The official, unmodified raw dataset from Inside Airbnb for the Canton of Vaud.
+- listings-2.csv: The official, unmodified raw dataset from Inside Airbnb for the Canton of Vaud.
 
 ## Reproducibility Guide
 

@@ -69,7 +69,7 @@ Contrary to H1, the data reveals that Superhosts do not charge a price premium. 
 2. Structural Domination — H2 Strongly Confirmed
 Willingness to Pay is heavily dominated by structural capacities (room_type, bathrooms, accommodates) and non-linear geographic factors. Proximity to economic centers and the Lake Geneva basin creates a steep non-linear price curve that cannot be compensated for by purely behavioral or service-oriented host traits.
 
-## 👥 Authors
+## Authors
 
 Pascal Ingold
 Timon Reichmuth

@@ -67,10 +67,10 @@ PASCAL:
 We propose a data-driven pricing decision-support system for Airbnb
 hosts in the Canton of Vaud, providing market-aligned price
 recommendations based on listing characteristics. The tool targets both
-new and existing hosts, using inputs such as location, room type, guest
+new and existing hosts, using inputs such as room type, guest
 capacity, availability, ratings, and superhost status. Six machine
-learning models, LM, GLM Poisson, GLM Binomial, GAM, SVM and a Neural
-Network, are applied to identify key price drivers and generate accurate
+learning tools are used: a linear Model(LM), a generalised linear model using poisson (GLM), a generalized linear Model using binomial (GLM), a general additive model (GAM), a support vector machine (SVM) and a Neural
+Network (ANN), are applied to identify key price drivers and generate accurate
 predictions. The objective is to balance revenue and occupancy, helping
 hosts understand their market value. A key feature is interpretability,
 enabling users to see why a certain price is recommended. From a

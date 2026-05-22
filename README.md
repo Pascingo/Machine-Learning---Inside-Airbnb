@@ -5,6 +5,29 @@
 This repository contains a data-driven pricing decision-support system tailored for Airbnb hosts in the Canton of Vaud, Switzerland.
 By applying advanced Machine Learning models, the system models guests' Willingness to Pay (WTP) and delivers actionable price recommendations based on individual listing characteristics. A core focus of this architecture is interpretability, ensuring that hosts do not just receive a black-box price suggestion but understand why a specific price is recommended to balance revenue and occupancy optimally.
 
+## Repository Structure (.zip Content)
+
+The submitted .zip file contains all the necessary components required to run and review the project:
+- Main_Work_ML.rmd: The central R-Markdown document. It contains the complete, fully documented R code—covering everything from data cleaning and feature engineering to the training and evaluation of all machine learning models.
+- Main_Work_ML.html: The pre-rendered ("knitted") HTML version of the project. This document serves as an interactive report for business clients and stakeholders, allowing them to review the findings and visualizations without needing any programming knowledge.
+- Data_Vaud_all/: The data directory containing the primary source files:
+-- listings-2.csv: The official, unmodified raw dataset from Inside Airbnb for the Canton of Vaud.
+
+## Reproducibility Guide
+
+Follow these steps to locally reproduce the entire analysis, models, and the final HTML report from the provided .zip file:
+
+### Prerequisites
+- Software Requirements: Ensure that R (version 4.2.0 or newer) and a suitable IDE (preferably RStudio) are installed on your system.
+- Extract the ZIP Archive: Unzip the contents of the .zip file into a local directory on your machine.
+
+### Step-by-Step Execution
+
+Open the Project: Launch RStudio and open the Main_Work_ML.rmd file. (Alternatively, double-clicking the file from your file explorer will automatically open it within your environment).
+Execute and Render (Knit): In the top toolbar of RStudio, click the "Knit" button (or use the shortcut Ctrl+Shift+K / Cmd+Shift+K).
+The environment will automatically handle the preset relative paths and ensure any necessary package checks included in the script are executed.
+R will then run the entire pipeline sequentially: loading the raw data from Data_Vaud_all/listings-2.csv, processing the features, training the models, and rendering the final visualizations. Once complete, a freshly generated Main_Work_ML.html file will be saved to your directory.
+
 ## Research Core & Hypotheses
 
 Our business case bridges quantitative predictive modeling with strategic market positioning by addressing two overarching research questions:

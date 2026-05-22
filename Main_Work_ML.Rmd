@@ -58,6 +58,13 @@ PASCAL:
 
 
 
+Fragen von Timon:
+-   in UtD haben wir ein Kapitel Capacity & Rating und ein Kapitel Room Types and Superhost Status. 
+    würde es nicht mehr sinn machen Capacity & Roomtypes zusammenzunehmen und Superhost STatus and rating?
+    Auch haben wir noch ein Host Variables Kapitel wir könnten es auch damit zusammenfügen. 
+-   Wieso heisst ein Kapitel Utilisation? da sind ja noch viel mehr Dinge drin. kann man das nicht umbenennen?
+-   3.9 Feature Engeneered Data: kann man allenfalls noch kurz dazu schreiben was genau engeneered wurde?         welche messgrössen sind relevant? ist es rein zufällig?
+
 
 
 # Introduction
@@ -230,7 +237,7 @@ d.airbnb_listings_feat <- d.airbnb_listings_feat %>%
   filter(!(room_type == "Private room" & price > 100000))
 ```
 
-in addition to the one outlier we wanted to remove one NA specifically, as this should be a Boolean.
+In addition to the one outlier we wanted to remove one NA specifically, as this should be a Boolean.
 
 ```{r filter NA in ProfilePic}
 d.airbnb_listings_feat <- d.airbnb_listings_feat %>%
@@ -290,8 +297,8 @@ p.host <- ggplot(d.airbnb_listings_feat %>% filter(!is.na(host_is_superhost)), a
 p.room + p.host
 ```
 
-Entire homes/apartments and Private rooms dominate the inventory; Hotel
-rooms and Shared rooms are marginal. Roughly 30% of hosts are
+Entire homes/apartments and Private rooms dominate the inventory; hotel
+rooms and shared rooms are marginal. Roughly 30% of hosts are
 Superhosts. This is a meaningful minority, but far from the norm.
 
 ## Log Prices and rooms / neighbourhoods
@@ -485,13 +492,13 @@ verifications are very rare.
 # Data Quality
 
 Using `gg_miss_var()`,we identified that the missing data is not
-uniformly distributed but concentrated in specific features. The plots
-below show where NAs sit and how they overlap. The biggest blocks of
+uniformly distributed but concentrated in specific features. The plot
+below shows where NAs sit. The biggest blocks of
 missing data are in the rate columns (*response*, *acceptance*) and the
 *review_scores* variables. For the rates, we considered treating NAs as
 zero but decided against it, as that would penalise hosts who simply have
 no reported value rather than a low one. For review scores, the data is
-most likely Missing Not At Random: a listing without reviews is usually
+most likely missing not at random (MNAR): a listing without reviews is usually
 a new or unbooked listing rather than a poorly-rated one. Imputing zeros
 would mislabel these as bad listings, and imputing the mean would
 artificially shrink variance. We therefore drop these observations from
@@ -502,11 +509,8 @@ gg_miss_var(d.airbnb_listings_feat) +
   labs(title = "Count of NA per Variable", y = " ") 
 ```
 
-The plot above summarises the share of missing values per variable.
-
-A quick count of NAs on the variables we use most often in the models
-below. `lm.main` and `svm.main` silently drop rows with missing values, which
-can quietly shrink the training set. Therefore we have to have an explicit look at the Variables *price*, *log_price*, *accomodates*, *number_of_reviews* and *host_is_superhost*. out of the plot above we can extract that there are no missing values in those variables. 
+`lm.main` and `svm.main` silently drop rows with missing values, which
+can quietly shrink the training set. Therefore we have to remember while interpreting those models and using either *review_scores_rating* , *host_response_rate* , *host_acceptance_rate* , *bathrooms* and *beds* that there are NA's and that they are omitted.
 
 # Exploratory Data Analysis
 

@@ -1294,8 +1294,6 @@ train.idx <- sample(seq_len(n), size = floor(0.8 * n))
 d.train <- d.airbnb_listings_feat_gam[train.idx, ]
 d.test <- d.airbnb_listings_feat_gam[-train.idx, ]
 
-qq.gam(gam.main)
-
 ```
 
 After the split, we model `log_price` rather than the raw price. The distribution is heavily right-skewed (see Chapter EDA). Coefficients on the log scale read multiplicatively: β corresponds to roughly `$(exp(β) − 1) × 100%$` price change. We use `method = "REML"` because it gives more reliable

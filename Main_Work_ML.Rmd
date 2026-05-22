@@ -34,7 +34,7 @@ caption {
 **ALS LETZES styler::style_file(DATEINAME) runnen in Konsole**
 
 ToDos backlog: 
-
+-   überflüssige Packete entfernen
 -   AI-Kontrolle /s tuning wieder reaktivieren
 
 
@@ -111,7 +111,7 @@ correspond to the price that tenants are willing to pay.
 Host-centered indicators are those that relate to the host’s
 performance, such as ratings or Superhost status. In contrast,
 location-centered indicators are those that relate to factors such as
-the size of the rental property.
+the size of the rental property. With these hypothesis, we are able to operationalize the research questions in such a way, that we can investigate the underlying relations. 
 
 # Data Preparation
 

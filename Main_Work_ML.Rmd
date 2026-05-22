@@ -532,8 +532,7 @@ kable(summary_stats, booktabs = TRUE) %>%
 
 The mean price sits well above the median, which means a small number of
 luxury listings is pulling the average upward. The price range stretches
-over several orders of magnitude. For any market-level summary we use
-the median to avoid this skew.
+over several orders of magnitude. *For any market-level summary we use the median to avoid this skew.*
 
 ## Analysis by Room Type
 
@@ -627,7 +626,7 @@ ggplot(cor_long, aes(x = Var1, y = Var2, fill = Correlation)) +
 
 The heatmap confirms what we already suspected: *accommodates*, *beds*
 and *bathrooms* **correlate strongly with each other**. A strong sign of
-multicollinearity to watch for in the LM (see LM Chapter). *price* and
+multicollinearity to avoid in the Models. *price* and
 *log_price* track capacity as expected; review variables form their own
 cluster. *number_of_reviews* and *estimated_occupancy_l365d* move
 together, because listings that get booked more naturally collect more
@@ -635,7 +634,7 @@ reviews.
 
 ## Log Price vs. Accommodates
 
-The most important Relationship in the dataset from what we see in the
+The most important relationship in the dataset from what we see in the
 correlation matrix above.
 
 ```{r price_vs_accommodates, out.width="80%", fig.show='hold'}

@@ -63,6 +63,9 @@ Fragen von Timon:
     Auch haben wir noch ein Host Variables Kapitel wir könnten es auch damit zusammenfügen. 
 -   Wieso heisst ein Kapitel Utilisation? da sind ja noch viel mehr Dinge drin. kann man das nicht umbenennen?
 -   3.9 Feature Engeneered Data: kann man allenfalls noch kurz dazu schreiben was genau engeneered wurde?         welche messgrössen sind relevant? ist es rein zufällig?
+-   5.7 Stimmt die Aussage unter der Grafik mit dem postcode dummy? wäre uns das nicht sogar lieber?
+- 6: H2 (with H1 as control) macht diese Aussage hinsichtlich des GAM's Sinn? Braucht es die SPalte output?
+-   6: es wäre sehr geil wenn wir auf diesen Satz später im ANN wieder bezug nehmen könnten: The ANN doesn’t add new information so much as it checks our assumptions. If a flexible neural network barely beats the GAM, the GAM is already capturing most of the available signal and we can trust the interpretable model over the black box.
 
 
 
@@ -633,7 +636,7 @@ reviews.
 
 ## Log Price vs. Accommodates
 
-The most important relationship in the dataset from what we see in the
+This is the most important relationship in the dataset from what we see in the
 correlation matrix above.
 
 ```{r price_vs_accommodates, out.width="80%", fig.show='hold'}
@@ -654,7 +657,7 @@ we work with `log_price` throughout the LM and GAM.
 
 ## Log Price by Review Score Group
 
-We display *review_scores_rating* as a histogram, but never in relation
+We already looked at *review_scores_rating* on its own, but never in relation
 to the price.
 
 ```{r price_by_rating, out.width="80%", fig.show='hold'}
@@ -774,7 +777,7 @@ ggplot(data = d.airbnb_listings_feat, aes(x = as.factor(host_is_superhost), y = 
 
 # Modelling Approach
 
-We build six models, each looking at price or its proxy, occupancy from
+We build six models, each looking at price, occupancy from
 a different angle. The point isn't to pick one winner. It's to
 triangulate. When models with very different mechanics converge on the
 same answer, we can trust it more than any single result. To achieve
@@ -824,7 +827,7 @@ host-centered indicators shift price?
 For this, we use the *review_scores_rating*. We also include the factor
 *host_is_superhost* to distinguish between the two groups. We measure
 willingness to pay here using the *price* of the rental property.
-Additionally, we introduce two control variables. First, the size of the
+Additionally, we introduce two control variables to the Model. First, the size of the
 rental property with the help of *accommodates*, as this obviously
 influences the rental price, and second, *room_type*. The latter we
 include since we can assume that a hotel room has different services
@@ -906,8 +909,9 @@ The model shows that both the hosts’ rating and their superhost status
 have a significant influence. The *review_scores_rating* has a positive
 effect of *`r round(lm.main$coefficients[2], digits = 3)`*. In contrast,
 *is_superhost* status has a negative effect of
-*`r round(lm.main$coefficients[3], digits = 3)`*. The assumption that
-tenants are willing to pay more when renting from a Superhost therefore
+*`r round(lm.main$coefficients[3], digits = 3)`*. With the interpretation of these Values we have to be careful, since there is a logarithm involved. For every increase of a rating by 1, the price rises about `r round((exp(lm.main$coefficients[2]) - 1) * 100, digits = 2)`%. If a host becomes a superhost, his prices are reduced by `r abs(round((exp(lm.main$coefficients[3]) - 1) * 100, digits = 2))`%. 
+
+The idea that tenants are willing to pay more when renting from a Superhost therefore
 does not necessarily seem to hold true. One possible explanation for
 this phenomenon is that Superhosts may have a better understanding of
 the market because they have been active for a longer time, and

@@ -65,7 +65,20 @@ Fragen von Timon:
 -   3.9 Feature Engeneered Data: kann man allenfalls noch kurz dazu schreiben was genau engeneered wurde?         welche messgrössen sind relevant? ist es rein zufällig?
 -   5.7 Stimmt die Aussage unter der Grafik mit dem postcode dummy? wäre uns das nicht sogar lieber?
 - 6: H2 (with H1 as control) macht diese Aussage hinsichtlich des GAM's Sinn? Braucht es die SPalte output?
--   6: es wäre sehr geil wenn wir auf diesen Satz später im ANN wieder bezug nehmen könnten: The ANN doesn’t add new information so much as it checks our assumptions. If a flexible neural network barely beats the GAM, the GAM is already capturing most of the available signal and we can trust the interpretable model over the black box.
+-   8: letzter Satz vor CV: Finally, the **room type** plays a crucial role. When comparing setups against the baseline of renting an *Entire home/apt* **private rooms** experience significantly lower occupancy rates. However, for **shared rooms**, the data does not reveal a statistically significant difference in occupancy compared to booking an entire apartment. 
+    ---> bitte korrekt Formatieren, habs nicht direkt gecheckt was gemacht werden müsste. 
+-   9.4: wollen wir das: (OR = 0.693, CI [0.57, 0.841], p = 2^{-4}).
+-   10.1: Location is non-linear by nature. Vaud combines lakeshore towns, urban centres, alpine resorts and rural areas, each with their own price logic. A 2D smoother over longitude and latitude captures this surface without us engineering postcode dummies.
+        --> wieso postcode dummies? wir hätten ja theoretisch sogar die Neighbourhood? diese Argumentation macht für mich keinen Sinn. 
+-   10.1: The GAM speaks mainly to **H2** through the spatial spline
+`s(longitude, latitude)`, while controlling for **H1** via
+*host_is_superhost* and *review_scores_rating*.
+    --> dieses Wording macht keinen Sinn. man kann nicht auf eine Hypothese kontrollieren. 
+-   10.3.1: We set the threshold at ±15%, anchored in the residual standard deviation on the log scale (exp(σ) − 1 ≈ 15%); a stricter or looser band would shift the proportions accordingly
+-----> stimmt das so? wir haben doch 15% einfach zufällig gewählt?
+-   10.4: Location matters non-linearly — coordinates clearly beat postcode dummies. --> wieso? wir testen a gar nicht damit? können wir das so behaupten. 
+-   13: klare adressierung der Forschungsfrage + Beantwortung fehlt hier noch. 
+
 
 
 
@@ -959,7 +972,7 @@ This is the only model in our set that targets occupancy rather than
 price. Both hypotheses are in scope, host-centered indicators (H1) and
 structural indicators (H2) can both drive how often a listing gets
 booked. The answer turns out to be the missing piece of the Superhost
-puzzle the other models will surface.
+puzzle the other models will and have surfaced.
 
 ## Model
 
@@ -1017,7 +1030,7 @@ used as a solution, which adjusts the standard errors upward.
 
 By utilizing a quasi-Poisson model, we successfully corrected for overdispersion in the data. This adjustment provides more realistic standard errors, ensuring a highly reliable evaluation of the actual drivers behind property occupancy. 
 
-Our analysis identifies several key factors influencing performance. **Price** has a highly significant negative impact; as expected, higher rates consistently lead to lower occupancy. Conversely, achieving **Superhost status** is a major advantage. It exerts a highly significant positive effect, multiplying a property's occupancy by approximately **2.6 times** compared to standard hosts. Additionally, both **guest reviews** and **property capacity** are strong, significant drivers of success—better ratings and the ability to accommodate more guests reliably translate into higher booking volumes.
+Our analysis identifies several key factors influencing performance. **Price** has a highly significant negative impact; as expected, higher rates consistently lead to lower occupancy. Conversely, achieving **Superhost status** is a major advantage. It exerts a highly significant positive effect, multiplying a property's occupancy by approximately **2.6 times** compared to standard hosts. Additionally, both **guest reviews** and **property capacity** are strong, significant drivers of success which means that better ratings and the ability to accommodate more guests reliably translate into higher booking volumes.
 
 Finally, the **room type** plays a crucial role. When comparing setups against the baseline of renting an *Entire home/apt* **private rooms** experience significantly lower occupancy rates. However, for **shared rooms**, the data does not reveal a statistically significant difference in occupancy compared to booking an entire apartment.
 
@@ -1028,7 +1041,7 @@ overfitting, we use cross-validation. In this process, we repeatedly
 split the data into new subsets, which we use to retrain and re-evaluate
 the model. We then check to see if there are any significant
 fluctuations. If the model were overfitting, we would repeatedly observe
-random fluctuations. 
+random fluctuations and therefore outliers in the plot. 
 
 ```{r cross-validation Datasets 10-fold (TIMON), out.width="80%"}
 set.seed(1)
@@ -1228,7 +1241,7 @@ hotel-room coefficient is significant but its wide confidence interval
 
 This is the opposite of what H1 would predict. Superhost status does not
 raise willingness to pay, it correlates with charging less. Combined
-with Pascal's Quasi-Poisson result (Superhosts get 2.6× more bookings),
+with out Reslut in the Quasi-Poisson GLM (Superhosts get 2.6× more bookings),
 the picture is consistent: Superhosts compete on price and earn through
 volume, not through a price premium. The practical takeaway for hosts
 aiming for the badge is to price competitively and let occupancy do the
@@ -1240,7 +1253,7 @@ work.
     counts the same as one 500 dollar above. The LM and GAM handle this
     gradient much better.
 -   **No location**. We left location out to keep the focus on host
-    variables, but in Vaud, location is a major price driver. Some of
+    variables, but in Vaud, location might be a major price driver. Some of
     what we attribute to room type or capacity is probably picking up
     location indirectly.
 -   **The cutoff moves with the market**. The median is just our
@@ -1543,7 +1556,7 @@ tl_over      <- round(tl_train["Overpriced"],  0)
 
 The GAM explains `r gam_dev_expl`% of the deviance (R² = `r gam_r2`) on `r format(gam_n, big.mark = ",")` training
 listings. That's a clear gain over the LM benchmark (R² = `r lm_r2`), and
-the AIC drops from `r format(aic_lm, big.mark = ",")` to `r format(aic_gam, big.mark = ",")`.  The smooth terms earn their additional degrees of freedom.
+the AIC drops from `r format(aic_lm, big.mark = ",")` to `r format(aic_gam, big.mark = ",")` which also suggests a better working Model.  The smooth terms earn their additional degrees of freedom.
 
 **Parametric terms**. Room type is the strongest categorical driver:
 hotel rooms charge roughly `r hotel_mult`× more than entire homes, private rooms

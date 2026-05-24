@@ -33,53 +33,39 @@ caption {
 ```
 **ALS LETZES styler::style_file(DATEINAME) runnen in Konsole**
 
+Sprint 24.05.2026
+
+
+Timon:
+-   in Kapitel 13 die Forschungsfragen (mit bezug auf Hypothesen (ff)) noch beantworten. (TIMON)
+-   Kapitel Capacity & Rating und ein Kapitel Room Types and Superhost Status --> kapitel optimaler zusammenfügen
+-   Kapitel 13 & 14 restrukturieren. neu soll ein Kapitel "Conclusion" entstehen, welches zwei unterkapitel     beinhaltet. eines      als type "scinetific conclusions" und eines als "businesscase conclusion". 
+    SC --> what the models agree on, what the different lenses ad, limitations, Ausblick
+    BCC --> REco Host, reco Airbnb
+
+
+Pascal:
+-   überflüssige Packete entfernen 
+-   2 Sätze in DP zu FE-Data schreiben und einen kurzen Verweis in 3.9 einbauen.
+-   8.3.2 letzter Satz Formatierung anpassen. 
+
+
+Davide:
+-   (OR = 0.693, CI [0.57, 0.841], p = 2^{-4}). Art der Formatierung entfernen. (DAVIDE)
+-   LEssons Learned anpassen (DAVIDE)
+-   Moddelin Approach Table H2 (wth H1 as control) ausbauen, korrekt mit Hypothesen ergänzen. Spalte OUTPut entfernen. (DAVIDE)
+-   GAM output table auf fehlende Variabeln überprüfen (DAVIDE)
+-   10.3.1 threshold setting anpassen (DAVIDE)
+-   Postcode Dummy aus der Arbeit entfernen. keine verweise darauf. (ctrl + F)
+
+
+
 ToDos backlog: 
--   überflüssige Packete entfernen
--   AI-Kontrolle /s tuning wieder reaktivieren
 
 
+-   alles nocheinmal drüberlesen. 
+-   tuning wieder reaktivieren
 
-TIMON:
--   Cap UTD: Properties and Roomtype: Room Type mehrfach drin, löschen. *done*
--   Finalkontrolle Farbe *done*
--   NA-Plot brucht noch einen Titel + saubere x-Achsenbeschriftung *done*
--   8.2 Model A in Model poisson oder GLM poisson anpassen. *done*
-
-DAVIDE:
--   GAM hat viele Outputs hardcoded in Interpretation, mit `` coden
-*=> erledigt*
--   GAM Text zu Visualisierungen und Kables 
-*=> erledigt*
-
-
-PASCAL:
--   README finalisieren
-
-
-
-Fragen von Timon:
--   in UtD haben wir ein Kapitel Capacity & Rating und ein Kapitel Room Types and Superhost Status. 
-    würde es nicht mehr sinn machen Capacity & Roomtypes zusammenzunehmen und Superhost STatus and rating?
-    Auch haben wir noch ein Host Variables Kapitel wir könnten es auch damit zusammenfügen. 
--   Wieso heisst ein Kapitel Utilisation? da sind ja noch viel mehr Dinge drin. kann man das nicht umbenennen?
--   3.9 Feature Engeneered Data: kann man allenfalls noch kurz dazu schreiben was genau engeneered wurde?         welche messgrössen sind relevant? ist es rein zufällig?
--   5.7 Stimmt die Aussage unter der Grafik mit dem postcode dummy? wäre uns das nicht sogar lieber?
-- 6: H2 (with H1 as control) macht diese Aussage hinsichtlich des GAM's Sinn? Braucht es die SPalte output?
--   8: letzter Satz vor CV: Finally, the **room type** plays a crucial role. When comparing setups against the baseline of renting an *Entire home/apt* **private rooms** experience significantly lower occupancy rates. However, for **shared rooms**, the data does not reveal a statistically significant difference in occupancy compared to booking an entire apartment. 
-    ---> bitte korrekt Formatieren, habs nicht direkt gecheckt was gemacht werden müsste. 
--   9.4: wollen wir das: (OR = 0.693, CI [0.57, 0.841], p = 2^{-4}).
--   10.1: Location is non-linear by nature. Vaud combines lakeshore towns, urban centres, alpine resorts and rural areas, each with their own price logic. A 2D smoother over longitude and latitude captures this surface without us engineering postcode dummies.
-        --> wieso postcode dummies? wir hätten ja theoretisch sogar die Neighbourhood? diese Argumentation macht für mich keinen Sinn. 
--   10.1: The GAM speaks mainly to **H2** through the spatial spline
-`s(longitude, latitude)`, while controlling for **H1** via
-*host_is_superhost* and *review_scores_rating*.
-    --> dieses Wording macht keinen Sinn. man kann nicht auf eine Hypothese kontrollieren. 
--   10.3.1: We set the threshold at ±15%, anchored in the residual standard deviation on the log scale (exp(σ) − 1 ≈ 15%); a stricter or looser band would shift the proportions accordingly
------> stimmt das so? wir haben doch 15% einfach zufällig gewählt?
--   10.4: Location matters non-linearly — coordinates clearly beat postcode dummies. --> wieso? wir testen a gar nicht damit? können wir das so behaupten. 
--   13: klare adressierung der Forschungsfrage + Beantwortung fehlt hier noch. 
--   13.2: wir fragen nicht darach was getan werden muss um den Superhost status zu erreichen. ich nehme an da gelten andere Kriterien als jene die wir unteruschen. wir können nicht sagen, dass man nicht die Preise erhöhen soll um Superhost zu werden. das ist faktisch einfach nicht das was wir untersucht haben. 
--   brauchen wir möglicherweise noch ein "Ausblick" Kapitel?
 
 
 
@@ -164,6 +150,7 @@ library(neuralnet)
 library(leaflet)
 library(leaflet.extras)
 library(patchwork)
+
 
 theme_set(theme_minimal())
 
@@ -434,7 +421,7 @@ distribution has a few extreme outliers (40+ beds), which could be large
 hostels or dormitories. We checked a few manually but didn't verify
 each one, so they remain in the data as potential noise.
 
-## Utilisation
+## Venue Details
 
 ```{r, fig.show='hold', out.width="80%"}
 # Minimum Nights (Log scale due to extreme outliers like 365+ nights)
@@ -453,9 +440,6 @@ p.occ <- ggplot(d.airbnb_listings_feat, aes(x = estimated_occupancy_l365d)) +
 
 p.nights | p.num_rev | p.occ
 ```
-
-The histograms illustrate the distributions of booking requirements,
-guest engagement, and listing utilization.
 
 Minimum nights (log scale) shows a clear preference for short stays with
 a 1 to 3 nights dominance. A handful of listings enforce 365-day
@@ -1285,8 +1269,8 @@ Three things make a GAM the right fit here:
 3.  **Interpretability stays.** Each smooth term can be plotted on its
     own and read like a coefficient.
 
-The GAM speaks mainly to **H2** through the spatial spline
-`s(longitude, latitude)`, while controlling for **H1** via
+The GAM speaks to **H2** through the spatial spline
+`s(longitude, latitude)`, while controlling for
 *host_is_superhost* and *review_scores_rating*.
 
 ## Model
@@ -1586,11 +1570,6 @@ well above 1, confirming the non-linearity:
 `r tl_fair`%, Underpriced ≈ `r tl_under`%, Overpriced ≈ `r tl_over`%). The overweight of underpriced
 listings suggests that a notable share of hosts is leaving money on the
 table.
-
-**Take-aways for the pricing tool**. Structural features (room type,
-bathrooms, capacity) explain most of what hosts can directly influence.
-Location matters non-linearly — coordinates clearly beat postcode dummies.
-The Superhost badge is an occupancy strategy, not a pricing one.
 
 ## Limitations
 
@@ -2097,23 +2076,7 @@ resorts), and host behaviours are specific to this market. The
 methodology transfers; the exact coefficients do not. Applying the same
 models to Geneva or Bern would require refitting on local data.
 
-# Use of GenAI
 
-Throughout this machine learning project, we leveraged various
-Generative AI tools specifically ChatGPT, Gemini, and Claude to support
-our analytical workflow. A primary use case was troubleshooting complex
-issues that extended beyond our existing knowledge base. When
-encountering technical bottlenecks, we used these models to break down
-and explain the underlying concepts, enabling us to systematically find
-the right solutions. Furthermore, we utilized GenAI as a critical review
-mechanism for our modeling approach. We consulted the AI to verify
-whether we had made the appropriate theoretical assumptions, such as
-selecting the correct data distributions for our models. It also served
-as a valuable sounding board to double-check our final analytical
-interpretations, ensuring our conclusions were statistically sound.
-Finally, these tools provided essential linguistic support. We actively
-used GenAI to translate our documentation and findings into professional
-English, ensuring a high-quality final report.
 
 # Lessons learned
 
@@ -2195,3 +2158,22 @@ Finally, R Bootcamp in February laid the foundation, but this project
 was where I actually got comfortable. Reading the others' code,
 debugging together, learning shortcuts — that side-by-side learning was
 something I can't get from a tutorial.
+
+
+# Use of GenAI
+
+Throughout this machine learning project, we leveraged various
+Generative AI tools specifically ChatGPT, Gemini, and Claude to support
+our analytical workflow. A primary use case was troubleshooting complex
+issues that extended beyond our existing knowledge base. When
+encountering technical bottlenecks, we used these models to break down
+and explain the underlying concepts, enabling us to systematically find
+the right solutions. Furthermore, we utilized GenAI as a critical review
+mechanism for our modeling approach. We consulted the AI to verify
+whether we had made the appropriate theoretical assumptions, such as
+selecting the correct data distributions for our models. It also served
+as a valuable sounding board to double-check our final analytical
+interpretations, ensuring our conclusions were statistically sound.
+Finally, these tools provided essential linguistic support. We actively
+used GenAI to translate our documentation and findings into professional
+English, ensuring a high-quality final report.

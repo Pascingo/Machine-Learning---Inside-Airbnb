@@ -68,8 +68,6 @@ ToDos backlog:
 
 
 
-
-
 # Introduction
 
 ## Business Case

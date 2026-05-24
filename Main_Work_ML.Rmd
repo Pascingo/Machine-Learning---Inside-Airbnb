@@ -41,7 +41,7 @@ Timon:
 -   Kapitel Capacity & Rating und ein Kapitel Room Types and Superhost Status --> kapitel optimaler zusammenfügen *done*
 -   Kapitel 13 & 14 restrukturieren. neu soll ein Kapitel "Conclusion" entstehen, welches zwei unterkapitel beinhaltet. Eines als type "scinetific conclusions" und eines als "businesscase conclusion". *done* 
     SC --> what the models agree on, what the different lenses ad, limitations, Ausblick
-    BCC --> REco Host, reco Airbnb
+    BCC --> Reco Host, reco Airbnb
 
 
 Pascal:
@@ -51,14 +51,13 @@ Pascal:
 -   conclusion drüberschauen und eigene Ergebnisse einbauen bei RQ1
 
 Davide:
--   (OR = 0.693, CI [0.57, 0.841], p = 2^{-4}). Art der Formatierung entfernen. (DAVIDE)
--   LEssons Learned anpassen (DAVIDE)
--   Moddelin Approach Table H2 (wth H1 as control) ausbauen, korrekt mit Hypothesen ergänzen. Spalte OUTPut entfernen. (DAVIDE)
--   GAM output table auf fehlende Variabeln überprüfen (DAVIDE)
--   10.3.1 threshold setting anpassen (DAVIDE)
--   Postcode Dummy aus der Arbeit entfernen. keine verweise darauf. (ctrl + F)
+-   (OR = 0.693, CI [0.57, 0.841], p = 2^{-4}). Art der Formatierung entfernen. (DAVIDE) *done - EDF part im GAM bei Interpretation dringelassen aber die scientific OR, CI, P-Vals rausgenommen*
+-   Lessons Learned anpassen (DAVIDE) *done*
+-   Modeling Approach Table H2 (wth H1 as control) ausbauen, korrekt mit Hypothesen ergänzen. *done* Spalte OUTPut entfernen. (DAVIDE) *done*
+-   GAM output table auf fehlende Variabeln überprüfen (DAVIDE) *done*
+-   10.3.1 threshold setting anpassen (DAVIDE) *done*
+-   Postcode Dummy aus der Arbeit entfernen. keine verweise darauf. (ctrl + F) *überall ausser am Schluss nicht entfernt*
 -   conclusion drüberschauen und eigene Ergebnisse einbauen bei RQ1
-
 
 
 ToDos backlog: 
@@ -700,8 +699,7 @@ ggplot(data = d.airbnb_listings_feat, aes(x = longitude, y = latitude)) +
 
 Hotspots cluster along Lake Geneva and around Lausanne, with rural and
 alpine areas trailing off. This is exactly the surface the GAM picks up
-later with its 2D spline and the reason we use raw coordinates rather
-than a postcode dummy.
+later with its 2D spline.
 
 ## Price per Guest Distribution
 
@@ -784,14 +782,14 @@ same answer, we can trust it more than any single result. To achieve
 this, we assigned every model a hypothesis to make sure that ever
 Hypothesis has a Model that matches the requirements of the model.
 
-| Model | Question | Hypothesis | Output |
-|------------------|------------------|------------------|------------------|
-| Linear Model | Which variables shift price linearly? | H1 | Coefficients |
-| GLM Poisson | Which variables drive occupancy? | H1 + H2 | Rate ratios |
-| GLM Binomial | Who ends up in the upper price half? | H1 | Odds ratios |
-| GAM | What does the non-linear price surface look like? | H2 (with H1 as control) | Smooth curves + fair price per listing |
-| SVM | Is a given listing under-, fair-, or overpriced? | RQ2 (prediction) | Classification verdict |
-| ANN | Does any host effect survive flexible controls? | H1 | Predicted prices for hypothetical hosts |
+| Model | Question | Hypothesis |
+|------------------|------------------|------------------|
+| Linear Model | Which variables shift price linearly? | H1 |
+| GLM Poisson | Which variables drive occupancy? | H1 + H2 |
+| GLM Binomial | Who ends up in the upper price half? | H1 |
+| GAM | What does the non-linear price surface look like? | H2 |
+| SVM | Is a given listing under-, fair-, or overpriced? | RQ2 (prediction) |
+| ANN | Does any host effect survive flexible controls? | H1 |
 
 The LM is our baseline. Anything more complex needs to clearly beat it.
 The GLM Poisson runs the same question on a different target (occupancy
@@ -1217,10 +1215,10 @@ hotel_upper  <- res$or_upper[res$term == "room_typeHotel room"]
 
 ## Interpretation GLM Binomial
 
-After controlling for size, room type and rating, Superhosts have `r sh_pct_lower`% lower odds of charging an above-median price (OR = `r or_sh`, CI [`r sh_lower`, `r sh_upper`], p = `r sh_pval`).
+After controlling for size, room type and rating, Superhosts have `r sh_pct_lower`% lower odds of charging an above-median price.
 
 The control variables behave as expected: each additional guest nearly
-doubles the odds of being in the upper price half (OR = `r or_acc`), private
+doubles the odds of being in the upper price half, private
 and shared rooms are far less likely to land above the median, and a
 one-point increase in rating raises the odds by about `r rev_pct_up`%. The
 hotel-room coefficient is significant but its wide confidence interval
@@ -1266,7 +1264,7 @@ Three things make a GAM the right fit here:
 2.  **Location is non-linear by nature.** Vaud combines lakeshore towns,
     urban centres, alpine resorts and rural areas, each with their own
     price logic. A 2D smoother over *longitude* and *latitude* captures
-    this surface without us engineering postcode dummies.
+    this surface.
 3.  **Interpretability stays.** Each smooth term can be plotted on its
     own and read like a coefficient.
 
@@ -1302,10 +1300,10 @@ d.test <- d.airbnb_listings_feat_gam[-train.idx, ]
 
 ```
 
-After the split, we model `log_price` rather than the raw price. The distribution is heavily right-skewed (see Chapter EDA). Coefficients on the log scale read multiplicatively: β corresponds to roughly `$(exp(β) − 1) × 100%$` price change. We use `method = "REML"` because it gives more reliable
+After the split, we model `log_price` rather than the raw price. The distribution is heavily right-skewed (see Chapter EDA). Coefficients on the log scale read multiplicatively. We use `method = "REML"` because it gives more reliable
 confidence intervals than the default.
 
-`room_type` and `bathrooms` are significant. `host_is_superhost` is essentially zero.
+`room_type` and `bathrooms` are highly significant price drivers. `host_is_superhost` on the other hand has a coefficient close to zero and a p-value of 0.56, meaning the superhost badge has no measurable effect on the nightly price.
 
 ```{r gam_fit, Lead Davide, out.width="80%"}
 gam.main <- gam(
@@ -1322,8 +1320,12 @@ gam.main <- gam(
   data = d.train
 )
 
-tidy(gam.main) %>%
+tidy(gam.main, parametric = TRUE) %>%
   kable(booktabs = TRUE, digits = 3, caption = "GAM: Parametric Coefficients") %>%
+  kable_styling()
+
+tidy(gam.main, parametric = FALSE) %>%
+  kable(booktabs = TRUE, digits = 3, caption = "GAM: Smooth Terms") %>%
   kable_styling() %>%
   footnote(
     general = paste0(
@@ -1363,21 +1365,6 @@ plot(gam.main,
   seWithMean = TRUE, ylab = "Effect on log(price)"
 )
 par(mfrow = c(1, 1))
-
-# EDF table for ALL smooth terms (incl. the 2D spatial spline)
-d.table <- as.data.frame(summary(gam.main)$s.table) %>% round(3)
-kable(d.table,
-  booktabs = TRUE,
-  caption = "Smooth Terms: Estimated Degrees of Freedom (EDF)"
-) %>%
-  kable_styling() %>%
-  footnote(
-    general = paste0(
-      "R-squared: ", round(summary(gam.main)$r.sq, 3),
-      ", Deviance explained: ", round(summary(gam.main)$dev.expl, 3)
-    ),
-    general_title = ""
-  )
 ```
 
 To know whether the smooth terms actually buy us something, we fit a linear
@@ -1411,9 +1398,7 @@ tibble(
 
 The GAM predicts an expected price for every listing. Comparing actual
 to expected gives hosts a quick verdict: `Underpriced`, `Fair Price`,
-or `Overpriced`. We set the threshold at ±15%, anchored in the residual
-standard deviation on the log scale (exp(σ) − 1 ≈ 15%); a stricter or
-looser band would shift the proportions accordingly.
+or `Overpriced`. We set the threshold manually at ±15%. A value we agreed on as a team based on what felt like a reasonable tolerance band around the model's predicted price.; a stricter or looser band would shift the proportions accordingly.
 
 ```{r traffic_light_labels, out.width="80%"}
 # Predictions on log scale
@@ -1549,7 +1534,7 @@ the AIC drops from `r format(aic_lm, big.mark = ",")` to `r format(aic_gam, big.
 hotel rooms charge roughly `r hotel_mult`× more than entire homes, private rooms
 `r private_pct`% less, shared rooms `r shared_pct`% less. The hotel-room result rests on
 few listings, so we don't over-read it. Each additional bathroom adds about
-`r bath_pct`% to the price — the strongest structural driver besides room type
+`r bath_pct`% to the price. The strongest structural driver besides room type
 and capacity. *host_is_superhost* is essentially zero and not significant,
 matching what the GLM Binomial and Neural Network show.
 
@@ -2059,7 +2044,7 @@ For hosts setting or revising their nightly price:
 
 For the platform itself, the same data points in three directions:
 
--   **A pricing assistant should use the GAM, not a linear formula**.
+-   **A pricing assistant should preferably use the GAM, not a linear formula**.
     Linear or postcode-based tools will systematically underprice
     lakeshore listings and overprice rural ones. The 2D spatial spline
     is the most defensible way to capture local dynamics with the data
@@ -2151,17 +2136,12 @@ The GAM was probably my biggest single learning. I had never worked with
 smooth terms before, and seeing the 2D spatial spline pick up Vaud's
 geography was genuinely a moment where the theory clicked into practice.
 
-Another lesson, less technical but probably the most useful one, was
-around our several iterations and the extra miles we took. I rewrote
-most of my texts at least three times. Each round made them shorter,
-clearer, and less **AI-flavoured**. I went into this project assuming the
-modelling would be the hard part. By the end, communicating the results
-clearly turned out to be just as much work.
+Another lesson, less technical but probably the most useful one, came from how often I rewrote my texts. Each round made them shorter, clearer, and more readable. I went into this project assuming the modelling would be the hard part. By the end, communicating the results clearly turned out to be just as much work.
 
 Finally, R Bootcamp in February laid the foundation, but this project
-was where I actually got comfortable. Reading the others' code,
-debugging together, learning shortcuts — that side-by-side learning was
-something I can't get from a tutorial.
+was where I actually got comfortable in R. Reading the others' code,
+debugging together, learning shortcuts and much more. That side-by-side learning was
+something I can't get from several tutorials.
 
 
 # Use of GenAI

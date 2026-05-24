@@ -78,6 +78,8 @@ Fragen von Timon:
 -----> stimmt das so? wir haben doch 15% einfach zufällig gewählt?
 -   10.4: Location matters non-linearly — coordinates clearly beat postcode dummies. --> wieso? wir testen a gar nicht damit? können wir das so behaupten. 
 -   13: klare adressierung der Forschungsfrage + Beantwortung fehlt hier noch. 
+-   13.2: wir fragen nicht darach was getan werden muss um den Superhost status zu erreichen. ich nehme an da gelten andere Kriterien als jene die wir unteruschen. wir können nicht sagen, dass man nicht die Preise erhöhen soll um Superhost zu werden. das ist faktisch einfach nicht das was wir untersucht haben. 
+-   brauchen wir möglicherweise noch ein "Ausblick" Kapitel?
 
 
 

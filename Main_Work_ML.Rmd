@@ -2037,7 +2037,8 @@ methodology transfers; the exact coefficients do not. Applying the same
 models to Geneva or Bern would require refitting on local data.
 
 ### Next Steps
-
+When we put the results of the study and the identified limitations into context, we realize that there is plenty of room for future research. We were able to see that a generalized additive model is a very useful approach. However, we have a clear shortcoming, particularly with regard to the limitation of location. Especially if there is a meaningful operationalization of location, for example, based on distances to a city center—pricing can be addressed in even greater detail. This would benefit not only the GAM but all models. However, our study demonstrated what is fundamentally possible. Regarding the second research question and the support vector machine, we also recognize that price classification is both possible and useful. Therefore, we see massive potential for Airbnb in this area in particular, which could be explored in a future study.
+Further improvements are also possible if the dataset were expanded to include additional Swiss cantons or other parts of the world. 
 
 
 ## Businesscase conclusion

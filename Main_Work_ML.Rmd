@@ -39,7 +39,7 @@ Sprint 24.05.2026
 Timon:
 -   in Kapitel 13 die Forschungsfragen (mit bezug auf Hypothesen (ff)) noch beantworten. (TIMON)
 -   Kapitel Capacity & Rating und ein Kapitel Room Types and Superhost Status --> kapitel optimaler zusammenfügen
--   Kapitel 13 & 14 restrukturieren. neu soll ein Kapitel "Conclusion" entstehen, welches zwei unterkapitel     beinhaltet. eines      als type "scinetific conclusions" und eines als "businesscase conclusion". 
+-   Kapitel 13 & 14 restrukturieren. neu soll ein Kapitel "Conclusion" entstehen, welches zwei unterkapitel beinhaltet. Eines als type "scinetific conclusions" und eines als "businesscase conclusion". 
     SC --> what the models agree on, what the different lenses ad, limitations, Ausblick
     BCC --> REco Host, reco Airbnb
 
@@ -269,41 +269,41 @@ LM, GAM and most diagnostics later.
 ## Capacity & Rating
 
 ```{r, fig.show='hold', out.width='80%'}
+p.room <- ggplot(d.airbnb_listings_feat, aes(x = room_type, fill = room_type)) +
+  geom_bar(show.legend = FALSE, fill = "deepskyblue") +
+  labs(title = "Proportion of Room Types", x = "Room Type", y = "Count") +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+
 p.acc <- ggplot(d.airbnb_listings_feat, aes(x = accommodates)) +
   geom_histogram(binwidth = 1, fill = "deepskyblue", color = "white") +
   scale_x_continuous(breaks = seq(1, max(d.airbnb_listings_feat$accommodates, na.rm = TRUE), by = 1)) +
   labs(title = "Listing Capacity", x = "Accommodates (Guests)", y = "Count")
 
-p.rev <- ggplot(d.airbnb_listings_feat, aes(x = review_scores_rating)) +
-  geom_histogram(bins = 30, fill = "deepskyblue", color = "white", alpha = 0.7) +
-  labs(title = "Review Scores Rating Distribution", x = "Rating", y = "Count")
 
-p.acc + p.rev
+
+p.room + p.acc
 ```
 
-Most listings are built for 2 or 4 guests. Review scores cluster heavily
-between 4 and 5. Both hosts and guests rate each other, which probably
-produces a leniency bias on top of any genuine quality signal.
+Most listings are built for 2 or 4 guests. Entire homes/apartments and Private rooms dominate the inventory while hotelrooms and shared rooms are marginal.
 
 ## Room Types & Superhost Status
 
 ```{r, fig.show='hold', out.width='80%'}
-p.room <- ggplot(d.airbnb_listings_feat, aes(x = room_type, fill = room_type)) +
-  geom_bar(show.legend = FALSE, fill = "deepskyblue") +
-  labs(title = "Proportion of Room Types", x = "Room Type", y = "Count") +
-  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+p.rev <- ggplot(d.airbnb_listings_feat, aes(x = review_scores_rating)) +
+  geom_histogram(bins = 30, fill = "deepskyblue", color = "white", alpha = 0.7) +
+  labs(title = "Review Scores Rating Distribution", x = "Rating", y = "Count")
 
 p.host <- ggplot(d.airbnb_listings_feat %>% filter(!is.na(host_is_superhost)), aes(x = as.factor(host_is_superhost), fill = as.factor(host_is_superhost))) +
   geom_bar(show.legend = FALSE) +
   scale_fill_manual(values = c("deepskyblue", "deepskyblue")) +
   labs(title = "Superhost Status", x = "Is Superhost?", y = "Count")
 
-p.room + p.host
+p.rev + p.host
 ```
 
-Entire homes/apartments and Private rooms dominate the inventory; hotel
-rooms and shared rooms are marginal. Roughly 30% of hosts are
-Superhosts. This is a meaningful minority, but far from the norm.
+
+Review scores cluster heavily between 4 and 5. Both hosts and guests rate each other, which probably produces a leniency bias on top of any genuine quality signal.
+Meanwhile are roughly 30% of hosts  Superhosts. This is a meaningful minority, but far from the norm.
 
 ## Log Prices and rooms / neighbourhoods
 
@@ -1940,9 +1940,11 @@ incomplete profiles, which could introduce bias if those missing data
 points systematically represented a specific market segment, such as
 poorly managed properties.
 
-# Synthesis, Conclusion & Recommendations
 
-## What the Models Agree On
+# Conclusion
+
+## Scientific Conclusion
+### What the Models Agree On
 
 Three findings hold across very different model architectures:
 
@@ -1970,7 +1972,7 @@ degree of freedom around 25, far too curved to approximate with linear
 coordinates or postcode dummies. Any tool that ignores location will
 systematically misprice listings outside the canton's average baseline.
 
-## What the Different Lenses Add
+### What the Different Lenses Add
 
 The price models and the occupancy model tell complementary halves of
 the Superhost story:
@@ -1993,50 +1995,8 @@ property type are added, the gap collapses to less than a dollar. This
 isn't really a disagreement between models but a useful warning against drawing conclusions
 from raw price comparisons.
 
-## Recommendations for Hosts
 
-For hosts setting or revising their nightly price:
-
--   **Anchor on structure, not status**. What a guest actually pays for
-    is the listing itself: room type, capacity, bathrooms, location. The
-    Superhost badge helps with visibility and booking volume, not with
-    the per-night rate.
--   **Use the traffic-light tool as a sanity check, not a target**. The
-    GAM-based recommendation gives a fair-market range based on what
-    comparable listings achieve. A listing flagged "Underpriced" is
-    leaving money on the table; one flagged "Overpriced" risks sitting
-    empty.
--   **If you're building toward Superhost status, compete on price**.
-    The 2.6× occupancy boost comes from satisfied guests and a full
-    calendar. Premium pricing makes both harder. Start with competitive
-    pricing, accumulate reviews, then raise prices selectively once the
-    badge is secure.
--   **Review scores matter less than you think for price**. Across the
-    pricing models the reward for higher ratings is modest. Reviews
-    matter, but their role is to drive *bookings*.
-
-## Recommendations for Airbnb
-
-For the platform itself, the same data points in three directions:
-
--   **A pricing assistant should use the GAM, not a linear formula**.
-    Linear or postcode-based tools will systematically underprice
-    lakeshore listings and overprice rural ones. The 2D spatial spline
-    is the most defensible way to capture local dynamics with the data
-    Airbnb already collects.
--   **Coach the "Underpriced" segment**. Roughly 41% of listings in the
-    dataset sit below the GAM's fair-price band. These hosts are the
-    easiest group to help: a recommendation alone could shift their
-    pricing toward market value, lifting both host revenue and platform
-    commission.
--   **Add operationalised location features**. Raw coordinates work well
-    for a smoother like the GAM but limit simpler tools. Distance to the
-    nearest lake, city centre, ski lift, and public transport stop would
-    let classifiers like the SVM catch up to the GAM's accuracy — and
-    these features are trivial to compute centrally and serve to every
-    model on the platform.
-
-# Overall Limitations
+### Overall Limitations
 
 Five limitations apply to this entire study, not just to individual
 models:
@@ -2075,6 +2035,58 @@ time. The price levels, location dynamics (lakeshore premium, alpine
 resorts), and host behaviours are specific to this market. The
 methodology transfers; the exact coefficients do not. Applying the same
 models to Geneva or Bern would require refitting on local data.
+
+### Next Steps
+
+
+
+## Businesscase conclusion
+### Recommendations for Hosts
+
+For hosts setting or revising their nightly price:
+
+-   **Anchor on structure, not status**. What a guest actually pays for
+    is the listing itself: room type, capacity, bathrooms, location. The
+    Superhost badge helps with visibility and booking volume, not with
+    the per-night rate.
+-   **Use the traffic-light tool as a sanity check, not a target**. The
+    GAM-based recommendation gives a fair-market range based on what
+    comparable listings achieve. A listing flagged "Underpriced" is
+    leaving money on the table; one flagged "Overpriced" risks sitting
+    empty.
+-   **If you're building toward Superhost status, compete on price**.
+    The 2.6× occupancy boost comes from satisfied guests and a full
+    calendar. Premium pricing makes both harder. Start with competitive
+    pricing, accumulate reviews, then raise prices selectively once the
+    badge is secure.
+-   **Review scores matter less than you think for price**. Across the
+    pricing models the reward for higher ratings is modest. Reviews
+    matter, but their role is to drive *bookings*.
+
+### Recommendations for Airbnb
+
+For the platform itself, the same data points in three directions:
+
+-   **A pricing assistant should use the GAM, not a linear formula**.
+    Linear or postcode-based tools will systematically underprice
+    lakeshore listings and overprice rural ones. The 2D spatial spline
+    is the most defensible way to capture local dynamics with the data
+    Airbnb already collects.
+-   **Coach the "Underpriced" segment**. Roughly 41% of listings in the
+    dataset sit below the GAM's fair-price band. These hosts are the
+    easiest group to help: a recommendation alone could shift their
+    pricing toward market value, lifting both host revenue and platform
+    commission.
+-   **Add operationalised location features**. Raw coordinates work well
+    for a smoother like the GAM but limit simpler tools. Distance to the
+    nearest lake, city centre, ski lift, and public transport stop would
+    let classifiers like the SVM catch up to the GAM's accuracy — and
+    these features are trivial to compute centrally and serve to every
+    model on the platform.
+
+
+
+
 
 
 

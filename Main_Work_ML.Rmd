@@ -1944,18 +1944,24 @@ poorly managed properties.
 # Conclusion
 
 ## Scientific Conclusion
-### What the Models Agree On
+### Answering research questions
 
-Three findings hold across very different model architectures:
+To answer the *first research question* we have to analyse our answers to both of the hypothesis. 
 
-**The Superhost badge does not raise the nightly price**. Four models
+in terms of host-sided Variables (H1) we find that**The Superhost badge does not raise the nightly price**. Four models
 with completely different mechanics, the linear regression, the
 logistic regression (GLM Binomial), the spline-based GAM, and the neural
 network, all return the same answer: after controlling for listing
 size, room type and other structural features, Superhost status has no
 measurable positive effect on price. Some models even show a small
-*negative* effect. This is the most robust single finding in this study.
+*negative* effect. This is the most robust single finding in this study. We can conclude thath Superhost strategy is: pricecompetitively, earn through volume.
 
+For the variable *review_scores* the linear model finds a positive effekt of about `r round((exp(lm.main$coefficients[2]) - 1) * 100, digits = 2)`%. 
+The GAM on the other side...
+**Hier bitte einen Teil für die Ergebnisse des GAMs eintragen. welche anderen, host-oprientierten Faktoren wurden gefunden die einen Einfluss haben? im lm erkennen wir einen Effekt des review-scores von, allenfalls auch noch mit den glm argumentieren?**
+
+
+Regarding the second Hypothesis and the venue-oriented Variables we can say that
 **Structural features are the real price drivers**. Capacity
 (`accommodates`), room type, and the number of bathrooms account for
 most of the explainable variation in price across all models that
@@ -1965,35 +1971,19 @@ home, all else equal. Reviews and host attributes matter, but their
 effect is small compared to the physical features a host can describe in
 a listing.
 
-**Location matters, and matters non-linearly**. Lake Geneva and Lausanne
-sit at the top of the price surface; rural and alpine areas drop off
-sharply. The GAM's 2D spatial spline captures this with an effective
-degree of freedom around 25, far too curved to approximate with linear
-coordinates or postcode dummies. Any tool that ignores location will
-systematically misprice listings outside the canton's average baseline.
-
-### What the Different Lenses Add
-
-The price models and the occupancy model tell complementary halves of
-the Superhost story:
-
-| Lens | Finding |
-|------------------------------------|------------------------------------|
-| LM, GLM Binomial, GAM, ANN | Superhosts charge **no more** (and slightly less) than regular hosts |
-| GLM Poisson | Superhosts get **2.6× more bookings** than regular hosts |
-
-Read together, these results sketch out the Superhost strategy: price
-competitively, earn through volume. A host who chases the badge by
-raising prices is doing it backwards. The badge comes from booking
-volume and consistent review quality, both of which are easier to
-achieve at a competitive price point.
-
-A second contrast worth highlighting is the Naive ANN versus the
+A contrast worth highlighting is the Naive ANN versus the
 Expanded ANN. The naive version, trained only on host variables,
 predicts a *lower* price for Superhosts (**`r results.ann_basic$Predicted_Price_CHF[2]` CHF** vs. **`r results.ann_basic$Predicted_Price_CHF[1]` CHF**). Once room and
 property type are added, the gap collapses to less than a dollar. This
 isn't really a disagreement between models but a useful warning against drawing conclusions
 from raw price comparisons.
+
+The answer to the first research question is, accordingly, relatively straightforward. We find that virtually all of the variables we examined have an impact on pricing. Interestingly, Superhost status has a negative impact. Furthermore, we find that venue-oriented variables, in particular, have a strong influence. 
+
+
+To answer the *second research question*, we must refer to the results of the support vector machine. We see that it is possible to predict the fairness of the price, but we also recognize that this prediction is insufficient based on the variables available to us. `r round(svm_accuracy * 100, 2)`% accuracy is just no good enough to criticize hosts for their pricing. 
+
+
 
 
 ### Overall Limitations

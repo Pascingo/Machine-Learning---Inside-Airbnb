@@ -11606,78 +11606,57 @@ segment, such as poorly managed properties.</p>
 <div id="scientific-conclusion" class="section level2" number="13.1">
 <h2><span class="header-section-number">13.1</span> Scientific
 Conclusion</h2>
-<div id="what-the-models-agree-on" class="section level3" number="13.1.1">
-<h3><span class="header-section-number">13.1.1</span> What the Models
-Agree On</h3>
-<p>Three findings hold across very different model architectures:</p>
-<p><strong>The Superhost badge does not raise the nightly
-price</strong>. Four models with completely different mechanics, the
-linear regression, the logistic regression (GLM Binomial), the
-spline-based GAM, and the neural network, all return the same answer:
-after controlling for listing size, room type and other structural
-features, Superhost status has no measurable positive effect on price.
-Some models even show a small <em>negative</em> effect. This is the most
-robust single finding in this study.</p>
-<p><strong>Structural features are the real price drivers</strong>.
-Capacity (<code>accommodates</code>), room type, and the number of
-bathrooms account for most of the explainable variation in price across
-all models that include them. The GAM shows that an additional bathroom
-adds roughly 25% to the price; a private room sells for about 30% less
-than an entire home, all else equal. Reviews and host attributes matter,
-but their effect is small compared to the physical features a host can
-describe in a listing.</p>
-<p><strong>Location matters, and matters non-linearly</strong>. Lake
-Geneva and Lausanne sit at the top of the price surface; rural and
-alpine areas drop off sharply. The GAM’s 2D spatial spline captures this
-with an effective degree of freedom around 25, far too curved to
-approximate with linear coordinates or postcode dummies. Any tool that
-ignores location will systematically misprice listings outside the
-canton’s average baseline.</p>
+<div id="answering-research-questions" class="section level3" number="13.1.1">
+<h3><span class="header-section-number">13.1.1</span> Answering research
+questions</h3>
+<p>To answer the <em>first research question</em> we have to analyse our
+answers to both of the hypothesis.</p>
+<p>in terms of host-sided Variables (H1) we find that<strong>The
+Superhost badge does not raise the nightly price</strong>. Four models
+with completely different mechanics, the linear regression, the logistic
+regression (GLM Binomial), the spline-based GAM, and the neural network,
+all return the same answer: after controlling for listing size, room
+type and other structural features, Superhost status has no measurable
+positive effect on price. Some models even show a small
+<em>negative</em> effect. This is the most robust single finding in this
+study. We can conclude thath Superhost strategy is: pricecompetitively,
+earn through volume.</p>
+<p>For the variable <em>review_scores</em> the linear model finds a
+positive effekt of about 7.41%. The GAM on the other side… <strong>Hier
+bitte einen Teil für die Ergebnisse des GAMs eintragen. welche anderen,
+host-oprientierten Faktoren wurden gefunden die einen Einfluss haben? im
+lm erkennen wir einen Effekt des review-scores von, allenfalls auch noch
+mit den glm argumentieren?</strong></p>
+<p>Regarding the second Hypothesis and the venue-oriented Variables we
+can say that <strong>Structural features are the real price
+drivers</strong>. Capacity (<code>accommodates</code>), room type, and
+the number of bathrooms account for most of the explainable variation in
+price across all models that include them. The GAM shows that an
+additional bathroom adds roughly 25% to the price; a private room sells
+for about 30% less than an entire home, all else equal. Reviews and host
+attributes matter, but their effect is small compared to the physical
+features a host can describe in a listing.</p>
+<p>A contrast worth highlighting is the Naive ANN versus the Expanded
+ANN. The naive version, trained only on host variables, predicts a
+<em>lower</em> price for Superhosts (<strong>131.65 CHF</strong>
+vs. <strong>160.15 CHF</strong>). Once room and property type are added,
+the gap collapses to less than a dollar. This isn’t really a
+disagreement between models but a useful warning against drawing
+conclusions from raw price comparisons.</p>
+<p>The answer to the first research question is, accordingly, relatively
+straightforward. We find that virtually all of the variables we examined
+have an impact on pricing. Interestingly, Superhost status has a
+negative impact. Furthermore, we find that venue-oriented variables, in
+particular, have a strong influence.</p>
+<p>To answer the <em>second research question</em>, we must refer to the
+results of the support vector machine. We see that it is possible to
+predict the fairness of the price, but we also recognize that this
+prediction is insufficient based on the variables available to us.
+69.15% accuracy is just no good enough to criticize hosts for their
+pricing.</p>
 </div>
-<div id="what-the-different-lenses-add" class="section level3" number="13.1.2">
-<h3><span class="header-section-number">13.1.2</span> What the Different
-Lenses Add</h3>
-<p>The price models and the occupancy model tell complementary halves of
-the Superhost story:</p>
-<table>
-<colgroup>
-<col width="50%" />
-<col width="50%" />
-</colgroup>
-<thead>
-<tr class="header">
-<th>Lens</th>
-<th>Finding</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td>LM, GLM Binomial, GAM, ANN</td>
-<td>Superhosts charge <strong>no more</strong> (and slightly less) than
-regular hosts</td>
-</tr>
-<tr class="even">
-<td>GLM Poisson</td>
-<td>Superhosts get <strong>2.6× more bookings</strong> than regular
-hosts</td>
-</tr>
-</tbody>
-</table>
-<p>Read together, these results sketch out the Superhost strategy: price
-competitively, earn through volume. A host who chases the badge by
-raising prices is doing it backwards. The badge comes from booking
-volume and consistent review quality, both of which are easier to
-achieve at a competitive price point.</p>
-<p>A second contrast worth highlighting is the Naive ANN versus the
-Expanded ANN. The naive version, trained only on host variables,
-predicts a <em>lower</em> price for Superhosts (<strong>131.65
-CHF</strong> vs. <strong>160.15 CHF</strong>). Once room and property
-type are added, the gap collapses to less than a dollar. This isn’t
-really a disagreement between models but a useful warning against
-drawing conclusions from raw price comparisons.</p>
-</div>
-<div id="overall-limitations" class="section level3" number="13.1.3">
-<h3><span class="header-section-number">13.1.3</span> Overall
+<div id="overall-limitations" class="section level3" number="13.1.2">
+<h3><span class="header-section-number">13.1.2</span> Overall
 Limitations</h3>
 <p>Five limitations apply to this entire study, not just to individual
 models:</p>
@@ -11713,8 +11692,23 @@ market. The methodology transfers; the exact coefficients do not.
 Applying the same models to Geneva or Bern would require refitting on
 local data.</p>
 </div>
-<div id="next-steps" class="section level3" number="13.1.4">
-<h3><span class="header-section-number">13.1.4</span> Next Steps</h3>
+<div id="next-steps" class="section level3" number="13.1.3">
+<h3><span class="header-section-number">13.1.3</span> Next Steps</h3>
+<p>When we put the results of the study and the identified limitations
+into context, we realize that there is plenty of room for future
+research. We were able to see that a generalized additive model is a
+very useful approach. However, we have a clear shortcoming, particularly
+with regard to the limitation of location. Especially if there is a
+meaningful operationalization of location, for example, based on
+distances to a city center—pricing can be addressed in even greater
+detail. This would benefit not only the GAM but all models. However, our
+study demonstrated what is fundamentally possible. Regarding the second
+research question and the support vector machine, we also recognize that
+price classification is both possible and useful. Therefore, we see
+massive potential for Airbnb in this area in particular, which could be
+explored in a future study. Further improvements are also possible if
+the dataset were expanded to include additional Swiss cantons or other
+parts of the world.</p>
 </div>
 </div>
 <div id="businesscase-conclusion" class="section level2" number="13.2">

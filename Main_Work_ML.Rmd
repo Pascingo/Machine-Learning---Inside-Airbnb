@@ -37,9 +37,9 @@ Sprint 24.05.2026
 
 
 Timon:
--   in Kapitel 13 die Forschungsfragen (mit bezug auf Hypothesen (ff)) noch beantworten. (TIMON)
--   Kapitel Capacity & Rating und ein Kapitel Room Types and Superhost Status --> kapitel optimaler zusammenfügen
--   Kapitel 13 & 14 restrukturieren. neu soll ein Kapitel "Conclusion" entstehen, welches zwei unterkapitel beinhaltet. Eines als type "scinetific conclusions" und eines als "businesscase conclusion". 
+-   in Kapitel 13 die Forschungsfragen (mit bezug auf Hypothesen (ff)) noch beantworten. (TIMON) *done
+-   Kapitel Capacity & Rating und ein Kapitel Room Types and Superhost Status --> kapitel optimaler zusammenfügen *done*
+-   Kapitel 13 & 14 restrukturieren. neu soll ein Kapitel "Conclusion" entstehen, welches zwei unterkapitel beinhaltet. Eines als type "scinetific conclusions" und eines als "businesscase conclusion". *done* 
     SC --> what the models agree on, what the different lenses ad, limitations, Ausblick
     BCC --> REco Host, reco Airbnb
 
@@ -48,7 +48,7 @@ Pascal:
 -   überflüssige Packete entfernen 
 -   2 Sätze in DP zu FE-Data schreiben und einen kurzen Verweis in 3.9 einbauen.
 -   8.3.2 letzter Satz Formatierung anpassen. 
-
+-   conclusion drüberschauen und eigene Ergebnisse einbauen bei RQ1
 
 Davide:
 -   (OR = 0.693, CI [0.57, 0.841], p = 2^{-4}). Art der Formatierung entfernen. (DAVIDE)
@@ -57,6 +57,7 @@ Davide:
 -   GAM output table auf fehlende Variabeln überprüfen (DAVIDE)
 -   10.3.1 threshold setting anpassen (DAVIDE)
 -   Postcode Dummy aus der Arbeit entfernen. keine verweise darauf. (ctrl + F)
+-   conclusion drüberschauen und eigene Ergebnisse einbauen bei RQ1
 
 
 

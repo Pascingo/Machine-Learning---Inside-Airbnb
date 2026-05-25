@@ -31,18 +31,10 @@ caption {
       font-size: 1.0em;
     }
 ```
+
+
+Last ToDos: 
 **ALS LETZES styler::style_file(DATEINAME) runnen in Konsole**
-
-
-Davide:
--   conclusion drüberschauen und eigene Ergebnisse einbauen bei RQ1
-
-Fragen Davide: 
-
-
-ToDos backlog: 
-
-
 -   alles nocheinmal drüberlesen. 
 -   tuning wieder reaktivieren
 
@@ -1901,71 +1893,24 @@ poorly managed properties.
 ## Scientific Conclusion
 ### Answering research questions
 
+
 To answer the *first research question* we have to analyse our answers to both of the hypothesis. 
 
-in terms of host-sided Variables (H1) we find that **the Superhost badge does not raise the nightly price**. Four models
-with completely different mechanics, the linear regression, the
-logistic regression (GLM Binomial), the spline-based GAM, and the neural
-network, all return the same answer: after controlling for listing
-size, room type and other structural features, Superhost status has no
-measurable positive effect on price. Some models even show a small
-*negative* effect. This is the most robust single finding in this study. We can conclude thath Superhost strategy is: pricecompetitively, earn through volume.
+In terms of host-sided variables (H1) we find that **the Superhost badge does not raise the nightly price**. Four models with completely different mechanics — the linear regression, the logistic regression (GLM Binomial), the spline-based GAM, and the neural network — all return the same answer: after controlling for listing size, room type and other structural features, Superhost status has no measurable positive effect on price. Some models even show a small *negative* effect. The GLM Binomial puts a precise number on this: Superhosts have `r sh_pct_lower`% *lower* odds of charging an above-median price. This is the most robust single finding in this study, and we can conclude that the Superhost strategy is to price competitively and earn through volume.
 
-For the variable *review_scores* the linear model finds a positive effekt of about `r round((exp(lm.main$coefficients[2]) - 1) * 100, digits = 2)`%. 
+For the variable *review_scores* the linear model finds a positive effect of about `r round((exp(lm.main$coefficients[2]) - 1) * 100, digits = 2)`%. The GLM Binomial confirms this through a different lens. A one-point increase in review score raises the odds of charging an above-median price by `r rev_pct_up`%. H1 is therefore only partially supported. Quality signals matter, but the Superhost badge itself is not a price lever.
 
-To further validate our findings, we applied Poisson and Quasi-Poisson Generalized Linear Models (GLM). The initial Poisson model revealed significant overdispersion in the data, highlighting the high variance typical for real-world pricing structures. By implementing the Quasi-Poisson model to adjust for this overdispersion and obtain more robust standard errors, we corroborated our primary finding: even under this different model specification, pricing power remains firmly tied to structural and venue-oriented features, while host-sided metrics exert only a marginal influence.
+To further validate our findings, we applied Poisson and Quasi-Poisson Generalized Linear Models (GLM). The initial Poisson model revealed significant overdispersion in the data, highlighting the high variance typical for real-world pricing structures. By implementing the Quasi-Poisson model to adjust for this overdispersion and obtain more robust standard errors, we corroborated our primary finding: even under this different model specification, pricing power remains firmly tied to structural and venue-oriented features, while host-sided metrics exert only a marginal influence. The pattern only makes sense once the GLM Poisson is added in. Superhosts trade margin for volume, earning more through occupancy rather than through higher per-night prices.
 
-The GLM Binomial speaks directly to **H1**: *do host-centered indicators
-raise willingness to pay?* The answer here is more nuanced than the
-hypothesis suggests. Two host-centered variables move the odds of an
-above-median price in opposite directions:
+Turning to the second hypothesis, the GAM gives the clearest verdict on H2. Its 2D spatial spline `s(longitude, latitude)` has an EDF of `r edf_loc`. Lakeshore listings and the Lausanne urban area sit at the top of the price surface. Rural and alpine areas drop off sharply. The non-linearity of the effect is also the strongest single argument we have for using a GAM over a linear model. H2 is clearly supported.
 
-- **Review score** raises the odds by `r rev_pct_up`% per point — consistent with H1.
-- **Superhost status** *lowers* the odds by `r sh_pct_lower`% — the opposite of H1.
+Beyond location, **structural features are the real price drivers**. Capacity (`accommodates`), room type, and the number of bathrooms account for most of the explainable variation in price across all models that include them. The GAM shows that an additional bathroom adds roughly 25% to the price. A private room sells for about 30% less than an entire home, all else equal. Reviews and host attributes matter, but their effect is small compared to the physical features a host can describe in a listing.
 
-H1 is therefore only partially supported. Quality signals matter, but the
-Superhost badge is not a price lever. The pattern only makes sense once
-the GLM Poisson is added in: Superhosts trade margin for volume, earning
-more through occupancy rather than through higher per-night prices.
+A contrast worth highlighting is the Naive ANN versus the Expanded ANN. The naive version, trained only on host variables, predicts a *lower* price for Superhosts (**`r results.ann_basic$Predicted_Price_CHF[2]` CHF** vs. **`r results.ann_basic$Predicted_Price_CHF[1]` CHF**). Once room and property type are added, the gap collapses to less than a dollar. This isn't really a disagreement between models but a useful warning against drawing conclusions from raw price comparisons.
 
-The GAM on the other side addresses both research questions:
+The answer the *first research question* is relatively straightforward. We find that virtually all of the variables we examined have an impact on pricing. Interestingly, Superhost status has a negative impact. Furthermore, we find that venue-oriented variables, in particular location and physical features, have the strongest influence.
 
-**RQ1 / H2 — does location drive willingness to pay?** Yes, strongly. The
-2D spatial spline `s(longitude, latitude)` has an EDF of `r edf_loc`.The
-most flexible term in the model. Lakeshore listings and the Lausanne urban
-area sit at the top of the price surface; rural and alpine areas drop off
-sharply. H2 is clearly supported, and the non-linearity of the effect is
-the strongest argument we have for using a GAM over a linear model.
-
-**RQ2 — can we predict whether a listing's price is justified?** With the
-GAM as the engine, yes. The model explains `r gam_dev_expl`% of the deviance
-on held-out data, generates a fair-market price for every listing, and
-produces a stable train/test split of the traffic-light verdicts. The
-verdicts feed directly into the SVM-based decision tool in the next chapter.
-
-Regarding the second Hypothesis and the venue-oriented Variables we can say that
-**Structural features are the real price drivers**. Capacity
-(`accommodates`), room type, and the number of bathrooms account for
-most of the explainable variation in price across all models that
-include them. The GAM shows that an additional bathroom adds roughly 25%
-to the price; a private room sells for about 30% less than an entire
-home, all else equal. Reviews and host attributes matter, but their
-effect is small compared to the physical features a host can describe in
-a listing.
-
-A contrast worth highlighting is the Naive ANN versus the
-Expanded ANN. The naive version, trained only on host variables,
-predicts a *lower* price for Superhosts (**`r results.ann_basic$Predicted_Price_CHF[2]` CHF** vs. **`r results.ann_basic$Predicted_Price_CHF[1]` CHF**). Once room and
-property type are added, the gap collapses to less than a dollar. This
-isn't really a disagreement between models but a useful warning against drawing conclusions
-from raw price comparisons.
-
-The answer to the first research question is, accordingly, relatively straightforward. We find that virtually all of the variables we examined have an impact on pricing. Interestingly, Superhost status has a negative impact. Furthermore, we find that venue-oriented variables, in particular, have a strong influence. 
-
-
-To answer the *second research question*, we must refer to the results of the support vector machine. We see that it is possible to predict the fairness of the price, but we also recognize that this prediction is insufficient based on the variables available to us. `r round(svm_accuracy * 100, 2)`% accuracy is just no good enough to criticize hosts for their pricing. 
-
-
+To answer the *second research question*, we draw on both the GAM and the SVM. The GAM itself explains `r gam_dev_expl`% of the deviance on held-out data and generates a fair-market price for every listing — strong evidence that the price drivers we identified are predictive, not just descriptive. The traffic-light verdicts derived from the GAM feed directly into the SVM, which reaches `r round(svm_accuracy * 100, 2)`% accuracy on the test set. We can predict price fairness, but we also recognize that this accuracy is insufficient to criticize hosts for their pricing based on the variables available to us.
 
 
 ### Overall Limitations

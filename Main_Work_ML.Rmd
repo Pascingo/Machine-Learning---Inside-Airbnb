@@ -32,12 +32,6 @@ caption {
     }
 ```
 
-
-Last ToDos: 
-**ALS LETZES styler::style_file(DATEINAME) runnen in Konsole**
-
-
-
 # Introduction
 
 ## Business Case

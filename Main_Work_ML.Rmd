@@ -37,7 +37,7 @@ Sprint 24.05.2026
 
 
 Timon:
--   in Kapitel 13 die Forschungsfragen (mit bezug auf Hypothesen (ff)) noch beantworten. (TIMON) *done
+-   in Kapitel 13 die Forschungsfragen (mit bezug auf Hypothesen (ff)) noch beantworten. (TIMON) *done*
 -   Kapitel Capacity & Rating und ein Kapitel Room Types and Superhost Status --> kapitel optimaler zusammenfügen *done*
 -   Kapitel 13 & 14 restrukturieren. neu soll ein Kapitel "Conclusion" entstehen, welches zwei unterkapitel beinhaltet. Eines als type "scinetific conclusions" und eines als "businesscase conclusion". *done* 
     SC --> what the models agree on, what the different lenses ad, limitations, Ausblick
@@ -134,16 +134,10 @@ library(e1071)
 library(nnet)
 library(pROC)
 library(Metrics)
-library(performance)
-library(broom)
 library(kableExtra)
-library(stringr)
-library(ggplot2)
-library(patchwork)
 library(knitr)
 library(performance)
 library(naniar)
-library(visdat)
 library(neuralnet)
 library(leaflet)
 library(leaflet.extras)

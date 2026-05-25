@@ -770,7 +770,7 @@ come from the GAM's fair-price band, so if we split after labelling, GAM
 information would leak into the SVM's test set. We split first, fit the
 GAM only on the training set, then derive labels.
 
-# Linear Model [Timon]
+# Linear Model (Timon)
 
 ## Theory
 
@@ -892,7 +892,7 @@ a significant impact on price. For example, we would need the distance
 to the nearest city center to measure this accurately.
 
 
-# Generalized linear Model — Poisson [Pascal]
+# Generalized linear Model — Poisson (Pascal)
 
 ## Theory
 
@@ -1045,7 +1045,7 @@ a Negative Binomial model as an alternative method to handle
 overdispersion while retaining standard likelihood metrics for easier
 comparison.
 
-# Generalized linear model — Binomial [Davide]
+# Generalized linear model — Binomial (Davide)
 
 ## Theory
 
@@ -1198,7 +1198,7 @@ work.
 -   **The cutoff moves with the market**. The median is just our
     sample's median. If the market shifts, so does it.
 
-# Generalized additive model [Davide]
+# Generalized additive model (Davide)
 
 ## Theory
 
@@ -1524,7 +1524,7 @@ points are worth keeping in mind:
     proximity to the lake cause higher prices, or just correlate with
     better properties?) it isn't.
 
-# Support vector machine [Timon]
+# Support vector machine (Timon)
 
 ## Theory
 
@@ -1653,7 +1653,7 @@ location data. We suspect that at the very least, the distance to the
 nearest city center would have a significant impact on the accuracy of
 the estimates.
 
-# Artificial neural network [Pascal]
+# Artificial neural network (Pascal)
 
 ## Theory
 

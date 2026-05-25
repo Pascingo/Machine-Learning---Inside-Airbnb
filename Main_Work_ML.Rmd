@@ -328,10 +328,9 @@ p.verified <- ggplot(d.airbnb_listings_feat %>% filter(!is.na(host_identity_veri
   geom_bar(fill = "deepskyblue") +
   labs(title = "Identity Verified", x = "t = True, f = False", y = "Count")
 
-(p.resp_time | p.resp_rate | p.acc_rate ) / 
+(p.resp_time | p.resp_rate | p.acc_rate) /
   plot_spacer() /
   (p.pic | p.verified)
-
 ```
 
 Hosts in Vaud are highly responsive and reliable: most reply within an
@@ -365,7 +364,7 @@ rare and thus not represented in the plot.
 p.baths <- ggplot(d.airbnb_listings_feat, aes(y = bathrooms)) +
   geom_boxplot(fill = "deepskyblue", color = "black") +
   scale_x_continuous(breaks = seq(0, max(d.airbnb_listings_feat$bathrooms, na.rm = TRUE), by = 1)) +
-  labs(title = "Number of Bathrooms", x = "Bathrooms", y = " ") 
+  labs(title = "Number of Bathrooms", x = "Bathrooms", y = " ")
 
 p.beds <- ggplot(d.airbnb_listings_feat, aes(y = beds)) +
   geom_boxplot(fill = "deepskyblue", color = "black") +
@@ -469,7 +468,7 @@ the models that need a rating, rather than imputing.
 
 ```{r,  out.width="80%"}
 gg_miss_var(d.airbnb_listings_feat) +
-  labs(title = "Count of NA per Variable", y = " ") 
+  labs(title = "Count of NA per Variable", y = " ")
 ```
 
 `lm.main` and `svm.main` silently drop rows with missing values, which
@@ -1095,8 +1094,9 @@ d.results_glm_binomial <- tidy(glm.binomial, conf.int = TRUE) %>%
   ) %>%
   select(term, estimate, odds_ratio, or_lower, or_upper, p.value)
 
-kable(d.results_glm_binomial, 
-      caption = "GLM Binomial: Odds Ratios with 95% Confidence Intervals") %>%
+kable(d.results_glm_binomial,
+  caption = "GLM Binomial: Odds Ratios with 95% Confidence Intervals"
+) %>%
   kable_styling()
 ```
 
@@ -1153,22 +1153,22 @@ p.glm_binomial
 res <- d.results_glm_binomial
 
 # Superhost
-or_sh        <- res$odds_ratio[res$term == "host_is_superhostTRUE"]
-sh_lower     <- res$or_lower[res$term   == "host_is_superhostTRUE"]
-sh_upper     <- res$or_upper[res$term   == "host_is_superhostTRUE"]
-sh_pval      <- res$p.value[res$term    == "host_is_superhostTRUE"]
+or_sh <- res$odds_ratio[res$term == "host_is_superhostTRUE"]
+sh_lower <- res$or_lower[res$term == "host_is_superhostTRUE"]
+sh_upper <- res$or_upper[res$term == "host_is_superhostTRUE"]
+sh_pval <- res$p.value[res$term == "host_is_superhostTRUE"]
 sh_pct_lower <- round((1 - or_sh) * 100, 0)
 
 # Accommodates
-or_acc       <- res$odds_ratio[res$term == "accommodates"]
+or_acc <- res$odds_ratio[res$term == "accommodates"]
 
 # Review rating
-or_rev       <- res$odds_ratio[res$term == "review_scores_rating"]
-rev_pct_up   <- round((or_rev - 1) * 100, 0)
+or_rev <- res$odds_ratio[res$term == "review_scores_rating"]
+rev_pct_up <- round((or_rev - 1) * 100, 0)
 
 # Hotel room CI
-hotel_lower  <- res$or_lower[res$term == "room_typeHotel room"]
-hotel_upper  <- res$or_upper[res$term == "room_typeHotel room"]
+hotel_lower <- res$or_lower[res$term == "room_typeHotel room"]
+hotel_upper <- res$or_upper[res$term == "room_typeHotel room"]
 ```
 
 
@@ -1257,7 +1257,6 @@ train.idx <- sample(seq_len(n), size = floor(0.8 * n))
 
 d.train <- d.airbnb_listings_feat_gam[train.idx, ]
 d.test <- d.airbnb_listings_feat_gam[-train.idx, ]
-
 ```
 
 After the split, we model `log_price` rather than the raw price. The distribution is heavily right-skewed (see Chapter EDA). Coefficients on the log scale read multiplicatively. We use `method = "REML"` because it gives more reliable
@@ -1451,36 +1450,36 @@ leaflet() %>%
 ```{r interpretation_gam_vars, include=FALSE}
 # Model performance
 gam_dev_expl <- round(summary(gam.main)$dev.expl * 100, 1)
-gam_r2       <- round(summary(gam.main)$r.sq, 3)
-gam_n        <- summary(gam.main)$n
+gam_r2 <- round(summary(gam.main)$r.sq, 3)
+gam_n <- summary(gam.main)$n
 
 # LM benchmark
-lm_r2        <- round(summary(lm.gam_comparison)$r.squared, 3)
+lm_r2 <- round(summary(lm.gam_comparison)$r.squared, 3)
 
 # AIC comparison
-aic_vals     <- AIC(lm.gam_comparison, gam.main)
-aic_lm       <- round(aic_vals$AIC[1], 0)
-aic_gam      <- round(aic_vals$AIC[2], 0)
+aic_vals <- AIC(lm.gam_comparison, gam.main)
+aic_lm <- round(aic_vals$AIC[1], 0)
+aic_gam <- round(aic_vals$AIC[2], 0)
 
 # Parametric coefficients (robust to spaces in names)
-cf           <- coef(gam.main)
-hotel_mult   <- round(exp(cf[grep("Hotel",        names(cf))]), 1)
-private_pct  <- round((1 - exp(cf[grep("Private", names(cf))])) * 100, 0)
-shared_pct   <- round((1 - exp(cf[grep("Shared",  names(cf))])) * 100, 0)
-bath_pct     <- round((exp(cf["bathrooms"]) - 1) * 100, 0)
+cf <- coef(gam.main)
+hotel_mult <- round(exp(cf[grep("Hotel", names(cf))]), 1)
+private_pct <- round((1 - exp(cf[grep("Private", names(cf))])) * 100, 0)
+shared_pct <- round((1 - exp(cf[grep("Shared", names(cf))])) * 100, 0)
+bath_pct <- round((exp(cf["bathrooms"]) - 1) * 100, 0)
 
 # Smooth terms EDF
-edf          <- summary(gam.main)$s.table
-edf_acc      <- round(edf[grep("accommodates",       rownames(edf)), "edf"], 2)
-edf_rev      <- round(edf[grep("review_scores",      rownames(edf)), "edf"], 2)
-edf_nrev     <- round(edf[grep("number_of_reviews",  rownames(edf)), "edf"], 2)
-edf_loc      <- round(edf[grep("longitude",          rownames(edf)), "edf"], 2)
+edf <- summary(gam.main)$s.table
+edf_acc <- round(edf[grep("accommodates", rownames(edf)), "edf"], 2)
+edf_rev <- round(edf[grep("review_scores", rownames(edf)), "edf"], 2)
+edf_nrev <- round(edf[grep("number_of_reviews", rownames(edf)), "edf"], 2)
+edf_loc <- round(edf[grep("longitude", rownames(edf)), "edf"], 2)
 
 # Traffic light distribution (from training set)
-tl_train     <- prop.table(table(d.train$traffic_light)) * 100
-tl_under     <- round(tl_train["Underpriced"], 0)
-tl_fair      <- round(tl_train["Fair Price"],  0)
-tl_over      <- round(tl_train["Overpriced"],  0)
+tl_train <- prop.table(table(d.train$traffic_light)) * 100
+tl_under <- round(tl_train["Underpriced"], 0)
+tl_fair <- round(tl_train["Fair Price"], 0)
+tl_over <- round(tl_train["Overpriced"], 0)
 ```
 
 
@@ -1577,19 +1576,19 @@ d.svm_test <- d.test[, svm.coloums]
 # for the radial kernel.
 
 tuned_svm <- tune(
-   svm,
-   traffic_light ~ ., # 'traffic_light' was already converted to a factor in the GAM step
-   data = d.svm_train,
-   kernel = "radial",
-   ranges = list(
-     cost = 2^(-6:10),
-     gamma = 2^(-5:2)
-   )
- )
+  svm,
+  traffic_light ~ ., # 'traffic_light' was already converted to a factor in the GAM step
+  data = d.svm_train,
+  kernel = "radial",
+  ranges = list(
+    cost = 2^(-6:10),
+    gamma = 2^(-5:2)
+  )
+)
 
 # Extracting the best parameters found during cross-validation
- svm_model_cost <- as.numeric(tuned_svm$best.parameters["cost"])
- svm_model_gamma <- as.numeric(tuned_svm$best.parameters["gamma"])
+svm_model_cost <- as.numeric(tuned_svm$best.parameters["cost"])
+svm_model_gamma <- as.numeric(tuned_svm$best.parameters["gamma"])
 
 ### einschub!!!!!!
 svm_model_cost <- 256
@@ -1597,7 +1596,7 @@ svm_model_gamma <- 0.625
 
 
 # displaying Parameters for visual confirmation
- cat("Optimal Cost:", svm_model_cost, "\n")
+cat("Optimal Cost:", svm_model_cost, "\n")
 cat("Optimal Gamma:", svm_model_gamma, "\n")
 cat("Best Cross-Validation Performance (Error Rate):", round(tuned_svm$best.performance, 4), "\n")
 
@@ -1744,8 +1743,6 @@ results.ann_basic <- data.frame(
   "Host_Type" = c("Regular Host (0)", "Superhost (1)"),
   "Predicted_Price_USD" = round(as.numeric(real_prices_naive), 2)
 )
-
-
 ```
 
 ```{r, Expanded ANN, Lead Pascal, out.width="80%"}
@@ -1809,7 +1806,6 @@ results.df_exp <- data.frame(
   "Host_Type" = c("Regular Host (0)", "Superhost (1)"),
   "Predicted_Price_USD" = round(as.numeric(real_prices_expanded), 2)
 )
-
 ```
 
 ```{r}

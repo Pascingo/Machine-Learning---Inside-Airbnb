@@ -59,6 +59,20 @@ Davide:
 -   Postcode Dummy aus der Arbeit entfernen. keine verweise darauf. (ctrl + F) *überall ausser am Schluss nicht entfernt*
 -   conclusion drüberschauen und eigene Ergebnisse einbauen bei RQ1
 
+Fragen Davide: 
+Introduction direkt zu Business Case ohne Satz dazwischen - meeh
+
+Dataprepartions - 2x das mit den 20 Variablen
+
+3.9 Analogous to the existing...
+
+bei limitations pro model aufs richtige chapter verweisen!!
+
+wollen wir bei traffic light 1x zeigen was 10/20/30% ausmachen würden und wir deshalb mit 15% gegangen sind? ratio ändert ja accordingly
+
+hab mit dem Treshhold bisschen gespielt. sollten wir besser begründen?
+
+
 
 ToDos backlog: 
 
@@ -1398,7 +1412,7 @@ or `Overpriced`. We set the threshold manually at ±15%. A value we agreed on as
 d.train$fitted_logprice <- as.numeric(predict(gam.main, newdata = d.train))
 d.test$fitted_logprice <- as.numeric(predict(gam.main, newdata = d.test))
 
-# Smearing correction (Duan 1983) for back-transforming log predictions
+# Smearing correction for back-transforming log predictions
 sigma2 <- summary(gam.main)$scale
 smearing <- exp(sigma2 / 2)
 d.train$fitted_price <- exp(d.train$fitted_logprice) * smearing
@@ -1535,11 +1549,10 @@ matching what the GLM Binomial and Neural Network show.
 well above 1, confirming the non-linearity:
 
 - `s(accommodates)` (EDF = `r edf_acc`): steep rise from 1 to ~6 guests, then
-  flattens — diminishing returns as expected.
+  flattens with diminishing returns as expected.
 - `s(review_scores_rating)` (EDF = `r edf_rev`): real but modest, with a wide
   confidence band.
-- `s(log1p(number_of_reviews))` (EDF = `r edf_nrev`): slight downward trend —
-  listings with more reviews tend to be priced lower.
+- `s(log1p(number_of_reviews))` (EDF = `r edf_nrev`): slight downward trend, when     listings with more reviews tend to be priced lower.
 - `s(longitude, latitude)` (EDF = `r edf_loc`): by far the most flexible
   term. High-price clusters along Lake Geneva and around Lausanne,
   sharp drops in rural and alpine areas. The strongest empirical support
@@ -1927,7 +1940,7 @@ poorly managed properties.
 
 To answer the *first research question* we have to analyse our answers to both of the hypothesis. 
 
-in terms of host-sided Variables (H1) we find that**The Superhost badge does not raise the nightly price**. Four models
+in terms of host-sided Variables (H1) we find that **the Superhost badge does not raise the nightly price**. Four models
 with completely different mechanics, the linear regression, the
 logistic regression (GLM Binomial), the spline-based GAM, and the neural
 network, all return the same answer: after controlling for listing
@@ -2045,7 +2058,7 @@ For the platform itself, the same data points in three directions:
     Airbnb already collects.
 -   **Coach the "Underpriced" segment**. Roughly 41% of listings in the
     dataset sit below the GAM's fair-price band. These hosts are the
-    easiest group to help: a recommendation alone could shift their
+    easiest client group to help. A recommendation alone could shift their
     pricing toward market value, lifting both host revenue and platform
     commission.
 -   **Add operationalised location features**. Raw coordinates work well
@@ -2054,9 +2067,6 @@ For the platform itself, the same data points in three directions:
     let classifiers like the SVM catch up to the GAM's accuracy — and
     these features are trivial to compute centrally and serve to every
     model on the platform.
-
-
-
 
 
 
@@ -2119,18 +2129,17 @@ regard.
 
 Coming into this project, my comfort zone was firmly in theory. I knew
 what a GLM was on paper, but actually building one that holds up against
-messy data was a different exercise. Working on the GLM Binomial and GAM
+messy data was a different experience. Working on the GLM Binomial and GAM
 forced me to confront the gap between understanding a model and making
 it useful. Things that look elegant in a lecture slide turn out to
-require dozens of small judgement calls in practice: which variables to
-include, how to handle NAs, when to log-transform, where to draw a
-threshold.
+require dozens of small judgement calls in practice. Questions like which variables to include, how to handle NAs, when to log-transform, where to draw a
+reasonable threshold and much more.
 
-The GAM was probably my biggest single learning. I had never worked with
+The GAM was probably my biggest single learning. I did not worked a lot with
 smooth terms before, and seeing the 2D spatial spline pick up Vaud's
 geography was genuinely a moment where the theory clicked into practice.
 
-Another lesson, less technical but probably the most useful one, came from how often I rewrote my texts. Each round made them shorter, clearer, and more readable. I went into this project assuming the modelling would be the hard part. By the end, communicating the results clearly turned out to be just as much work.
+I went into this project assuming the modelling would be the hard part. By the end, communicating the results clearly turned out to be just as much work.
 
 Finally, R Bootcamp in February laid the foundation, but this project
 was where I actually got comfortable in R. Reading the others' code,

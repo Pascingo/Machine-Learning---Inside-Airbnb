@@ -33,28 +33,11 @@ caption {
 ```
 **ALS LETZES styler::style_file(DATEINAME) runnen in Konsole**
 
-Sprint 24.05.2026
-
-
-Timon:
-
-
-
-Pascal:
 
 Davide:
 -   conclusion drüberschauen und eigene Ergebnisse einbauen bei RQ1
 
 Fragen Davide: 
-
-3.9 Analogous to the existing...
-
-bei limitations pro model aufs richtige chapter verweisen!!
-
-wollen wir bei traffic light 1x zeigen was 10/20/30% ausmachen würden und wir deshalb mit 15% gegangen sind? ratio ändert ja accordingly
-
-hab mit dem Treshhold bisschen gespielt. sollten wir besser begründen?
-
 
 
 ToDos backlog: 
@@ -452,6 +435,7 @@ p.price_high <- ggplot(d.airbnb_listings_feat, aes(x = as.factor(price_high))) +
 
 p.demand | p.price_high
 ```
+
 Analogous to the existing variables, the feature-engineered data are also evaluated. *Log_Price* has already been plotted alongside the original prices to directly compare their distributions. The *price_per_guest* will be analyzed during the Exploratory Data Analysis.
 *High_demand* is heavily imbalanced: very few listings cross our
 threshold. Accuracy would be a misleading metric for this target, so for
@@ -924,8 +908,6 @@ could include latitude and longitude, these variables alone do not have
 a significant impact on price. For example, we would need the distance
 to the nearest city center to measure this accurately.
 
-*General limitations that apply to every model in this study are
-summarised in chapter 14.*
 
 # Generalized linear Model — Poisson
 

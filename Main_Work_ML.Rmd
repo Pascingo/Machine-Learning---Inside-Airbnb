@@ -1590,7 +1590,6 @@ tuned_svm <- tune(
 svm_model_cost <- as.numeric(tuned_svm$best.parameters["cost"])
 svm_model_gamma <- as.numeric(tuned_svm$best.parameters["gamma"])
 
-### einschub!!!!!!
 svm_model_cost <- 256
 svm_model_gamma <- 0.625
 

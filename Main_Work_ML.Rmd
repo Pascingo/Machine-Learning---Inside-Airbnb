@@ -45,10 +45,10 @@ Timon:
 
 
 Pascal:
--   überflüssige Packete entfernen 
--   2 Sätze in DP zu FE-Data schreiben und einen kurzen Verweis in 3.9 einbauen.
--   8.3.2 letzter Satz Formatierung anpassen. 
--   conclusion drüberschauen und eigene Ergebnisse einbauen bei RQ1
+-   überflüssige Packete entfernen *done*
+-   2 Sätze in DP zu FE-Data schreiben und einen kurzen Verweis in 3.9 einbauen. *done*
+-   8.3.2 letzter Satz Formatierung anpassen. *done*
+-   conclusion drüberschauen und eigene Ergebnisse einbauen bei RQ1 *done*
 
 Davide:
 -   (OR = 0.693, CI [0.57, 0.841], p = 2^{-4}). Art der Formatierung entfernen. (DAVIDE) *done - EDF part im GAM bei Interpretation dringelassen aber die scientific OR, CI, P-Vals rausgenommen*
@@ -456,8 +456,8 @@ p.price_high <- ggplot(d.airbnb_listings_feat, aes(x = as.factor(price_high))) +
 
 p.demand | p.price_high
 ```
-
-High demand is heavily imbalanced: very few listings cross our
+Analogous to the existing variables, the feature-engineered data are also evaluated. *Log_Price* has already been plotted alongside the original prices to directly compare their distributions. The *price_per_guest* will be analyzed during the Exploratory Data Analysis.
+*High_demand* is heavily imbalanced: very few listings cross our
 threshold. Accuracy would be a misleading metric for this target, so for
 classification on it we'd lean on F1 and precision-recall instead. High
 price is balanced by design, we split at the median, so both classes
@@ -1007,9 +1007,9 @@ used as a solution, which adjusts the standard errors upward.
 
 By utilizing a quasi-Poisson model, we successfully corrected for overdispersion in the data. This adjustment provides more realistic standard errors, ensuring a highly reliable evaluation of the actual drivers behind property occupancy. 
 
-Our analysis identifies several key factors influencing performance. **Price** has a highly significant negative impact; as expected, higher rates consistently lead to lower occupancy. Conversely, achieving **Superhost status** is a major advantage. It exerts a highly significant positive effect, multiplying a property's occupancy by approximately **2.6 times** compared to standard hosts. Additionally, both **guest reviews** and **property capacity** are strong, significant drivers of success which means that better ratings and the ability to accommodate more guests reliably translate into higher booking volumes.
+Our analysis identifies several key factors influencing performance. *Price* has a highly significant negative impact; as expected, higher rates consistently lead to lower occupancy. Conversely, achieving *Superhost status* is a major advantage. It exerts a highly significant positive effect, multiplying a property's occupancy by approximately **2.6 times** compared to standard hosts. Additionally, both *guest reviews* and *property capacity* are strong, significant drivers of success which means that better ratings and the ability to accommodate more guests reliably translate into higher booking volumes.
 
-Finally, the **room type** plays a crucial role. When comparing setups against the baseline of renting an *Entire home/apt* **private rooms** experience significantly lower occupancy rates. However, for **shared rooms**, the data does not reveal a statistically significant difference in occupancy compared to booking an entire apartment.
+Finally, the *room type* plays a crucial role. When comparing setups against the baseline of renting an *Entire home/apt*, *private rooms* experience significantly lower occupancy rates. However, for *shared rooms*, the data does not reveal a statistically significant difference in occupancy compared to booking an entire apartment.
 
 ### Cross-validation
 
@@ -1938,6 +1938,7 @@ For the variable *review_scores* the linear model finds a positive effekt of abo
 The GAM on the other side...
 **Hier bitte einen Teil für die Ergebnisse des GAMs eintragen. welche anderen, host-oprientierten Faktoren wurden gefunden die einen Einfluss haben? im lm erkennen wir einen Effekt des review-scores von, allenfalls auch noch mit den glm argumentieren?**
 
+To further validate our findings, we applied Poisson and Quasi-Poisson Generalized Linear Models (GLM). The initial Poisson model revealed significant overdispersion in the data, highlighting the high variance typical for real-world pricing structures. By implementing the Quasi-Poisson model to adjust for this overdispersion and obtain more robust standard errors, we corroborated our primary finding: even under this different model specification, pricing power remains firmly tied to structural and venue-oriented features, while host-sided metrics exert only a marginal influence.
 
 Regarding the second Hypothesis and the venue-oriented Variables we can say that
 **Structural features are the real price drivers**. Capacity

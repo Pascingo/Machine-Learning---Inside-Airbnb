@@ -37,32 +37,15 @@ Sprint 24.05.2026
 
 
 Timon:
--   in Kapitel 13 die Forschungsfragen (mit bezug auf Hypothesen (ff)) noch beantworten. (TIMON) *done*
--   Kapitel Capacity & Rating und ein Kapitel Room Types and Superhost Status --> kapitel optimaler zusammenfügen *done*
--   Kapitel 13 & 14 restrukturieren. neu soll ein Kapitel "Conclusion" entstehen, welches zwei unterkapitel beinhaltet. Eines als type "scinetific conclusions" und eines als "businesscase conclusion". *done* 
-    SC --> what the models agree on, what the different lenses ad, limitations, Ausblick
-    BCC --> Reco Host, reco Airbnb
+
 
 
 Pascal:
--   überflüssige Packete entfernen *done*
--   2 Sätze in DP zu FE-Data schreiben und einen kurzen Verweis in 3.9 einbauen. *done*
--   8.3.2 letzter Satz Formatierung anpassen. *done*
--   conclusion drüberschauen und eigene Ergebnisse einbauen bei RQ1 *done*
 
 Davide:
--   (OR = 0.693, CI [0.57, 0.841], p = 2^{-4}). Art der Formatierung entfernen. (DAVIDE) *done - EDF part im GAM bei Interpretation dringelassen aber die scientific OR, CI, P-Vals rausgenommen*
--   Lessons Learned anpassen (DAVIDE) *done*
--   Modeling Approach Table H2 (wth H1 as control) ausbauen, korrekt mit Hypothesen ergänzen. *done* Spalte OUTPut entfernen. (DAVIDE) *done*
--   GAM output table auf fehlende Variabeln überprüfen (DAVIDE) *done*
--   10.3.1 threshold setting anpassen (DAVIDE) *done*
--   Postcode Dummy aus der Arbeit entfernen. keine verweise darauf. (ctrl + F) *überall ausser am Schluss nicht entfernt*
 -   conclusion drüberschauen und eigene Ergebnisse einbauen bei RQ1
 
 Fragen Davide: 
-Introduction direkt zu Business Case ohne Satz dazwischen - meeh
-
-Dataprepartions - 2x das mit den 20 Variablen
 
 3.9 Analogous to the existing...
 
@@ -204,9 +187,7 @@ d.listings_clean <- d.listings_clean %>%
     -calculated_host_listings_count_shared_rooms, -reviews_per_month, -bedrooms, -review_scores_value
   )
 ```
-
-According to the requirements for this paper, the dataset is limited to
-a maximum of 20 variables. To meet this specification, we have removed
+To meet this specification, we have removed
 columns from the dataset that will not be used in our analysis.
 Consequently, `d.listings_clean` is our final, cleaned dataset, which we
 will use to run all subsequent models.
@@ -1405,7 +1386,7 @@ tibble(
 
 The GAM predicts an expected price for every listing. Comparing actual
 to expected gives hosts a quick verdict: `Underpriced`, `Fair Price`,
-or `Overpriced`. We set the threshold manually at ±15%. A value we agreed on as a team based on what felt like a reasonable tolerance band around the model's predicted price.; a stricter or looser band would shift the proportions accordingly.
+or `Overpriced`. We set the threshold manually at ±15%. A value we agreed on as a team based on what felt like a reasonable tolerance band around the model's predicted price. A stricter or looser band would shift the proportions accordingly.
 
 ```{r traffic_light_labels, out.width="80%"}
 # Predictions on log scale

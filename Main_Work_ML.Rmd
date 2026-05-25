@@ -1949,10 +1949,36 @@ measurable positive effect on price. Some models even show a small
 *negative* effect. This is the most robust single finding in this study. We can conclude thath Superhost strategy is: pricecompetitively, earn through volume.
 
 For the variable *review_scores* the linear model finds a positive effekt of about `r round((exp(lm.main$coefficients[2]) - 1) * 100, digits = 2)`%. 
-The GAM on the other side...
-**Hier bitte einen Teil für die Ergebnisse des GAMs eintragen. welche anderen, host-oprientierten Faktoren wurden gefunden die einen Einfluss haben? im lm erkennen wir einen Effekt des review-scores von, allenfalls auch noch mit den glm argumentieren?**
 
 To further validate our findings, we applied Poisson and Quasi-Poisson Generalized Linear Models (GLM). The initial Poisson model revealed significant overdispersion in the data, highlighting the high variance typical for real-world pricing structures. By implementing the Quasi-Poisson model to adjust for this overdispersion and obtain more robust standard errors, we corroborated our primary finding: even under this different model specification, pricing power remains firmly tied to structural and venue-oriented features, while host-sided metrics exert only a marginal influence.
+
+The GLM Binomial speaks directly to **H1**: *do host-centered indicators
+raise willingness to pay?* The answer here is more nuanced than the
+hypothesis suggests. Two host-centered variables move the odds of an
+above-median price in opposite directions:
+
+- **Review score** raises the odds by `r rev_pct_up`% per point — consistent with H1.
+- **Superhost status** *lowers* the odds by `r sh_pct_lower`% — the opposite of H1.
+
+H1 is therefore only partially supported. Quality signals matter, but the
+Superhost badge is not a price lever. The pattern only makes sense once
+the GLM Poisson is added in: Superhosts trade margin for volume, earning
+more through occupancy rather than through higher per-night prices.
+
+The GAM on the other side addresses both research questions:
+
+**RQ1 / H2 — does location drive willingness to pay?** Yes, strongly. The
+2D spatial spline `s(longitude, latitude)` has an EDF of `r edf_loc`.The
+most flexible term in the model. Lakeshore listings and the Lausanne urban
+area sit at the top of the price surface; rural and alpine areas drop off
+sharply. H2 is clearly supported, and the non-linearity of the effect is
+the strongest argument we have for using a GAM over a linear model.
+
+**RQ2 — can we predict whether a listing's price is justified?** With the
+GAM as the engine, yes. The model explains `r gam_dev_expl`% of the deviance
+on held-out data, generates a fair-market price for every listing, and
+produces a stable train/test split of the traffic-light verdicts. The
+verdicts feed directly into the SVM-based decision tool in the next chapter.
 
 Regarding the second Hypothesis and the venue-oriented Variables we can say that
 **Structural features are the real price drivers**. Capacity

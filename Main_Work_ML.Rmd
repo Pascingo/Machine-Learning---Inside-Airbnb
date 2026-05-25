@@ -2085,3 +2085,5 @@ interpretations, ensuring our conclusions were statistically sound.
 Finally, these tools provided essential linguistic support. We actively
 used GenAI to translate our documentation and findings into professional
 English, ensuring a high-quality final report.
+
+It was nearly impossible to get directly perfect results out of the GenAI-Tools. All Outputs had to be manually checked, because often the results based on wrong assumptions about the distribution of the data. We had to control if the results were correct, if not we had to reprompt the problems or use a more precisely wording. GenAI was correct in about 80% of the cases, but those other 20% were quite difficult to find and to correct, if you trust the AI blindly. Another pitfall was the explanation of models by the AI, as the explanation was often way more complicated and technical than the one in class.
